@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Checkout</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">หน้าแรก</a></li>
+        <li><a href="articles.html">บทความ</a></li>
+        <li><a href="intro-ea.html">แนะนำ EA เทรดทอง</a></li>
+        <li><a href="ea1.html">EA 1</a></li>
+        <li><a href="ea2.html">EA 2</a></li>
+        <li><a href="about.html">เกี่ยวกับเรา / ติดต่อเรา</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- แสดงรายการสินค้าในตะกร้า -->
+    <section>
+      <h2>รายการสินค้าในตะกร้า</h2>
+      <div id="cart-items"></div>
+      <p><strong>รวมทั้งหมด:</strong> <span id="total-price">0</span> USD</p>
+    </section>
+
+    <!-- ฟอร์มกรอกข้อมูลลูกค้า -->
+    <section>
+      <h2>ข้อมูลลูกค้า</h2>
+      <form id="checkout-form">
+        <label>ชื่อ-นามสกุล:</label><br>
+        <input type="text" name="fullname" required><br><br>
+
+        <label>อีเมล:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>เบอร์โทรศัพท์:</label><br>
+        <input type="tel" name="phone" required><br><br>
+
+        <label>ที่อยู่สำหรับออกใบเสร็จ:</label><br>
+        <textarea name="address" required></textarea><br><br>
+
+        <h3>วิธีการชำระเงิน</h3>
+        <select name="payment" required>
+          <option value="">-- เลือกวิธีการชำระเงิน --</option>
+          <option value="paypal">PayPal</option>
+          <option value="creditcard">บัตรเครดิต/เดบิต</option>
+          <option value="bank">โอนผ่านธนาคาร</option>
+        </select><br><br>
+
+        <button type="submit" class="btn">ยืนยันการสั่งซื้อ</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Sorrawee - Gold Trading EA</p>
+  </footer>
+
+  <script>
+    // โหลดข้อมูลตะกร้าจาก LocalStorage
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cartDiv = document.getElementById("cart-items");
+    let total = 0;
+
+    cart.forEach(item => {
+      cartDiv.innerHTML += `<p>${item.product} - ${item.price} USD</p>`;
+      total += item.price;
+    });
+
+    document.getElementById("total-price").innerText = total;
+
+    // ฟอร์ม Checkout
+    document.getElementById("checkout-form").addEventListener("submit", function(e){
+      e.preventDefault();
+      alert("ขอบคุณสำหรับการสั่งซื้อ! ระบบจะติดต่อกลับไปทางอีเมลที่คุณกรอกไว้");
+      localStorage.removeItem("cart"); // เคลียร์ตะกร้า
+    });
+  </script>
+</body>
+</html>
