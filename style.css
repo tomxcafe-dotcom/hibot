@@ -1,0 +1,129 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9fafb;
+  color: #111;
+}
+
+/* NAV */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 40px;
+  background: #111827;
+  color: white;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+}
+
+/* HERO */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 60px;
+}
+
+.hero img {
+  width: 350px;
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 12px 25px;
+  background: #f59e0b;
+  color: black;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+/* SECTION */
+.section {
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.section.dark {
+  background: #111827;
+  color: white;
+}
+
+/* FEATURES */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+/* PRICING */
+.pricing {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.price-card {
+  background: white;
+  padding: 25px;
+  width: 260px;
+  border-radius: 12px;
+  color: black;
+}
+
+.price-card.highlight {
+  border: 3px solid #f59e0b;
+}
+
+.price {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.price-card button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  background: #111827;
+  color: white;
+  border-radius: 6px;
+}
+
+/* ORDER */
+form {
+  max-width: 400px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input, button {
+  padding: 12px;
+  font-size: 16px;
+}
+
+/* FOOTER */
+footer {
+  background: #111827;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
