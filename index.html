@@ -1,100 +1,36 @@
+<!-- 📂 index.html (หน้าแรก) -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>Gold Trading EA</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EA เทรดทองอัตโนมัติ</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="logo">GOLD EA</div>
-  <ul>
-    <li><a href="#features">คุณสมบัติ</a></li>
-    <li><a href="#pricing">ราคา</a></li>
-    <li><a href="#order">สั่งซื้อ</a></li>
-  </ul>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-text">
-    <h1>Gold Trading EA</h1>
-    <p>ระบบเทรดทองอัตโนมัติสำหรับ MT4 / MT5<br>
-    ทำกำไรอย่างมีวินัย ไม่ใช้อารมณ์</p>
-    <a href="#pricing" class="btn-primary">ดูราคา</a>
-  </div>
-  <img src="images/gold-ea.png" alt="Gold EA">
-</section>
-
-<!-- FEATURES -->
-<section id="features" class="section">
-  <h2>คุณสมบัติเด่น</h2>
-  <div class="features">
-    <div class="card">📈 เทรดอัตโนมัติ 24 ชม.</div>
-    <div class="card">⚙️ ตั้งค่า Lot / SL / TP ได้</div>
-    <div class="card">🧠 กลยุทธ์ Trend + Smart Entry</div>
-    <div class="card">🛡️ ระบบควบคุมความเสี่ยง</div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section id="pricing" class="section dark">
-  <h2>แพ็กเกจราคา</h2>
-
-  <div class="pricing">
-    <div class="price-card">
-      <h3>Trial</h3>
-      <p class="price">ฟรี</p>
+  <header>
+    <h1>EA เทรดทองอัตโนมัติ</h1>
+    <nav>
       <ul>
-        <li>ใช้งาน 7 วัน</li>
-        <li>จำกัด Lot</li>
+        <li><a href="index.html">หน้าแรก</a></li>
+        <li><a href="articles.html">บทความ</a></li>
+        <li><a href="intro-ea.html">แนะนำ EA เทรดทอง</a></li>
+        <li><a href="ea1.html">EA 1</a></li>
+        <li><a href="ea2.html">EA 2</a></li>
+        <li><a href="about.html">เกี่ยวกับเรา / ติดต่อเรา</a></li>
       </ul>
-      <button onclick="selectPlan('Trial')">เลือกแพ็กเกจ</button>
-    </div>
+    </nav>
+  </header>
 
-    <div class="price-card highlight">
-      <h3>Standard</h3>
-      <p class="price">3,900 บาท</p>
-      <ul>
-        <li>ใช้งานเต็มรูปแบบ</li>
-        <li>อัปเดตฟรี</li>
-      </ul>
-      <button onclick="selectPlan('Standard')">เลือกแพ็กเกจ</button>
-    </div>
+  <main>
+    <section class="banner">
+      <h2>ยินดีต้อนรับสู่เว็บไซต์ EA เทรดทอง</h2>
+      <p>ระบบเทรดทองอัตโนมัติ ที่ช่วยให้คุณทำกำไรได้ง่ายขึ้น</p>
+      <a href="intro-ea.html" class="btn">ดูรายละเอียด EA</a>
+    </section>
+  </main>
 
-    <div class="price-card">
-      <h3>Pro</h3>
-      <p class="price">6,900 บาท</p>
-      <ul>
-        <li>บัญชีไม่จำกัด</li>
-        <li>Support VIP</li>
-      </ul>
-      <button onclick="selectPlan('Pro')">เลือกแพ็กเกจ</button>
-    </div>
-  </div>
-</section>
-
-<!-- ORDER -->
-<section id="order" class="section">
-  <h2>ฟอร์มสั่งซื้อ</h2>
-
-  <form id="orderForm">
-    <input type="text" id="name" placeholder="ชื่อ-นามสกุล" required>
-    <input type="email" id="email" placeholder="อีเมล" required>
-    <input type="text" id="plan" placeholder="แพ็กเกจที่เลือก" readonly>
-    <button type="submit">ยืนยันการสั่งซื้อ</button>
-  </form>
-
-  <p id="result"></p>
-</section>
-
-<footer>
-  © 2026 Gold Trading EA
-</footer>
-
-<script src="script.js"></script>
+  <footer>
+    <p>© 2026 Sorrawee - Gold Trading EA</p>
+  </footer>
 </body>
 </html>
