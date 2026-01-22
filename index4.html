@@ -4,847 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIBOT - Expert Advisor สำหรับ MT4/MT5</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;700&display=swap" rel="stylesheet">
     
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="HIBOT - Expert Advisor สำหรับ MT4/MT5">
+    <meta property="og:description" content="เครื่องมือเทรดอัตโนมัติ 24 ชม. ช่วยคุณทำกำไรตามระบบโดยไม่ต้องเฝ้ากราฟ">
+    <meta property="og:image" content="image_72bfad.png">
+    <meta property="og:url" content="https://yourwebsite.com">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body, html {
-            height: 100%;
-            font-family: 'Kanit', sans-serif;
-            overflow: hidden;
-            background-color: #000;
-        }
-
-        /* Container หลัก */
-        .hero-section {
-            position: relative;
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-        }
-
-        /* 1. ภาพพื้นหลัง (Background Image) */
-        .bg-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* ใส่ URL ภาพตู้เซฟของคุณที่นี่ */
-            background-image: url('https://files.oaiusercontent.com/file-KEn40fVqXmC8H6K5Y3m4J4?se=2024-10-24T08%3A44%3A42Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3De56de4da-786d-4786-8a9d-9273c66f5461.webp&sig=S9A%2BTfN/X/zP/Xf/N8p%2Bv7u9OQ2X/X0Xy1Y9W8W8W8W%3D');
-            background-size: cover;
-            background-position: center;
-            z-index: 1;
-            animation: kenBurns 20s infinite alternate ease-in-out;
-        }
-
-        /* 2. Overlay สีเขียวโปร่งแสง (ตามธีม HIBOT) */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                45deg,
-                rgba(0, 163, 136, 0.4) 0%, 
-                rgba(0, 0, 0, 0.7) 100%
-            );
-            z-index: 2;
-        }
-
-        /* 3. Digital Scanline Effect (เส้นวิ่งๆ แบบดิจิทัล) */
-        .scanlines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                transparent 50%,
-                rgba(0, 255, 200, 0.05) 51%
-            );
-            background-size: 100% 4px;
-            z-index: 3;
-            pointer-events: none;
-        }
-
-        /* 4. กล่องข้อความกลางจอ */
-        .content-box {
-            position: relative;
-            z-index: 10;
-            padding: 40px 60px;
-            background: rgba(0, 163, 136, 0.85); /* สีเขียวตามรูปภาพที่ 2 */
-            backdrop-filter: blur(10px); /* เอฟเฟกต์กระจกฝ้า */
-            border-top: 2px solid #00ffd2;
-            border-bottom: 2px solid #00ffd2;
-            box-shadow: 0 0 30px rgba(0, 255, 210, 0.3);
-            max-width: 90%;
-            transform: skew(-5deg); /* เอียงกล่องเล็กน้อยให้ดูเท่ */
-        }
-
-        .text-wrapper {
-            transform: skew(5deg); /* ดัดข้อความกลับมาให้ตรง */
-        }
-
-        h1 {
-            font-size: clamp(2rem, 8vw, 4.5rem);
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-        }
-
-        p {
-            font-size: clamp(1rem, 3vw, 1.5rem);
-            font-weight: 300;
+        /* Global Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #1e2a3a;
             line-height: 1.6;
-            opacity: 0.95;
         }
 
-        /* --- Animations --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        /* เอฟเฟกต์ซูมภาพพื้นหลังช้าๆ */
-        @keyframes kenBurns {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.15); }
-        }
-
-        /* เอฟเฟกต์เส้นสแกนวิ่งลง */
-        .hero-section::after {
-            content: "";
-            position: absolute;
-            top: -100%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                transparent,
-                rgba(0, 255, 210, 0.2),
-                transparent
-            );
-            z-index: 4;
-            animation: scan 4s infinite linear;
-        }
-
-        @keyframes scan {
-            0% { top: -100%; }
-            100% { top: 100%; }
-        }
-
+        /* Header & Nav */
         .header {
             background: #fff;
-            padding: 20px 0;
+            padding: 15px 0;
             position: sticky;
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo-img {
-            width: 200px;
-            height: 200px;
-        }
-
-        .logo-text {
-            font-size: 42px;
-            font-weight: bold;
-            color: #1e2a3a;
-            letter-spacing: 2px;
-        }
+        .nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo img { width: 50px; height: 50px; border-radius: 8px; }
+        .logo-text { font-size: 28px; font-weight: bold; color: #1e2a3a; letter-spacing: 1px; }
 
         .cart-btn {
             background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
             color: #fff;
-            padding: 12px 30px;
+            padding: 10px 25px;
             border: none;
             border-radius: 25px;
             cursor: pointer;
             font-weight: bold;
             position: relative;
             transition: transform 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
         }
-
-        .cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
         .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ff4757;
-            color: #fff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            position: absolute; top: -8px; right: -8px;
+            background: #ff4757; color: #fff; border-radius: 50%;
+            width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 11px;
         }
 
+        /* Hero Section */
         .hero {
             background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            text-align: center;
-            padding: 100px 20px;
-            position: relative;
-            overflow: hidden;
+            color: #fff; text-align: center; padding: 100px 20px;
         }
+        .hero h1 { font-size: 48px; margin-bottom: 20px; }
+        .hero p { font-size: 20px; opacity: 0.9; max-width: 800px; margin: 0 auto; }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="https://drive.google.com/uc?export=view&id=1qhSnFySudYEDvrdCYKUQj_7MNLmolreM"><rect width="100" height="100" fill="none"/><path d="M0 50 Q25 25 50 50 T100 50" stroke="rgba(255,255,255,0.1)" fill="none" stroke-width="2"/></svg>');
-            opacity: 0.3;
-        }
+        /* Sections General */
+        section { padding: 80px 20px; }
+        h2 { text-align: center; font-size: 36px; margin-bottom: 40px; color: #1e2a3a; }
 
-        .hero h1 {
-            font-size: 56px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero p {
-            font-size: 24px;
-            opacity: 0.95;
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
- .disclaimer {
-            background: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 20px;
-            margin: 40px auto;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 900px;
-        }
-
-        .disclaimer p {
-            color: #856404;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .featured-images {
-            padding: 80px 20px;
-            background: #fff;
-        }
-
-        .featured-images h2 {
-            text-align: center;
-            font-size: 42px;
-            margin-bottom: 50px;
-            color: #1e2a3a;
-        }
-
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .featured-image {
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s;
-            position: relative;
-        }
-
-        .featured-image:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(77, 212, 172, 0.3);
-        }
-
-        .featured-image img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .image-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: #fff;
-            padding: 30px 20px 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .trial-section {
-            background: linear-gradient(135deg, #1e2a3a 0%, #2d3e50 100%);
-            color: #fff;
-            padding: 80px 20px;
-            text-align: center;
-        }
-
-        .trial-section h2 {
-            font-size: 42px;
-            margin-bottom: 20px;
-        }
-
-        .trial-section p {
-            font-size: 20px;
-            margin-bottom: 40px;
-            opacity: 0.9;
-        }
-
-        .trial-form {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid rgba(77, 212, 172, 0.3);
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #4dd4ac;
-            font-weight: bold;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid rgba(77, 212, 172, 0.3);
-            border-radius: 10px;
-            font-size: 16px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1e2a3a;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #4dd4ac;
-        }
-
- .form-container { width: 100%; max-width: 600px; margin: 0 auto; border: 1px solid #ccc; border-radius: 8px; overflow: hidden;
-        
-}
-        iframe { width: 100%; height: 600px; border: none; }
-       
-        .trial-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .trial-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
-        .about-section {
-            background: #fff;
-            padding: 80px 20px;
-        }
-
-        .about-section h2 {
-            text-align: center;
-            font-size: 42px;
-            margin-bottom: 20px;
-            color: #1e2a3a;
-        }
-
-        .about-description {
-            text-align: center;
-            font-size: 18px;
-            max-width: 900px;
-            margin: 0 auto 60px;
-            color: #495057;
-            line-height: 1.8;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
-        }
-
+        /* Feature Cards */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
         .feature-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
-            border-radius: 15px;
-            padding: 35px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s;
+            background: #fff; padding: 30px; border-radius: 15px; text-align: center;
+            border: 2px solid #e9ecef; transition: 0.3s;
         }
+        .feature-card:hover { transform: translateY(-10px); border-color: #4dd4ac; box-shadow: 0 10px 30px rgba(77,212,172,0.2); }
+        .feature-icon { font-size: 40px; margin-bottom: 15px; }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: #4dd4ac;
-            box-shadow: 0 10px 30px rgba(77, 212, 172, 0.2);
-        }
-
-        .feature-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            color: #20b89a;
-            margin-bottom: 15px;
-            font-size: 22px;
-        }
-
-        .feature-card p {
-            color: #6c757d;
-            line-height: 1.7;
-        }
-
-        .how-it-works {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 80px 20px;
-        }
-
-        .how-it-works h2 {
-            text-align: center;
-            font-size: 42px;
-            margin-bottom: 60px;
-            color: #1e2a3a;
-        }
-
-        .steps-container {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .step {
-            text-align: center;
-            max-width: 200px;
-        }
-
-        .step-number {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: bold;
-            margin: 0 auto 20px;
-            box-shadow: 0 5px 20px rgba(77, 212, 172, 0.3);
-        }
-
-        .step h3 {
-            color: #1e2a3a;
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        .step p {
-            color: #6c757d;
-            font-size: 15px;
-        }
-
-        .products {
-            padding: 80px 20px;
-            background: #fff;
-        }
-
-        .products h2 {
-            text-align: center;
-            font-size: 42px;
-            margin-bottom: 60px;
-            color: #1e2a3a;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
+        /* Products */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
         .product-card {
-            background: #fff;
-            border-radius: 20px;
-            padding: 40px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            background: #fff; border-radius: 20px; padding: 40px; border: 2px solid #e9ecef;
+            position: relative; transition: 0.3s;
         }
-
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #4dd4ac 0%, #20b89a 100%);
-        }
-
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(77, 212, 172, 0.2);
-            border-color: #4dd4ac;
-        }
-
-        .product-card.popular {
-            border-color: #20b89a;
-            box-shadow: 0 10px 30px rgba(77, 212, 172, 0.2);
-        }
-
+        .product-card.popular { border-color: #20b89a; box-shadow: 0 10px 30px rgba(77,212,172,0.1); }
         .popular-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+            position: absolute; top: 15px; right: 15px; background: #20b89a;
+            color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px;
+        }
+        .price { font-size: 36px; color: #20b89a; font-weight: bold; margin: 15px 0; }
+        .product-card ul { list-style: none; margin-bottom: 30px; }
+        .product-card li { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .product-card li:before { content: "✓ "; color: #20b89a; font-weight: bold; }
+
+        .add-to-cart-btn, .trial-btn {
+            width: 100%; padding: 15px; background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
+            color: #fff; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px;
         }
 
-        .product-card h3 {
-            color: #1e2a3a;
-            margin-bottom: 15px;
-            font-size: 28px;
-        }
+        /* Trial Form */
+        .trial-section { background: #1e2a3a; color: #fff; }
+        .trial-form { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; color: #4dd4ac; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border-radius: 8px; border: none; }
 
-        .product-card .price {
-            font-size: 42px;
-            color: #20b89a;
-            margin: 20px 0;
-            font-weight: bold;
-        }
-
-        .product-card ul {
-            list-style: none;
-            margin: 30px 0;
-        }
-
-        .product-card li {
-            padding: 12px 0;
-            border-bottom: 1px solid #e9ecef;
-            color: #495057;
-        }
-
-        .product-card li:last-child {
-            border-bottom: none;
-        }
-
-        .product-card li:before {
-            content: "✓ ";
-            color: #20b89a;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .add-to-cart-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .add-to-cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
+        /* Modal */
         .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            overflow-y: auto;
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.7); overflow-y: auto;
         }
-
         .modal-content {
-            background: #fff;
-            margin: 50px auto;
-            padding: 40px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: #fff; margin: 50px auto; padding: 40px; border-radius: 20px;
+            width: 90%; max-width: 500px; position: relative;
         }
+        .close { position: absolute; right: 20px; top: 10px; font-size: 30px; cursor: pointer; }
 
-        .close {
-            color: #adb5bd;
-            float: right;
-            font-size: 35px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .remove-btn { color: #ff4757; border: none; background: none; cursor: pointer; }
 
-        .close:hover {
-            color: #20b89a;
-        }
+        /* Contact Section */
+        .contact-form { max-width: 800px; margin: 0 auto; text-align: center; }
+        iframe { width: 100%; border-radius: 15px; border: 1px solid #ddd; }
 
-        .cart-item {
-            background: #f8f9fa;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e9ecef;
-        }
-
-        .remove-btn {
-            background: #ff4757;
-            color: #fff;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .remove-btn:hover {
-            background: #ff3838;
-        }
-
-        .cart-total {
-            font-size: 28px;
-            text-align: right;
-            margin: 30px 0;
-            color: #20b89a;
-            font-weight: bold;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .checkout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
-        .payment-section {
-            display: none;
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .qr-code {
-            background: #fff;
-            padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            margin: 20px 0;
-            border: 2px solid #e9ecef;
-        }
-
-        .qr-code img {
-            width: 250px;
-            height: 250px;
-        }
-
-        .confirm-payment-btn {
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            padding: 16px 50px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .confirm-payment-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
-        .download-section {
-            display: none;
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .download-btn {
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            padding: 20px 50px;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 15px 10px;
-            display: inline-block;
-            text-decoration: none;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
-        .success-message {
-            color: #20b89a;
-            font-size: 28px;
-            margin: 20px 0;
-            font-weight: bold;
-        }
-
-        .empty-cart {
-            text-align: center;
-            padding: 40px;
-            color: #adb5bd;
-        }
-
-        .modal h2 {
-            color: #1e2a3a;
-            margin-bottom: 30px;
-        }
-
-        .modal h3 {
-            color: #1e2a3a;
-            margin: 20px 0;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 36px;
-            }
-            .hero p {
-                font-size: 18px;
-            }
-}
-            .images-grid {
-                grid-template-columns: 1fr;
-            }
-            .featured-image img {
-                height: 300px;
-}
-            .about-section h2, .products h2, .how-it-works h2 {
-                font-size: 32px;
-            }
-        }
+        @media (max-width: 768px) { .hero h1 { font-size: 32px; } }
     </style>
 </head>
 <body>
+
     <header class="header">
         <div class="container">
             <nav class="nav">
                 <div class="logo">
-                    <svg class="logo-img" viewBox="0 0 500 500" xmlns="https://drive.google.com/uc?export=view&id=1qhSnFySudYEDvrdCYKUQj_7MNLmolreM">
-                        <defs>
-                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" style="stop-color:#7dd3c0;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#20b89a;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M 173 141 L 207 141 L 207 294 L 173 294 Z" fill="#7dd3c0"/>
-                        <path d="M 220 173 L 254 173 L 254 235 L 220 235 Z" fill="#4dd4ac"/>
-                        <path d="M 265 127 L 299 127 L 299 280 L 265 280 Z" fill="url(#grad1)"/>
-                    </svg>
+                    <img src="image_72bfad.png" alt="HIBOT">
                     <span class="logo-text">HIBOT</span>
                 </div>
                 <button class="cart-btn" onclick="openCart()">
-                    🛒 ตะกร้า
-                    <span class="cart-count" id="cartCount">0</span>
+                    🛒 ตะกร้า <span class="cart-count" id="cartCount">0</span>
                 </button>
             </nav>
         </div>
@@ -853,476 +143,188 @@
     <section class="hero">
         <div class="container">
             <h1>HIBOT Expert Advisor</h1>
-            <p>เครื่องมือที่ช่วยเทรดอัตโนมัติทำคำสั่งซื้อขายให้คุณแบบอัตโนมัติ</p>
-            <p>และเก็บกำไรแทนคุณได้ 24 ชั่วโมง</p>
+            <p>นวัตกรรมเทรดอัตโนมัติที่ช่วยให้คุณพิชิตตลาด Forex 24 ชั่วโมง โดยไม่ต้องเฝ้าหน้าจอ</p>
         </div>
     </section>
 
-    <section class="about-section">
-        <div class="container">
-            <h2>เกี่ยวกับเรา</h2>
-            <p class="about-description">
-                "HIBOT" คือ Expert Advisor (EA) เป็นโปรแกรมที่เขียนขึ้นเพื่อเป็นเครื่องมือที่ช่วยเทรดอัตโนมัติ ช่วยให้ผู้เทรดสามารถทำการซื้อ-ขายในตลาด Forex 
-                และเก็บกำไรแทนผู้เทรดได้ 24 ชั่วโมง โดยผู้เทรดไม่จำเป็นต้องอยู่หน้าจอตลอดเวลา 
-            </p>
+    <section class="container">
+        <h2>ทำไมต้องเลือก HIBOT?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⏰</div>
+                <h3>ประหยัดเวลา</h3>
+                <p>ไม่ต้องเฝ้ากราฟตลอดเวลา ปล่อยให้ระบบจัดการแทนคุณ</p>
             </div>
-        <div class="container">
-            <p class="about-description"> "⚠️ ทุกการลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาข้อมูลก่อนตัดสินใจลงทุน" </p>
-           </div>  
-        
-        <div class="container">
-             <p class="about-description"> <h3>Expert Advisor (EA) นี้เหมาะกับใคร</h3> </p>
-        </div>
-        
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">⏰</div>
-                    <h3>ผู้ที่ไม่มีเวลา</h3>
-                    <p>ไม่สามารถเฝ้ากราฟได้ตลอดเวลา</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>เพิ่มประสิทธิภาพกำไร</h3>
-                    <p>มีท่าเทรดที่ทำซ้ำๆ แล้วทำกำไรได้ตามระบบ</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🧘</div>
-                    <h3>การจัดการอารมณ์</h3>
-                    <p>ผู้ที่ไม่สามารถจัดการอารมณ์ระหว่างเทรดได้</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3>Passive Income</h3>
-                    <p>ผู้ที่ต้องการสร้างรายได้แบบ Passive ที่มีผลตอบแทนอย่างสม่ำเสมอ</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3>เทรดอัตโนมัติ</h3>
-                    <p>ระบบเทรดอัตโนมัติที่ทำงานแทนคุณตลอด 24 ชั่วโมง</p>
-                </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧘</div>
+                <h3>ไร้อารมณ์ร่วม</h3>
+                <p>ลดความผิดพลาดจากความกลัวและความโลภ เทรดตามแผน 100%</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>แม่นยำสูง</h3>
+                <p>วิเคราะห์เงื่อนไขทางเทคนิคด้วยความเร็วระดับเสี้ยววินาที</p>
             </div>
         </div>
     </section>
 
-    <section class="how-it-works">
+    <section id="pricing" style="background: #fff;">
         <div class="container">
-            <h2>การทำงานของ HIBOT</h2>
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>วิเคราะห์ตลาด</h3>
-                    <p>วิเคราะห์แนวโน้มตลาดตามกลยุทธ์ที่ใช้</p>
-                    <p>ประกอบกับ Timeframe ที่เทรด แบบ Real-time</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>ตัดสินใจเทรด</h3>
-                    <p>อัลกอริทึมตัดสินใจซื้อขายตามกลยุทธ์</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>ดำเนินการ</h3>
-                    <p>ทำคำสั่งซื้อขายอัตโนมัติ</p>
-                </div>
-
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>เก็บกำไร</h3>
-                    <p>ตั้ง Stop Loss และ Take Profit อัตโนมัติ</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="products">
-        <div class="container">
-            <h2>แพ็คเกจของเรา</h2>
+            <h2>แพ็คเกจที่คุณเลือกได้</h2>
             <div class="product-grid">
                 <div class="product-card">
-                    <h3>EURUSD ฺBasic Package</h3>
+                    <h3>Basic Package</h3>
                     <div class="price">฿499</div>
                     <ul>
-                        <li>EA สำหรับ MT4</li>
-                        <li>Timeframe H1</li>
-                        <li>ทุน 200$</li>
-                        <li>อายุการใช้งานตลอดชีพ</li>
-                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
-                        <li>ผลการ Backtest</li>
+                        <li>EA สำหรับ MT4 (Locked)</li>
+                        <li>รองรับคู่เงิน EURUSD</li>
+                        <li>ใช้งานตลอดชีพ</li>
+                        <li>อัปเดตฟรี 6 เดือน</li>
                     </ul>
                     <button class="add-to-cart-btn" onclick="addToCart('Basic Package', 499)">เพิ่มลงตะกร้า</button>
                 </div>
-
                 <div class="product-card popular">
-                    <span class="popular-badge">⭐ ยอดนิยม</span>
-                    <h3>EURUSD Pro Package</h3>
+                    <span class="popular-badge">ขายดีที่สุด</span>
+                    <h3>Pro Package</h3>
                     <div class="price">฿999</div>
                     <ul>
-                        <li>EA สำหรับ MT4</li>
-                        <li>Source code</li>
-                        <li>Timeframe H1</li>
-                        <li>ทุน 200$</li>
-                         <li>อายุการใช้งานตลอดชีพ</li>
-                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
-                        <li>ผลการ Backtest</li>
+                        <li>EA สำหรับ MT4 + Source Code</li>
+                        <li>ไม่จำกัดเลขบัญชี</li>
+                        <li>ใช้งานได้ทุกคู่เงิน</li>
+                        <li>คู่มือการปรับตั้งค่าแบบละเอียด</li>
                     </ul>
                     <button class="add-to-cart-btn" onclick="addToCart('Pro Package', 999)">เพิ่มลงตะกร้า</button>
                 </div>
-
                 <div class="product-card">
-                    <h3>EURUSD ฺVIP Package</h3>
+                    <h3>VIP Package</h3>
                     <div class="price">฿1,499</div>
                     <ul>
                         <li>EA สำหรับ MT4 & MT5</li>
-                        <li>Source code</li>
-                        <li>Timeframe H1</li>
-                        <li>ทุน 200$</li>
-                        <li>อายุการใช้งานตลอดชีพ</li>
-                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
-                        <li>ผลการ Backtest</li>
+                        <li>Source Code ทั้งหมด</li>
+                        <li>สิทธิ์เข้ากลุ่ม Support VIP</li>
+                        <li>ช่วยติดตั้งผ่าน TeamViewer</li>
                     </ul>
-                    <button class="add-to-cart-btn" onclick="addToCart('VIP Package', 1199)">เพิ่มลงตะกร้า</button>
+                    <button class="add-to-cart-btn" onclick="addToCart('VIP Package', 1499)">เพิ่มลงตะกร้า</button>
                 </div>
-                              <div class="product-card">
-                    <h3>EURUSD ฺBasic Package</h3>
-                    <div class="price">฿499</div>
-                    <ul>
-                        <li>EA สำหรับ MT4</li>
-                        <li>Timeframe H1</li>
-                        <li>ทุน 200$</li>
-                        <li>อายุการใช้งานตลอดชีพ</li>
-                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
-                        <li>ผลการ Backtest</li>
-                    </ul>
-                    <button class="add-to-cart-btn" onclick="addToCart('Basic Package', 499)">เพิ่มลงตะกร้า</button>
-                </div>
-
-                <div class="product-card popular">
-                    <span class="popular-badge">⭐ ยอดนิยม</span>
-                    <h3>EURUSD Pro Package</h3>
-                    <div class="price">฿999</div>
-                    <ul>
-                        <li>EA สำหรับ MT4</li>
-                        <li>Source code</li>
-                        <li>Timeframe H1</li>
-                        <li>ทุน 200$</li>
-                        <li>อายุการใช้งานตลอดชีพ</li>
-                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
-                        <li>ผลการ Backtest</li>
-                    </ul>
-                    <button class="add-to-cart-btn" onclick="addToCart('Pro Package', 999)">เพิ่มลงตะกร้า</button>
-                </div>
-
-                <div class="product-card">
-                    <h3>EURUSD ฺVIP Package</h3>
-                    <div class="price">฿1,499</div>
-                    <ul>
-                        <li>EA สำหรับ MT4 & MT5</li>
-                        <li>Source code</li>
-                        <li>Timeframe H1</li>
-                        <li>ทุน 200$</li>
-                        <li>อายุการใช้งานตลอดชีพ</li>
-                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
-                        <li>ผลการ Backtest</li>
-                    </ul>
-                    <button class="add-to-cart-btn" onclick="addToCart('VIP Package', 1199)">เพิ่มลงตะกร้า</button>
-                </div>
-                
             </div>
         </div>
     </section>
 
-<section class="trial-section">
+    <section class="trial-section">
         <div class="container">
-            <h2>🎁 ทดลองใช้ EA ฟรี!</h2>
-            <p>ลงทะเบียนเพื่อรับ EA ทดลองฟรีจาก 5 กลยุทธ์</p>
-            
+            <h2>🎁 ลงทะเบียนทดลองใช้ฟรี</h2>
+            <p style="text-align:center; margin-bottom: 30px;">รับ EA ไปทดสอบพอร์ต Demo ก่อนตัดสินใจ</p>
             <div class="trial-form">
                 <form id="trialForm" onsubmit="submitTrial(event)">
                     <div class="form-group">
-                        <label for="fullName">ชื่อ-นามสกุล *</label>
-                        <input type="text" id="fullName" required placeholder="กรอกชื่อ-นามสกุล">
+                        <label>ชื่อ-นามสกุล</label>
+                        <input type="text" id="tName" required placeholder="สมชาย ใจดี">
                     </div>
-
                     <div class="form-group">
-                        <label for="email">อีเมล *</label>
-                        <input type="email" id="email" required placeholder="example@email.com">
+                        <label>อีเมล</label>
+                        <input type="email" id="tEmail" required placeholder="yourname@gmail.com">
                     </div>
-
                     <div class="form-group">
-                        <label for="phone">เบอร์โทรศัพท์ *</label>
-                        <input type="tel" id="phone" required placeholder="0xx-xxx-xxxx">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="strategy">เลือกกลยุทธ์ที่สนใจ *</label>
-                        <select id="strategy" required>
-                            <option value="">-- เลือกกลยุทธ์ --</option>
-                            <option value="scalping">Scalping Strategy</option>
-                            <option value="breakout">Breakout Strategy</option>
-                            <option value="trend">Trend Following</option>
-                            <option value="support">Support & Resistance</option>
-                            <option value="grid">Grid Trading</option>
+                        <label>กลยุทธ์ที่สนใจ</label>
+                        <select id="tStrategy">
+                            <option value="Scalping">Scalping (เก็บสั้น)</option>
+                            <option value="Trend">Trend Following (รันเทรนด์)</option>
+                            <option value="Grid">Grid System (แก้พอร์ต)</option>
                         </select>
                     </div>
-
-                    <button type="submit" class="trial-btn"><h3> 📥 ลงทะเบียนและรับ EA ฟรี</h3> </button>
+                    <button type="submit" class="trial-btn">รับลิงก์ดาวน์โหลดฟรี</button>
                 </form>
             </div>
         </div>
     </section>
 
-<h2 style="text-align:center;">ติดต่อเรา</h2> 
-    <div class="form-container"> <!-- วางโค้ด iframe ที่ Google Forms ให้มา --> 
-        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScD9WuBRuDxSlQzYU7xaTdqt7vesiB19o4lbMQ6U2XiRUbk2A/viewform?usp=dialog" width="600" height="600" frameborder="0" marginheight="0" marginwidth="0"> กำลังโหลด… </iframe> </div>
+    <section class="container contact-form">
+        <h2>ติดต่อสอบถาม</h2>
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScD9WuBRuDxSlQzYU7xaTdqt7vesiB19o4lbMQ6U2XiRUbk2A/viewform?embedded=true" height="600" frameborder="0">กำลังโหลด...</iframe>
+    </section>
 
-    <!-- Trial Modal -->
-    <div id="trialModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeTrialModal()">&times;</span>
-            <h2>📧 ลงทะเบียนสำเร็จ!</h2>
-            <p class="pending-message">⏳ รอ Admin อนุมัติการดาวน์โหลด<br>คุณจะได้รับอีเมลยืนยันเมื่อได้รับการอนุมัติ</p>
-            <div id="trialInfo" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left;">
-                <p><strong>ชื่อ:</strong> <span id="displayName"></span></p>
-                <p><strong>อีเมล:</strong> <span id="displayEmail"></span></p>
-                <p><strong>กลยุทธ์:</strong> <span id="displayStrategy"></span></p>
-            </div>
-            <div id="downloadLinks" style="display: none;">
-                <p class="success-message">✓ ได้รับการอนุมัติแล้ว!</p>
-                <a href="https://drive.google.com/file/d/YOUR_FILE_ID/view" target="_blank" class="download-btn">
-                    📥 ดาวน์โหลด EA ทดลองใช้
-                </a>
-                <p style="margin-top: 15px; color: #6c757d; font-size: 14px;">
-                    * ลิงก์นี้จะเชื่อมต่อไปยัง Google Drive<br>
-                    * คุณจะได้รับคู่มือการใช้งานทางอีเมล
-                </p>
-            </div>
-            <button class="trial-btn" onclick="simulateAdminApproval()" style="margin-top: 20px;">
-                🔓 จำลองการอนุมัติของ Admin (สำหรับทดสอบ)
-            </button>
-        </div>
-    </div>
-
-    <!-- Cart Modal -->
     <div id="cartModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeCart()">&times;</span>
-            <h2>🛒 ตะกร้าสินค้า</h2>
-            
+            <h2 style="font-size: 24px;">สินค้าในตะกร้า</h2>
             <div id="cartItems"></div>
-            <div id="cartTotal" class="cart-total"></div>
+            <div id="totalArea" style="margin-top:20px; text-align:right; font-weight:bold; font-size: 20px;"></div>
+            <button id="checkoutBtn" class="add-to-cart-btn" style="margin-top:20px;" onclick="showPayment()">ชำระเงินทันที</button>
             
-            <button id="checkoutBtn" class="checkout-btn" onclick="showPayment()">ชำระเงิน</button>
-
-            <div id="paymentSection" class="payment-section">
-                <h3>สแกน QR Code เพื่อชำระเงิน</h3>
-                <div class="qr-code">
-                    <svg width="250" height="250" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="250" height="250" fill="white"/>
-                        <g fill="black">
-                            <rect x="20" y="20" width="30" height="30"/>
-                            <rect x="60" y="20" width="30" height="30"/>
-                            <rect x="100" y="20" width="30" height="30"/>
-                            <rect x="180" y="20" width="30" height="30"/>
-                            <rect x="20" y="60" width="30" height="30"/>
-                            <rect x="100" y="60" width="30" height="30"/>
-                            <rect x="140" y="60" width="30" height="30"/>
-                            <rect x="180" y="60" width="30" height="30"/>
-                            <rect x="20" y="100" width="30" height="30"/>
-                            <rect x="60" y="100" width="30" height="30"/>
-                            <rect x="100" y="100" width="30" height="30"/>
-                            <rect x="140" y="100" width="30" height="30"/>
-                            <rect x="180" y="100" width="30" height="30"/>
-                            <rect x="60" y="140" width="30" height="30"/>
-                            <rect x="140" y="140" width="30" height="30"/>
-                            <rect x="20" y="180" width="30" height="30"/>
-                            <rect x="60" y="180" width="30" height="30"/>
-                            <rect x="100" y="180" width="30" height="30"/>
-                            <rect x="140" y="180" width="30" height="30"/>
-                            <rect x="180" y="180" width="30" height="30"/>
-                        </g>
-                    </svg>
-                </div>
-                <p style="font-size: 18px; color: #495057;">ยอดชำระ: <strong id="paymentAmount" style="color: #20b89a; font-size: 28px;"></strong></p>
-                <p style="color: #6c757d; margin-top: 10px;">กรุณาชำระเงินและกดยืนยันการชำระเงิน</p>
-                <button class="confirm-payment-btn" onclick="confirmPayment()">✓ ยืนยันการชำระเงิน</button>
+            <div id="paymentSection" style="display:none; text-align:center; margin-top:30px;">
+                <h3>สแกนเพื่อชำระเงิน</h3>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PROMPTPAY_DATA" style="width:200px; margin:15px 0;">
+                <p>ธนาคารกสิกรไทย: 000-0-00000-0</p>
+                <button class="add-to-cart-btn" style="margin-top:15px; background: #1e2a3a;" onclick="alert('ระบบได้รับคำสั่งซื้อแล้ว Admin จะตรวจสอบสลิปและส่งไฟล์ให้ทางอีเมลครับ')">แจ้งโอนเงิน</button>
             </div>
+        </div>
+    </div>
 
-            <div id="downloadSection" class="download-section">
-                <p class="pending-message">⏳ รอ Admin อนุมัติการดาวน์โหลด</p>
-                <p style="margin: 20px 0; color: #6c757d;">การชำระเงินของคุณได้รับแล้ว<br>Admin กำลังตรวจสอบ คุณจะได้รับลิงก์ดาวน์โหลดทางอีเมลเมื่อได้รับการอนุมัติ</p>
-                
-                <div id="approvedDownload" style="display: none;">
-                    <p class="success-message">✓ ได้รับการอนุมัติแล้ว!</p>
-                    <h3 style="margin: 20px 0;">ดาวน์โหลด Expert Advisor</h3>
-                    <a href="https://drive.google.com/file/d/YOUR_MT4_FILE_ID/view" target="_blank" class="download-btn">
-                        📥 ดาวน์โหลด EA สำหรับ MT4
-                    </a>
-                    <a href="https://drive.google.com/file/d/YOUR_MT5_FILE_ID/view" target="_blank" class="download-btn">
-                        📥 ดาวน์โหลด EA สำหรับ MT5
-                    </a>
-                    <p style="margin-top: 20px; color: #6c757d;">คู่มือการติดตั้งได้ถูกส่งไปยังอีเมลของคุณแล้ว</p>
-                </div>
-
-                <button class="confirm-payment-btn" onclick="simulatePurchaseApproval()" style="margin-top: 20px;">
-                    🔓 จำลองการอนุมัติของ Admin (สำหรับทดสอบ)
-                </button>
-            </div>
+    <div id="successModal" class="modal">
+        <div class="modal-content" style="text-align:center;">
+            <span class="close" onclick="document.getElementById('successModal').style.display='none'">&times;</span>
+            <h2 style="color:#20b89a;">ลงทะเบียนสำเร็จ!</h2>
+            <p>เราได้ส่งลิงก์ดาวน์โหลด EA ไปที่อีเมลของคุณแล้ว (หากไม่พบ กรุณาเช็คใน Junk Mail)</p>
+            <br>
+            <a href="#" class="trial-btn" style="display:block; text-decoration:none;">📥 ดาวน์โหลดทันที</a>
         </div>
     </div>
 
     <script>
         let cart = [];
-        let isTrialApproved = false;
-        let isPurchaseApproved = false;
+        const cartCount = document.getElementById('cartCount');
+        const cartModal = document.getElementById('cartModal');
+        const cartItems = document.getElementById('cartItems');
+        const totalArea = document.getElementById('totalArea');
 
-        // Trial Form Functions
-        function submitTrial(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const strategy = document.getElementById('strategy').value;
-            const strategyText = document.getElementById('strategy').options[document.getElementById('strategy').selectedIndex].text;
-
-            // แสดงข้อมูลในโมดอล
-            document.getElementById('displayName').textContent = name;
-            document.getElementById('displayEmail').textContent = email;
-            document.getElementById('displayStrategy').textContent = strategyText;
-
-            // ซ่อนลิงก์ดาวน์โหลด
-            document.getElementById('downloadLinks').style.display = 'none';
-            isTrialApproved = false;
-
-            // เปิดโมดอล
-            document.getElementById('trialModal').style.display = 'block';
-
-            // รีเซ็ตฟอร์ม
-            document.getElementById('trialForm').reset();
-
-            // จำลองการส่งข้อมูลไป backend
-            console.log('Trial Registration:', { name, email, phone, strategy });
-        }
-
-        function simulateAdminApproval() {
-            isTrialApproved = true;
-            document.querySelector('#trialModal .pending-message').style.display = 'none';
-            document.getElementById('downloadLinks').style.display = 'block';
-            alert('✓ Admin อนุมัติแล้ว! คุณสามารถดาวน์โหลด EA ได้แล้ว');
-        }
-
-        function closeTrialModal() {
-            document.getElementById('trialModal').style.display = 'none';
-        }
-
-        // Cart Functions
         function addToCart(name, price) {
             cart.push({name, price});
-            updateCartCount();
-            alert('เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
+            updateCart();
+            alert('เพิ่มสินค้าลงตะกร้าแล้ว!');
         }
 
-        function updateCartCount() {
-            document.getElementById('cartCount').textContent = cart.length;
-        }
-
-        function openCart() {
-            displayCart();
-            document.getElementById('cartModal').style.display = 'block';
-        }
-
-        function closeCart() {
-            document.getElementById('cartModal').style.display = 'none';
-            resetCartModal();
-        }
-
-        function displayCart() {
-            const cartItemsDiv = document.getElementById('cartItems');
-            const cartTotalDiv = document.getElementById('cartTotal');
-            
-            if (cart.length === 0) {
-                cartItemsDiv.innerHTML = '<div class="empty-cart">ตะกร้าว่างเปล่า</div>';
-                cartTotalDiv.innerHTML = '';
-                document.getElementById('checkoutBtn').style.display = 'none';
-                return;
-            }
-
-            document.getElementById('checkoutBtn').style.display = 'block';
-            
-            let html = '';
+        function updateCart() {
+            cartCount.innerText = cart.length;
+            cartItems.innerHTML = cart.length === 0 ? '<p>ไม่มีสินค้า</p>' : '';
             let total = 0;
-
             cart.forEach((item, index) => {
-                html += `
-                    <div class="cart-item">
-                        <div>
-                            <strong>${item.name}</strong><br>
-                            <span style="color: #20b89a;">฿${item.price.toLocaleString()}</span>
-                        </div>
-                        <button class="remove-btn" onclick="removeFromCart(${index})">ลบ</button>
-                    </div>
-                `;
                 total += item.price;
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <span>${item.name}</span>
+                        <span>฿${item.price} <button class="remove-btn" onclick="removeItem(${index})">✕</button></span>
+                    </div>`;
             });
-
-            cartItemsDiv.innerHTML = html;
-            cartTotalDiv.innerHTML = `<strong>รวมทั้งหมด: ฿${total.toLocaleString()}</strong>`;
+            totalArea.innerText = `รวมทั้งสิ้น: ฿${total.toLocaleString()}`;
         }
 
-        function removeFromCart(index) {
+        function removeItem(index) {
             cart.splice(index, 1);
-            updateCartCount();
-            displayCart();
+            updateCart();
         }
+
+        function openCart() { cartModal.style.display = 'block'; }
+        function closeCart() { cartModal.style.display = 'none'; resetPayment(); }
 
         function showPayment() {
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
+            if(cart.length === 0) return alert('กรุณาเลือกสินค้าก่อนครับ');
             document.getElementById('checkoutBtn').style.display = 'none';
             document.getElementById('paymentSection').style.display = 'block';
         }
 
-        function confirmPayment() {
-            if (confirm('คุณได้ทำการชำระเงินเรียบร้อยแล้วใช่หรือไม่?')) {
-                document.getElementById('paymentSection').style.display = 'none';
-                document.getElementById('downloadSection').style.display = 'block';
-                document.getElementById('approvedDownload').style.display = 'none';
-                isPurchaseApproved = false;
-            }
-        }
-
-        function simulatePurchaseApproval() {
-            isPurchaseApproved = true;
-            document.querySelector('#downloadSection .pending-message').style.display = 'none';
-            document.querySelector('#downloadSection > p').style.display = 'none';
-            document.getElementById('approvedDownload').style.display = 'block';
-            alert('✓ Admin อนุมัติแล้ว! คุณสามารถดาวน์โหลด EA ได้แล้ว');
-        }
-
-        function resetCartModal() {
-            document.getElementById('paymentSection').style.display = 'none';
-            document.getElementById('downloadSection').style.display = 'none';
+        function resetPayment() {
             document.getElementById('checkoutBtn').style.display = 'block';
-            isPurchaseApproved = false;
+            document.getElementById('paymentSection').style.display = 'none';
         }
 
-        // Close modal when clicking outside
+        function submitTrial(e) {
+            e.preventDefault();
+            document.getElementById('successModal').style.display = 'block';
+        }
+
         window.onclick = function(event) {
-            const cartModal = document.getElementById('cartModal');
-            const trialModal = document.getElementById('trialModal');
-            
-            if (event.target == cartModal) {
-                closeCart();
-            }
-            if (event.target == trialModal) {
-                closeTrialModal();
-            }
+            if (event.target == cartModal) closeCart();
+            if (event.target == document.getElementById('successModal')) document.getElementById('successModal').style.display = 'none';
         }
     </script>
 </body>
