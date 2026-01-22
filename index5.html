@@ -278,6 +278,11 @@
             border-color: #4dd4ac;
         }
 
+        .product-card.popular {
+            border-color: #20b89a;
+            box-shadow: 0 10px 30px rgba(77, 212, 172, 0.2);
+        }
+
         .popular-badge {
             position: absolute;
             top: 20px;
@@ -314,6 +319,10 @@
             color: #495057;
         }
 
+        .product-card li:last-child {
+            border-bottom: none;
+        }
+
         .product-card li:before {
             content: "✓ ";
             color: #20b89a;
@@ -333,6 +342,11 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
         }
 
         .modal {
@@ -363,6 +377,11 @@
             font-size: 35px;
             font-weight: bold;
             cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #20b89a;
         }
 
         .cart-item {
@@ -383,6 +402,11 @@
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #ff3838;
         }
 
         .cart-total {
@@ -404,7 +428,13 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 20px;
+            transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
         }
 
         .form-group {
@@ -423,6 +453,16 @@
             padding: 12px;
             border: 2px solid #e9ecef;
             border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4dd4ac;
+        }
+
+        .order-status-content {
+            margin-top: 20px;
         }
 
         .status-badge {
@@ -433,8 +473,20 @@
             display: inline-block;
         }
 
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-approved { background: #d4edda; color: #155724; }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
 
         .download-btn {
             display: inline-block;
@@ -445,11 +497,34 @@
             text-decoration: none;
             border-radius: 8px;
             font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            color: #adb5bd;
         }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 36px; }
-            .nav-buttons { width: 100%; justify-content: center; }
+            .hero h1 {
+                font-size: 36px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            .about-section h2, .products h2, .how-it-works h2 {
+                font-size: 32px;
+            }
         }
     </style>
 </head>
@@ -462,9 +537,12 @@
                     <span class="logo-text">HIBOT</span>
                 </div>
                 <div class="nav-buttons">
-                    <button class="order-status-btn" onclick="openOrderStatus()">📋 ตรวจสอบคำสั่งซื้อ</button>
+                    <button class="order-status-btn" onclick="openOrderStatus()">
+                        📋 ตรวจสอบคำสั่งซื้อ
+                    </button>
                     <button class="cart-btn" onclick="openCart()">
-                        🛒 ตะกร้า <span class="cart-count" id="cartCount">0</span>
+                        🛒 ตะกร้า
+                        <span class="cart-count" id="cartCount">0</span>
                     </button>
                 </div>
             </nav>
@@ -474,7 +552,85 @@
     <section class="hero">
         <div class="container">
             <h1>HIBOT Expert Advisor</h1>
-            <p>เครื่องมือที่ช่วยเทรดอัตโนมัติ 24 ชั่วโมง</p>
+            <p>เครื่องมือที่ช่วยเทรดอัตโนมัติทำคำสั่งซื้อขายให้คุณแบบอัตโนมัติ</p>
+            <p>และเก็บกำไรแทนคุณได้ 24 ชั่วโมง</p>
+        </div>
+    </section>
+
+    <section class="about-section">
+        <div class="container">
+            <h2>เกี่ยวกับเรา</h2>
+            <p class="about-description">
+                "HIBOT" คือ Expert Advisor (EA) เป็นโปรแกรมที่เขียนขึ้นเพื่อเป็นเครื่องมือที่ช่วยเทรดอัตโนมัติ ช่วยให้ผู้เทรดสามารถทำการซื้อ-ขายในตลาด Forex 
+                และเก็บกำไรแทนผู้เทรดได้ 24 ชั่วโมง โดยผู้เทรดไม่จำเป็นต้องอยู่หน้าจอตลอดเวลา
+            </p>
+            <p class="about-description" style="color: #ff4757; font-weight: bold;">
+                ⚠️ ทุกการลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาข้อมูลก่อนตัดสินใจลงทุน
+            </p>
+            <p class="about-description"><strong>Expert Advisor (EA) นี้เหมาะกับใคร</strong></p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>ผู้ที่ไม่มีเวลา</h3>
+                    <p>ไม่สามารถเฝ้ากราฟได้ตลอดเวลา</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>เพิ่มประสิทธิภาพกำไร</h3>
+                    <p>มีท่าเทรดที่ทำซ้ำๆ แล้วทำกำไรได้ตามระบบ</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🧘</div>
+                    <h3>การจัดการอารมณ์</h3>
+                    <p>ผู้ที่ไม่สามารถจัดการอารมณ์ระหว่างเทรดได้</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Passive Income</h3>
+                    <p>ผู้ที่ต้องการสร้างรายได้แบบ Passive ที่มีผลตอบแทนอย่างสม่ำเสมอ</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>เทรดอัตโนมัติ</h3>
+                    <p>ระบบเทรดอัตโนมัติที่ทำงานแทนคุณตลอด 24 ชั่วโมง</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works">
+        <div class="container">
+            <h2>การทำงานของ HIBOT</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>วิเคราะห์ตลาด</h3>
+                    <p>วิเคราะห์แนวโน้มตลาดตามกลยุทธ์ที่ใช้ ประกอบกับ Timeframe ที่เทรด แบบ Real-time</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>ตัดสินใจเทรด</h3>
+                    <p>อัลกอริทึมตัดสินใจซื้อขายตามกลยุทธ์</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>ดำเนินการ</h3>
+                    <p>ทำคำสั่งซื้อขายอัตโนมัติ</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>เก็บกำไร</h3>
+                    <p>ตั้ง Stop Loss และ Take Profit อัตโนมัติ</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -487,70 +643,105 @@
                     <div class="price">฿499</div>
                     <ul>
                         <li>EA สำหรับ MT4</li>
+                        <li>Timeframe H1</li>
+                        <li>ทุน 200$</li>
                         <li>อายุการใช้งานตลอดชีพ</li>
+                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
+                        <li>ผลการ Backtest</li>
                     </ul>
                     <button class="add-to-cart-btn" onclick="addToCart('EURUSD Basic Package', 499)">เพิ่มลงตะกร้า</button>
                 </div>
 
-                <div class="product-card">
+                <div class="product-card popular">
                     <span class="popular-badge">⭐ ยอดนิยม</span>
                     <h3>EURUSD Pro Package</h3>
                     <div class="price">฿999</div>
                     <ul>
-                        <li>EA สำหรับ MT4 + Source code</li>
+                        <li>EA สำหรับ MT4</li>
+                        <li>Source code</li>
+                        <li>Timeframe H1</li>
+                        <li>ทุน 200$</li>
                         <li>อายุการใช้งานตลอดชีพ</li>
+                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
+                        <li>ผลการ Backtest</li>
                     </ul>
                     <button class="add-to-cart-btn" onclick="addToCart('EURUSD Pro Package', 999)">เพิ่มลงตะกร้า</button>
+                </div>
+
+                <div class="product-card">
+                    <h3>EURUSD VIP Package</h3>
+                    <div class="price">฿1,499</div>
+                    <ul>
+                        <li>EA สำหรับ MT4 & MT5</li>
+                        <li>Source code</li>
+                        <li>Timeframe H1</li>
+                        <li>ทุน 200$</li>
+                        <li>อายุการใช้งานตลอดชีพ</li>
+                        <li>ใช้ได้ไม่จำกัดบัญชี</li>
+                        <li>ผลการ Backtest</li>
+                    </ul>
+                    <button class="add-to-cart-btn" onclick="addToCart('EURUSD VIP Package', 1499)">เพิ่มลงตะกร้า</button>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Cart Modal -->
     <div id="cartModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeCart()">&times;</span>
             <h2>🛒 ตะกร้าสินค้า</h2>
+            
             <div id="cartItems"></div>
             <div id="cartTotal" class="cart-total"></div>
+            
             <button id="checkoutBtn" class="checkout-btn" onclick="proceedToCheckout()">ดำเนินการชำระเงิน</button>
 
             <div id="checkoutForm" style="display: none;">
                 <h3 style="margin: 20px 0;">กรอกข้อมูลสำหรับการสั่งซื้อ</h3>
-                <form onsubmit="submitOrder(event)">
+                <form id="orderForm" onsubmit="submitOrder(event)">
                     <div class="form-group">
                         <label>ชื่อ-นามสกุล *</label>
-                        <input type="text" id="customerName" required>
+                        <input type="text" id="customerName" required placeholder="กรอกชื่อ-นามสกุล">
                     </div>
                     <div class="form-group">
                         <label>อีเมล *</label>
-                        <input type="email" id="customerEmail" required>
+                        <input type="email" id="customerEmail" required placeholder="example@email.com">
                     </div>
                     <div class="form-group">
                         <label>เบอร์โทรศัพท์ *</label>
-                        <input type="tel" id="customerPhone" required>
+                        <input type="tel" id="customerPhone" required placeholder="0xx-xxx-xxxx">
                     </div>
-                    <button type="submit" class="checkout-btn">ยืนยันคำสั่งซื้อ</button>
+                    <button type="submit" class="checkout-btn">ยืนยันคำสั่งซื้อและชำระเงิน</button>
                 </form>
             </div>
 
-            <div id="orderSuccess" style="display: none; text-align: center;">
-                <h2 style="color: #20b89a;">✓ สั่งซื้อสำเร็จ!</h2>
-                <p>หมายเลขคำสั่งซื้อ: <strong id="orderIdDisplay"></strong></p>
-                <p>กรุณาจดจำหมายเลขนี้เพื่อใช้ตรวจสอบสถานะ</p>
+            <div id="orderSuccess" style="display: none; text-align: center; padding: 20px;">
+                <h2 style="color: #20b89a; margin-bottom: 20px;">✓ สั่งซื้อสำเร็จ!</h2>
+                <p style="margin-bottom: 10px;">หมายเลขคำสั่งซื้อ: <strong id="orderIdDisplay"></strong></p>
+                <p style="color: #6c757d; margin-bottom: 20px;">
+                    ⏳ รอ Admin อนุมัติการดาวน์โหลด<br>
+                    คุณจะได้รับอีเมลยืนยันเมื่อได้รับการอนุมัติ<br><br>
+                    สามารถตรวจสอบสถานะได้ที่ปุ่ม "📋 ตรวจสอบคำสั่งซื้อ"
+                </p>
                 <button class="checkout-btn" onclick="closeCart(); location.reload();">ปิด</button>
             </div>
         </div>
     </div>
 
+    <!-- Order Status Modal -->
     <div id="orderStatusModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeOrderStatus()">&times;</span>
-            <h2>📋 ตรวจสอบสถานะ</h2>
+            <h2>📋 ตรวจสอบสถานะคำสั่งซื้อ</h2>
+            
             <div class="form-group">
-                <input type="text" id="orderIdInput" placeholder="กรอกหมายเลข ORD-XXXXXX">
+                <label>กรอกหมายเลขคำสั่งซื้อ</label>
+                <input type="text" id="orderIdInput" placeholder="ORD-2026-0001">
             </div>
-            <button class="checkout-btn" onclick="checkOrderStatus()">ตรวจสอบ</button>
-            <div id="orderStatusResult" style="margin-top:20px;"></div>
+            <button class="checkout-btn" onclick="checkOrderStatus()">ตรวจสอบสถานะ</button>
+
+            <div id="orderStatusResult" class="order-status-content"></div>
         </div>
     </div>
 
@@ -560,7 +751,7 @@
         function addToCart(name, price) {
             cart.push({name, price});
             updateCartCount();
-            alert('เพิ่ม ' + name + ' แล้ว');
+            alert('✓ เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
         }
 
         function updateCartCount() {
@@ -574,26 +765,46 @@
 
         function closeCart() {
             document.getElementById('cartModal').style.display = 'none';
+            resetCartModal();
         }
 
         function displayCart() {
-            const itemsDiv = document.getElementById('cartItems');
-            const totalDiv = document.getElementById('cartTotal');
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotalDiv = document.getElementById('cartTotal');
+            
             if (cart.length === 0) {
-                itemsDiv.innerHTML = '<p style="text-align:center">ว่างเปล่า</p>';
-                totalDiv.innerHTML = '';
+                cartItemsDiv.innerHTML = '<div class="empty-cart">📦 ตะกร้าว่างเปล่า</div>';
+                cartTotalDiv.innerHTML = '';
                 document.getElementById('checkoutBtn').style.display = 'none';
                 return;
             }
+
             document.getElementById('checkoutBtn').style.display = 'block';
+            
             let html = '';
             let total = 0;
+
             cart.forEach((item, index) => {
-                html += `<div class="cart-item"><span>${item.name}</span><strong>฿${item.price}</strong></div>`;
+                html += `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <span style="color: #20b89a;">฿${item.price.toLocaleString()}</span>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">ลบ</button>
+                    </div>
+                `;
                 total += item.price;
             });
-            itemsDiv.innerHTML = html;
-            totalDiv.innerHTML = 'รวม: ฿' + total;
+
+            cartItemsDiv.innerHTML = html;
+            cartTotalDiv.innerHTML = `<strong>รวมทั้งหมด: ฿${total.toLocaleString()}</strong>`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            displayCart();
         }
 
         function proceedToCheckout() {
@@ -601,26 +812,80 @@
             document.getElementById('checkoutForm').style.display = 'block';
         }
 
-        function submitOrder(event) {
+        async function submitOrder(event) {
             event.preventDefault();
-            const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+
+            const customerName = document.getElementById('customerName').value;
+            const email = document.getElementById('customerEmail').value;
+            const phone = document.getElementById('customerPhone').value;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+            // สร้างหมายเลขคำสั่งซื้อ
+            const timestamp = Date.now();
+            const orderId = 'ORD-' + new Date().getFullYear() + '-' + String(timestamp).slice(-6);
+
             const order = {
                 id: orderId,
-                name: document.getElementById('customerName').value,
-                total: cart.reduce((s, i) => s + i.price, 0),
-                status: 'pending' // รอดำเนินการ
+                customerName,
+                email,
+                phone,
+                items: cart,
+                total,
+                status: 'pending',
+                date: new Date().toISOString(),
+                paymentProof: true
             };
 
-            // บันทึกลง LocalStorage
-            let orders = JSON.parse(localStorage.getItem('hibot_orders')) || [];
-            orders.push(order);
-            localStorage.setItem('hibot_orders', JSON.stringify(orders));
+            try {
+                // ตรวจสอบว่า storage API พร้อมใช้งานหรือไม่
+                if (!window.storage || !window.storage.set || !window.storage.get) {
+                    throw new Error('Storage API not available');
+                }
 
+                // โหลดคำสั่งซื้อที่มีอยู่
+                let orders = [];
+                try {
+                    const result = await window.storage.get('hibot_orders', true);
+                    if (result && result.value) {
+                        orders = JSON.parse(result.value);
+                    }
+                } catch (error) {
+                    console.log('Creating new orders list:', error);
+                    orders = [];
+                }
+
+                // เพิ่มคำสั่งซื้อใหม่
+                orders.push(order);
+
+                // บันทึกกลับไปที่ storage
+                const saveResult = await window.storage.set('hibot_orders', JSON.stringify(orders), true);
+                
+                if (!saveResult) {
+                    throw new Error('Failed to save order');
+                }
+
+                console.log('Order saved successfully:', orderId);
+
+                // แสดงข้อความสำเร็จ
+                document.getElementById('checkoutForm').style.display = 'none';
+                document.getElementById('orderIdDisplay').textContent = orderId;
+                document.getElementById('orderSuccess').style.display = 'block';
+
+                // ล้างตะกร้า
+                cart = [];
+                updateCartCount();
+
+            } catch (error) {
+                console.error('Error submitting order:', error);
+                alert('เกิดข้อผิดพลาด: ' + error.message + '\n\nกรุณาลองใหม่อีกครั้งหรือติดต่อผู้ดูแลระบบ');
+            }
+        }
+
+        function resetCartModal() {
+            document.getElementById('checkoutBtn').style.display = 'block';
             document.getElementById('checkoutForm').style.display = 'none';
-            document.getElementById('orderIdDisplay').textContent = orderId;
-            document.getElementById('orderSuccess').style.display = 'block';
-            cart = [];
-            updateCartCount();
+            document.getElementById('orderSuccess').style.display = 'none';
+            document.getElementById('orderForm').reset();
         }
 
         function openOrderStatus() {
@@ -629,24 +894,74 @@
 
         function closeOrderStatus() {
             document.getElementById('orderStatusModal').style.display = 'none';
+            document.getElementById('orderStatusResult').innerHTML = '';
+            document.getElementById('orderIdInput').value = '';
         }
 
-        function checkOrderStatus() {
-            const inputId = document.getElementById('orderIdInput').value;
-            const orders = JSON.parse(localStorage.getItem('hibot_orders')) || [];
-            const found = orders.find(o => o.id === inputId);
+        async function checkOrderStatus() {
+            const orderId = document.getElementById('orderIdInput').value.trim();
             const resultDiv = document.getElementById('orderStatusResult');
 
-            if (found) {
-                resultDiv.innerHTML = `
-                    <div style="background:#f0f0f0; padding:15px; border-radius:10px;">
-                        <p>ID: ${found.id}</p>
-                        <p>สถานะ: <span class="status-badge status-pending">รอดำเนินการ (Admin กำลังตรวจสอบ)</span></p>
-                    </div>`;
-            } else {
-                resultDiv.innerHTML = '<p style="color:red">ไม่พบหมายเลขนี้</p>';
+            if (!orderId) {
+                alert('กรุณากรอกหมายเลขคำสั่งซื้อ');
+                return;
+            }
+
+            try {
+                const result = await window.storage.get(`order_status_${orderId}`, true);
+                
+                if (result && result.value) {
+                    const orderStatus = JSON.parse(result.value);
+                    let html = '<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px;">';
+                    html += `<p><strong>หมายเลขคำสั่งซื้อ:</strong> ${orderStatus.orderId}</p>`;
+                    
+                    if (orderStatus.status === 'pending') {
+                        html += `<p><strong>สถานะ:</strong> <span class="status-badge status-pending">รอดำเนินการ</span></p>`;
+                        html += '<p style="margin-top: 15px; color: #6c757d;">⏳ Admin กำลังตรวจสอบคำสั่งซื้อของคุณ กรุณารอสักครู่</p>';
+                    } else if (orderStatus.status === 'approved') {
+                        html += `<p><strong>สถานะ:</strong> <span class="status-badge status-approved">อนุมัติแล้ว</span></p>`;
+                        html += '<h3 style="margin: 20px 0; color: #20b89a;">✓ ดาวน์โหลด Expert Advisor</h3>';
+                        
+                        if (orderStatus.downloadLinks.mt4) {
+                            html += `<a href="${orderStatus.downloadLinks.mt4}" target="_blank" class="download-btn">📥 ดาวน์โหลด MT4</a>`;
+                        }
+                        if (orderStatus.downloadLinks.mt5) {
+                            html += `<a href="${orderStatus.downloadLinks.mt5}" target="_blank" class="download-btn">📥 ดาวน์โหลด MT5</a>`;
+                        }
+                        
+                        if (orderStatus.approveMessage) {
+                            html += `<p style="margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 8px; color: #155724;">${orderStatus.approveMessage}</p>`;
+                        }
+                    } else if (orderStatus.status === 'rejected') {
+                        html += `<p><strong>สถานะ:</strong> <span class="status-badge status-rejected">ปฏิเสธ</span></p>`;
+                        if (orderStatus.rejectReason) {
+                            html += `<p style="margin-top: 15px; padding: 15px; background: #f8d7da; border-radius: 8px; color: #721c24;"><strong>เหตุผล:</strong> ${orderStatus.rejectReason}</p>`;
+                        }
+                    }
+                    
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = '<div style="text-align: center; padding: 20px; background: #f8d7da; border-radius: 10px; margin-top: 20px; color: #721c24;"><strong>❌ ไม่พบหมายเลขคำสั่งซื้อนี้ในระบบ</strong><br><small>กรุณาตรวจสอบหมายเลขอีกครั้ง</small></div>';
+                }
+            } catch (error) {
+                console.error('Error checking order status:', error);
+                resultDiv.innerHTML = '<div style="text-align: center; padding: 20px; background: #f8d7da; border-radius: 10px; margin-top: 20px; color: #721c24;"><strong>❌ ไม่พบหมายเลขคำสั่งซื้อนี้ในระบบ</strong><br><small>กรุณาตรวจสอบหมายเลขอีกครั้ง</small></div>';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const cartModal = document.getElementById('cartModal');
+            const statusModal = document.getElementById('orderStatusModal');
+            
+            if (event.target == cartModal) {
+                closeCart();
+            }
+            if (event.target == statusModal) {
+                closeOrderStatus();
             }
         }
     </script>
 </body>
-</html>
+</html>`
