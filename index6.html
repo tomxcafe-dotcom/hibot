@@ -66,7 +66,7 @@
             flex-wrap: wrap;
         }
 
-        .cart-btn, .order-status-btn {
+        .cart-btn, .order-status-btn, .admin-btn {
             background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
             color: #fff;
             padding: 12px 24px;
@@ -77,9 +77,16 @@
             position: relative;
             transition: transform 0.3s;
             box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .cart-btn:hover, .order-status-btn:hover {
+        .admin-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .cart-btn:hover, .order-status-btn:hover, .admin-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
         }
@@ -104,32 +111,16 @@
             color: #fff;
             text-align: center;
             padding: 80px 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.1;
         }
 
         .hero h1 {
             font-size: 48px;
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
         }
 
         .hero p {
             font-size: 20px;
             opacity: 0.95;
-            position: relative;
-            z-index: 1;
             max-width: 800px;
             margin: 0 auto;
         }
@@ -206,7 +197,6 @@
 
         .feature-card p {
             color: #6c757d;
-            line-height: 1.6;
         }
 
         .how-it-works {
@@ -286,7 +276,6 @@
             border: 2px solid #e9ecef;
             transition: all 0.3s;
             position: relative;
-            overflow: hidden;
         }
 
         .product-card::before {
@@ -369,11 +358,6 @@
             transition: all 0.3s;
         }
 
-        .add-to-cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
         .trial-section {
             background: linear-gradient(135deg, #1e2a3a 0%, #2d3e50 100%);
             color: #fff;
@@ -384,12 +368,6 @@
         .trial-section h2 {
             font-size: 36px;
             margin-bottom: 15px;
-        }
-
-        .trial-section p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            opacity: 0.9;
         }
 
         .trial-form {
@@ -422,12 +400,6 @@
             font-size: 14px;
             background: rgba(255, 255, 255, 0.9);
             color: #1e2a3a;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #4dd4ac;
         }
 
         .trial-btn, .checkout-btn {
@@ -440,13 +412,7 @@
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .trial-btn:hover, .checkout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
         }
 
         .contact-section {
@@ -462,7 +428,6 @@
         }
 
         .form-container {
-            width: 100%;
             max-width: 600px;
             margin: 0 auto;
             border: 1px solid #e9ecef;
@@ -543,7 +508,6 @@
             border-radius: 20px;
             font-size: 13px;
             font-weight: bold;
-            display: inline-block;
         }
 
         .status-pending {
@@ -573,22 +537,9 @@
         }
 
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 32px;
-            }
-            .hero p {
-                font-size: 16px;
-            }
-            .products h2, .about-section h2, .how-it-works h2 {
-                font-size: 28px;
-            }
-            .logo img {
-                width: 50px;
-                height: 50px;
-            }
-            .logo-text {
-                font-size: 24px;
-            }
+            .hero h1 { font-size: 32px; }
+            .logo img { width: 50px; height: 50px; }
+            .logo-text { font-size: 24px; }
         }
     </style>
 </head>
@@ -601,13 +552,12 @@
                     <span class="logo-text">HIBOT</span>
                 </div>
                 <div class="nav-buttons">
-                    <button class="order-status-btn" onclick="openOrderStatus()">
-                        📋 ตรวจสอบคำสั่งซื้อ
-                    </button>
+                    <button class="order-status-btn" onclick="openOrderStatus()">📋 ตรวจสอบคำสั่งซื้อ</button>
                     <button class="cart-btn" onclick="openCart()">
                         🛒 ตะกร้า
                         <span class="cart-count" id="cartCount">0</span>
                     </button>
+                    <a href="admin.html" target="_blank" class="admin-btn">🔐 Admin</a>
                 </div>
             </nav>
         </div>
@@ -638,31 +588,27 @@
                 <div class="feature-card">
                     <div class="feature-icon">⏰</div>
                     <h3>ผู้ที่ไม่มีเวลา</h3>
-                    <p>ไม่สามารถเฝ้างราฟได้ตลอดเวลา</p>
+                    <p>ไม่สามารถเฝ้ากราฟได้ตลอดเวลา</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">🎯</div>
                     <h3>เพิ่มประสิทธิภาพกำไร</h3>
                     <p>มีท่าเทรดที่ทำซ้ำๆ แล้วทำกำไรได้ตามระบบ</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">🧘</div>
                     <h3>การจัดการอารมณ์</h3>
                     <p>ผู้ที่ไม่สามารถจัดการอารมณ์ระหว่างเทรดได้</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">💰</div>
                     <h3>Passive Income</h3>
-                    <p>ผู้ที่ต้องการสร้างรายได้แบบ Passive ที่มีผลตอบแทนอย่างสม่ำเสมอ</p>
+                    <p>ผู้ที่ต้องการสร้างรายได้แบบ Passive</p>
                 </div>
-
                 <div class="feature-card">
                     <div class="feature-icon">🤖</div>
                     <h3>เทรดอัตโนมัติ</h3>
-                    <p>ระบบเทรดอัตโนมัติที่ทำงานแทนคุณตลอด 24 ชั่วโมง</p>
+                    <p>ระบบเทรดอัตโนมัติ 24 ชั่วโมง</p>
                 </div>
             </div>
         </div>
@@ -675,25 +621,22 @@
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3>วิเคราะห์ตลาด</h3>
-                    <p>วิเคราะห์แนวโน้มตลาดตามกลยุทธ์ที่ใช้ ประกอบกับ Timeframe ที่เทรด แบบ Real-time</p>
+                    <p>วิเคราะห์แนวโน้มตลาดแบบ Real-time</p>
                 </div>
-
                 <div class="step">
                     <div class="step-number">2</div>
                     <h3>ตัดสินใจเทรด</h3>
-                    <p>อัลกอริทึมตัดสินใจซื้อขายตามกลยุทธ์</p>
+                    <p>อัลกอริทึมตัดสินใจตามกลยุทธ์</p>
                 </div>
-
                 <div class="step">
                     <div class="step-number">3</div>
                     <h3>ดำเนินการ</h3>
                     <p>ทำคำสั่งซื้อขายอัตโนมัติ</p>
                 </div>
-
                 <div class="step">
                     <div class="step-number">4</div>
                     <h3>เก็บกำไร</h3>
-                    <p>ตั้ง Stop Loss และ Take Profit อัตโนมัติ</p>
+                    <p>ตั้ง SL และ TP อัตโนมัติ</p>
                 </div>
             </div>
         </div>
@@ -704,7 +647,7 @@
             <h2>แพ็คเกจของเรา</h2>
             <div class="product-grid">
                 <div class="product-card">
-                    <h3>EURUSD Basic Package</h3>
+                    <h3>EURUSD Basic</h3>
                     <div class="price">฿499</div>
                     <ul>
                         <li>EA สำหรับ MT4</li>
@@ -719,7 +662,7 @@
 
                 <div class="product-card popular">
                     <span class="popular-badge">⭐ ยอดนิยม</span>
-                    <h3>EURUSD Pro Package</h3>
+                    <h3>EURUSD Pro</h3>
                     <div class="price">฿999</div>
                     <ul>
                         <li>EA สำหรับ MT4</li>
@@ -734,7 +677,7 @@
                 </div>
 
                 <div class="product-card">
-                    <h3>EURUSD VIP Package</h3>
+                    <h3>EURUSD VIP</h3>
                     <div class="price">฿1,499</div>
                     <ul>
                         <li>EA สำหรับ MT4 & MT5</li>
@@ -759,22 +702,19 @@
             <div class="trial-form">
                 <form id="trialForm" onsubmit="submitTrial(event)">
                     <div class="form-group">
-                        <label for="fullName">ชื่อ-นามสกุล *</label>
+                        <label>ชื่อ-นามสกุล *</label>
                         <input type="text" id="fullName" required placeholder="กรอกชื่อ-นามสกุล">
                     </div>
-
                     <div class="form-group">
-                        <label for="email">อีเมล *</label>
+                        <label>อีเมล *</label>
                         <input type="email" id="email" required placeholder="example@email.com">
                     </div>
-
                     <div class="form-group">
-                        <label for="phone">เบอร์โทรศัพท์ *</label>
+                        <label>เบอร์โทรศัพท์ *</label>
                         <input type="tel" id="phone" required placeholder="0xx-xxx-xxxx">
                     </div>
-
                     <div class="form-group">
-                        <label for="strategy">เลือกกลยุทธ์ที่สนใจ *</label>
+                        <label>เลือกกลยุทธ์ที่สนใจ *</label>
                         <select id="strategy" required>
                             <option value="">-- เลือกกลยุทธ์ --</option>
                             <option value="scalping">Scalping Strategy</option>
@@ -784,7 +724,6 @@
                             <option value="grid">Grid Trading</option>
                         </select>
                     </div>
-
                     <button type="submit" class="trial-btn">📥 ลงทะเบียนและรับ EA ฟรี</button>
                 </form>
             </div>
@@ -795,15 +734,38 @@
         <div class="container">
             <h2>ติดต่อเรา</h2>
             <div class="form-container">
-                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScD9WuBRuDxSlQzYU7xaTdqt7vesiB19o4lbMQ6U2XiRUbk2A/viewform?usp=dialog" frameborder="0" marginheight="0" marginwidth="0">กำลังโหลด…</iframe>
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScD9WuBRuDxSlQzYU7xaTdqt7vesiB19o4lbMQ6U2XiRUbk2A/viewform?usp=dialog"></iframe>
             </div>
         </div>
     </section>
 
-    <!-- Trial Modal -->
     <div id="trialModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeTrialModal()">&times;</span>
             <h2>📧 ลงทะเบียนสำเร็จ!</h2>
-            <div id="trialInfo" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                <p><strong>ชื่อ:</strong> <span id="displayName"></span></p
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <p><strong>ชื่อ:</strong> <span id="displayName"></span></p>
+                <p><strong>อีเมล:</strong> <span id="displayEmail"></span></p>
+                <p><strong>กลยุทธ์:</strong> <span id="displayStrategy"></span></p>
+            </div>
+            <p style="color: #6c757d;">⏳ รอ Admin อนุมัติการดาวน์โหลด<br>คุณจะได้รับอีเมลยืนยันเมื่อได้รับการอนุมัติ</p>
+        </div>
+    </div>
+
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCart()">&times;</span>
+            <h2>🛒 ตะกร้าสินค้า</h2>
+            <div id="cartItems"></div>
+            <div id="cartTotal" class="cart-total"></div>
+            <button id="checkoutBtn" class="checkout-btn" onclick="proceedToCheckout()">ดำเนินการชำระเงิน</button>
+
+            <div id="checkoutForm" style="display: none;">
+                <h3 style="margin: 20px 0;">กรอกข้อมูลสำหรับการสั่งซื้อ</h3>
+                <form onsubmit="submitOrder(event)">
+                    <div class="form-group">
+                        <label>ชื่อ-นามสกุล *</label>
+                        <input type="text" id="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>อีเม
