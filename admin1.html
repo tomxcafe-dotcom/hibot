@@ -491,23 +491,23 @@
         let currentOrderId = null;
         let currentTab = 'pending';
 
-        async function init() {
-            await loadOrders();
+        function init() {
+            loadOrders();
             updateStats();
             renderOrders('pending');
             
-            setInterval(async () => {
-                await loadOrders();
+            setInterval(() => {
+                loadOrders();
                 updateStats();
                 renderOrders(currentTab);
             }, 5000);
         }
 
-        async function loadOrders() {
+        function loadOrders() {
             try {
-                const result = await window.storage.get('hibot_orders', true);
-                if (result && result.value) {
-                    orders = JSON.parse(result.value).map(order => ({
+                const ordersData = localStorage.getItem('hibot_orders');
+                if (ordersData) {
+                    orders = JSON.parse(ordersData).map(order => ({
                         ...order,
                         date: new Date(order.date),
                         approvedDate: order.approvedDate ? new Date(order.approvedDate) : null,
@@ -522,9 +522,9 @@
             }
         }
 
-        async function saveOrders() {
+        function saveOrders() {
             try {
-                await window.storage.set('hibot_orders', JSON.stringify(orders), true);
+                localStorage.setItem('hibot_orders', JSON.stringify(orders));
             } catch (error) {
                 console.error('Error saving orders:', error);
             }
@@ -684,7 +684,7 @@
             document.getElementById('rejectModal').style.display = 'block';
         }
 
-        async function confirmApproval() {
+        function confirmApproval() {
             const mt4Link = document.getElementById('mt4Link').value;
             const mt5Link = document.getElementById('mt5Link').value;
             const message = document.getElementById('approveMessage').value;
@@ -700,8 +700,8 @@
             order.downloadLinks = { mt4: mt4Link, mt5: mt5Link };
             order.approveMessage = message;
 
-            await saveOrders();
-            await saveCustomerOrderStatus(order);
+            saveOrders();
+            saveCustomerOrderStatus(order);
 
             alert(`✓ อนุมัติคำสั่งซื้อเรียบร้อย!\n\nอีเมลพร้อมลิงก์ดาวน์โหลดถูกส่งไปที่: ${order.email}`);
             
@@ -713,7 +713,7 @@
             document.getElementById('mt5Link').value = '';
         }
 
-        async function confirmRejection() {
+        function confirmRejection() {
             const reason = document.getElementById('rejectReason').value;
 
             if (!reason.trim()) {
@@ -726,8 +726,8 @@
             order.rejectedDate = new Date();
             order.rejectReason = reason;
 
-            await saveOrders();
-            await saveCustomerOrderStatus(order);
+            saveOrders();
+            saveCustomerOrderStatus(order);
 
             alert(`✕ ปฏิเสธคำสั่งซื้อเรียบร้อย!\n\nอีเมลแจ้งเหตุผลถูกส่งไปที่: ${order.email}`);
             
@@ -738,9 +738,9 @@
             document.getElementById('rejectReason').value = '';
         }
 
-        async function saveCustomerOrderStatus(order) {
+        function saveCustomerOrderStatus(order) {
             try {
-                await window.storage.set(`order_status_${order.id}`, JSON.stringify({
+                localStorage.setItem(`order_status_${order.id}`, JSON.stringify({
                     orderId: order.id,
                     status: order.status,
                     approvedDate: order.approvedDate,
@@ -748,7 +748,7 @@
                     downloadLinks: order.downloadLinks,
                     approveMessage: order.approveMessage,
                     rejectReason: order.rejectReason
-                }), true);
+                }));
             } catch (error) {
                 console.error('Error saving customer order status:', error);
             }
