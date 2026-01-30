@@ -1016,56 +1016,7 @@
 </div>
 
 <script>
-    // ⚠️ นำ URL Web App จากการ Deploy ใน Apps Script มาใส่ที่นี่
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUAsjgwZXwNY03Evzn3YQFbjfXjxaI00tcv3K4dRedt1C8_QggRxq1tPQasgraKF4F/exec"; 
-
-    async function confirmPayment() {
-        const email = document.getElementById('payEmail').value;
-        const fileInput = document.getElementById('slipFile');
-        const file = fileInput.files[0];
-        const btn = document.getElementById('confirmBtn');
-        const loader = document.getElementById('loader');
-
-        if (!email || !file) {
-            alert('กรุณากรอกอีเมลและแนบสลิปให้ครบถ้วนครับ');
-            return;
-        }
-
-        btn.disabled = true;
-        loader.style.display = 'block';
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async function () {
-            const payload = {
-                email: email,
-                fileName: file.name,
-                mimeType: file.type,
-                slipBase64: reader.result
-            };
-
-            try {
-                const response = await fetch(GAS_WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                if (result.status === "success") {
-                    document.getElementById('paymentSection').style.display = 'none';
-                    document.getElementById('downloadSection').style.display = 'block';
-                } else {
-                    alert("เกิดข้อผิดพลาด: " + result.error);
-                }
-            } catch (e) {
-                alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-            } finally {
-                btn.disabled = false;
-                loader.style.display = 'none';
-            }
-        };
-    }
-    // ... ฟังก์ชัน addToCart, openCart อื่นๆ คงเดิม ...
-</script>
+  
 
     <script>
         <script>
