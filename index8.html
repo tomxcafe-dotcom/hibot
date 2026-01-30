@@ -194,98 +194,71 @@
             font-weight: bold;
         }
 
-        /* ส่วน LINE Group Section - ใหม่! */
+        /* ปรับปรุง LINE Group Section ให้กะทัดรัด */
         .line-group-section {
-            background: linear-gradient(135deg, #1e2a3a 0%, #2d3e50 100%);
-            color: #fff;
-            padding: 80px 20px;
+            background: #f4f7f6; /* เปลี่ยนเป็นสีอ่อนเพื่อให้หน้าเว็บดูโปร่ง */
+            padding: 50px 20px;
             text-align: center;
         }
 
-        .line-group-section h2 {
-            font-size: 42px;
-            margin-bottom: 20px;
-        }
-
-        .line-group-section p {
-            font-size: 20px;
-            margin-bottom: 40px;
-            opacity: 0.9;
-        }
-
-        .line-qr-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid rgba(77, 212, 172, 0.3);
-        }
-
-        .line-qr-code {
+        .line-card {
             background: #fff;
-            padding: 30px;
             border-radius: 15px;
-            display: inline-block;
-            margin: 20px 0;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 450px; /* จำกัดความกว้างให้เล็กลง */
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
         }
 
         .line-qr-code img {
-            width: 300px;
-            height: 300px;
-            display: block;
-        }
-
-        .line-benefits {
-            text-align: left;
-            margin-top: 30px;
-            background: rgba(77, 212, 172, 0.1);
-            padding: 25px;
-            border-radius: 10px;
-        }
-
-        .line-benefits h3 {
-            color: #4dd4ac;
+            width: 180px; /* ลดขนาด QR Code */
+            height: 180px;
             margin-bottom: 15px;
-            font-size: 22px;
+            border: 1px solid #eee;
+            padding: 5px;
         }
 
-        .line-benefits ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .line-benefits li {
-            padding: 10px 0;
-            padding-left: 30px;
-            position: relative;
+        .line-btn-small {
+            display: inline-flex;
+            align-items: center;
+            background: #06C755;
             color: #fff;
-            font-size: 16px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: 0.3s;
         }
 
-        .line-benefits li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #4dd4ac;
-            font-weight: bold;
-            font-size: 20px;
+        .line-btn-small:hover {
+            background: #05a346;
+            transform: scale(1.05);
         }
 
-        .line-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #06C755 0%, #00B900 100%);
-            color: #fff;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: bold;
+        .line-mini-list {
+            text-align: left;
             margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(6, 199, 85, 0.3);
+            font-size: 14px;
+            color: #555;
+            border-top: 1px dashed #ddd;
+            padding-top: 15px;
         }
 
+        .line-mini-list li {
+            list-style: none;
+            margin-bottom: 5px;
+        }
+
+        .line-mini-list li:before {
+            content: "•";
+            color: #06C755;
+            font-weight: bold;
+            display: inline-block; 
+            width: 1em;
+        }
         .about-section {
             background: #fff;
             padding: 80px 20px;
@@ -845,21 +818,19 @@
     <!-- ส่วน LINE Group - ใหม่! -->
     <section class="line-group-section">
         <div class="container">
-            <h2>📱 เข้ากลุ่ม LINE HIBOT</h2>
-            <p>รับข่าวสาร คำแนะนำ และเทคนิคการใช้งาน EA ฟรี!</p>
-            
-            <div class="line-qr-container">
-                <div class="line-qr-code">
-                    <!-- ใส่ QR Code รูปจริงของกลุ่ม LINE ที่นี่ -->
-                    <img src="https://qr-official.line.me/gs/M_xxx_GW.png" alt="LINE QR Code" 
-                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect width=%22300%22 height=%22300%22 fill=%22%23f0f0f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2220%22 fill=%22%23999%22%3ELINE QR Code%3C/text%3E%3C/svg%3E'">
-                </div>
+            <div class="line-card">
+                <h3 style="margin-bottom: 10px; color: #1e2a3a;">💬 เข้าร่วมชุมชน HIBOT</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">สแกนเพื่อรับเทคนิคการเทรดและอัปเดต EA ฟรี</p>
                 
-                <div class="line-badge">
-                    📱 Scan QR Code เพื่อเข้ากลุ่ม
+                <div class="line-qr-code">
+                    <img src="https://via.placeholder.com/180x180?text=LINE+QR" alt="LINE QR Code">
                 </div>
 
-                <div class="line-benefits">
+                <a href="YOUR_LINE_LINK_HERE" target="_blank" class="line-btn-small">
+                    <span style="margin-right: 8px;">➕</span> เพิ่มเพื่อนใน LINE
+                </a>
+
+               <div class="line-benefits">
                     <h3>💎 สิทธิพิเศษสำหรับสมาชิกกลุ่ม LINE</h3>
                     <ul>
                         <li>รับข่าวสารและอัปเดตล่าสุดเกี่ยวกับ EA</li>
@@ -870,10 +841,6 @@
                         <li>ทดลองใช้ EA Strategy ใหม่ๆ ฟรี!</li>
                     </ul>
                 </div>
-
-                <p style="margin-top: 25px; opacity: 0.8; font-size: 14px;">
-                    * หรือค้นหา LINE ID: <strong>@hibot</strong>
-                </p>
             </div>
         </div>
     </section>
