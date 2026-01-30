@@ -985,39 +985,27 @@
             
             <button id="checkoutBtn" class="checkout-btn" onclick="showPayment()">ชำระเงิน</button>
 
-            <div id="paymentSection" class="payment-section">
-                <h3>สแกน QR Code เพื่อชำระเงิน</h3>
-                <div class="qr-code">
-                    <svg width="250" height="250" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="250" height="250" fill="white"/>
-                        <g fill="black">
-                            <rect x="20" y="20" width="30" height="30"/>
-                            <rect x="60" y="20" width="30" height="30"/>
-                            <rect x="100" y="20" width="30" height="30"/>
-                            <rect x="180" y="20" width="30" height="30"/>
-                            <rect x="20" y="60" width="30" height="30"/>
-                            <rect x="100" y="60" width="30" height="30"/>
-                            <rect x="140" y="60" width="30" height="30"/>
-                            <rect x="180" y="60" width="30" height="30"/>
-                            <rect x="20" y="100" width="30" height="30"/>
-                            <rect x="60" y="100" width="30" height="30"/>
-                            <rect x="100" y="100" width="30" height="30"/>
-                            <rect x="140" y="100" width="30" height="30"/>
-                            <rect x="180" y="100" width="30" height="30"/>
-                            <rect x="60" y="140" width="30" height="30"/>
-                            <rect x="140" y="140" width="30" height="30"/>
-                            <rect x="20" y="180" width="30" height="30"/>
-                            <rect x="60" y="180" width="30" height="30"/>
-                            <rect x="100" y="180" width="30" height="30"/>
-                            <rect x="140" y="180" width="30" height="30"/>
-                            <rect x="180" y="180" width="30" height="30"/>
-                        </g>
-                    </svg>
-                </div>
-                <p style="font-size: 18px; color: #495057;">ยอดชำระ: <strong id="paymentAmount" style="color: #20b89a; font-size: 28px;"></strong></p>
-                <p style="color: #6c757d; margin-top: 10px;">กรุณาชำระเงินและกดยืนยันการชำระเงิน</p>
-                <button class="confirm-payment-btn" onclick="confirmPayment()">✓ ยืนยันการชำระเงิน</button>
-            </div>
+          <div id="paymentSection" class="payment-section">
+    <h3>สแกน QR Code เพื่อชำระเงิน</h3>
+    <div class="qr-code">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=YOUR_PROMPTPAY_ID" alt="QR Code">
+    </div>
+    <p style="font-size: 18px; color: #495057;">ยอดชำระ: <strong id="paymentAmount" style="color: #20b89a; font-size: 28px;"></strong></p>
+    
+    <div style="max-width: 400px; margin: 20px auto; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 10px;">
+        <div class="form-group">
+            <label for="payEmail" style="color: #1e2a3a;">อีเมลสำหรับรับลิงก์ *</label>
+            <input type="email" id="payEmail" placeholder="example@email.com" required>
+        </div>
+        <div class="form-group">
+            <label for="slipFile" style="color: #1e2a3a;">แนบหลักฐานการโอน (Slip) *</label>
+            <input type="file" id="slipFile" accept="image/*" required style="padding: 10px;">
+        </div>
+    </div>
+
+    <p style="color: #6c757d;">เมื่อแนบไฟล์และกรอกอีเมลเรียบร้อยแล้ว กดยืนยันเพื่อส่งให้ Admin ตรวจสอบ</p>
+    <button class="confirm-payment-btn" onclick="confirmPayment()">✓ ส่งหลักฐานการชำระเงิน</button>
+</div>
 
             <div id="downloadSection" class="download-section">
                 <p class="pending-message">⏳ รอ Admin อนุมัติการดาวน์โหลด</p>
@@ -1154,14 +1142,48 @@
             document.getElementById('paymentSection').style.display = 'block';
         }
 
-        function confirmPayment() {
-            if (confirm('คุณได้ทำการชำระเงินเรียบร้อยแล้วใช่หรือไม่?')) {
+       async function confirmPayment() {
+    const email = document.getElementById('payEmail').value;
+    const fileInput = document.getElementById('slipFile');
+    const file = fileInput.files[0];
+
+    if (!email || !file) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+        return;
+    }
+
+    // แปลงไฟล์เป็น Base64 เพื่อส่งผ่าน JSON
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async function () {
+        const base64File = reader.result;
+
+        const payload = {
+            email: email,
+            fileName: file.name,
+            mimeType: file.type,
+            slipBase64: base64File
+        };
+
+        try {
+            // ใส่ URL ที่ได้จากขั้นตอน Deploy Web App ของคุณ
+            const response = await fetch("YOUR_GAS_WEB_APP_URL", {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            if (result.status === "success") {
+                alert("ส่งหลักฐานเรียบร้อย! รอ Admin ตรวจสอบ");
                 document.getElementById('paymentSection').style.display = 'none';
                 document.getElementById('downloadSection').style.display = 'block';
-                document.getElementById('approvedDownload').style.display = 'none';
-                isPurchaseApproved = false;
             }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
         }
+    };
+}
 
         function simulatePurchaseApproval() {
             isPurchaseApproved = true;
