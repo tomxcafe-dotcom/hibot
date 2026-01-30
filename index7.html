@@ -1068,154 +1068,178 @@
 </script>
 
     <script>
-        let cart = [];
-        let isTrialApproved = false;
-        let isPurchaseApproved = false;
+        <script>
+    // ⚠️ นำ URL Web App จากการ Deploy ใน Apps Script มาใส่ที่นี่
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUAsjgwZXwNY03Evzn3YQFbjfXjxaI00tcv3K4dRedt1C8_QggRxq1tPQasgraKF4F/exec"; 
 
-        // Trial Form Functions
-        function submitTrial(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const strategy = document.getElementById('strategy').value;
-            const strategyText = document.getElementById('strategy').options[document.getElementById('strategy').selectedIndex].text;
+    let cart = [];
 
-            // แสดงข้อมูลในโมดอล
-            document.getElementById('displayName').textContent = name;
-            document.getElementById('displayEmail').textContent = email;
-            document.getElementById('displayStrategy').textContent = strategyText;
+    // --- ฟังก์ชันจัดการตะกร้าสินค้า ---
+    function addToCart(name, price) {
+        cart.push({name, price});
+        updateCartCount();
+        alert('เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
+    }
 
-            // ซ่อนลิงก์ดาวน์โหลด
-            document.getElementById('downloadLinks').style.display = 'none';
-            isTrialApproved = false;
+    function updateCartCount() {
+        document.getElementById('cartCount').textContent = cart.length;
+    }
 
-            // เปิดโมดอล
-            document.getElementById('trialModal').style.display = 'block';
+    function openCart() {
+        displayCart();
+        document.getElementById('cartModal').style.display = 'block';
+    }
 
-            // รีเซ็ตฟอร์ม
-            document.getElementById('trialForm').reset();
+    function closeCart() {
+        document.getElementById('cartModal').style.display = 'none';
+        resetCartStatus(); // ล้างค่าเมื่อปิดเพื่อความปลอดภัย
+    }
 
-            // จำลองการส่งข้อมูลไป backend
-            console.log('Trial Registration:', { name, email, phone, strategy });
-        }
-
-        function simulateAdminApproval() {
-            isTrialApproved = true;
-            document.querySelector('#trialModal .pending-message').style.display = 'none';
-            document.getElementById('downloadLinks').style.display = 'block';
-            alert('✓ Admin อนุมัติแล้ว! คุณสามารถดาวน์โหลด EA ได้แล้ว');
-        }
-
-        function closeTrialModal() {
-            document.getElementById('trialModal').style.display = 'none';
-        }
-
-        // Cart Functions
-        function addToCart(name, price) {
-            cart.push({name, price});
-            updateCartCount();
-            alert('เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
-        }
-
-        function updateCartCount() {
-            document.getElementById('cartCount').textContent = cart.length;
-        }
-
-        function openCart() {
-            displayCart();
-            document.getElementById('cartModal').style.display = 'block';
-        }
-
-        function closeCart() {
-            document.getElementById('cartModal').style.display = 'none';
-            resetCartModal();
-        }
-
-        function displayCart() {
-            const cartItemsDiv = document.getElementById('cartItems');
-            const cartTotalDiv = document.getElementById('cartTotal');
-            
-            if (cart.length === 0) {
-                cartItemsDiv.innerHTML = '<div class="empty-cart">ตะกร้าว่างเปล่า</div>';
-                cartTotalDiv.innerHTML = '';
-                document.getElementById('checkoutBtn').style.display = 'none';
-                return;
-            }
-
-            document.getElementById('checkoutBtn').style.display = 'block';
-            
-            let html = '';
-            let total = 0;
-
-            cart.forEach((item, index) => {
-                html += `
-                    <div class="cart-item">
-                        <div>
-                            <strong>${item.name}</strong><br>
-                            <span style="color: #20b89a;">฿${item.price.toLocaleString()}</span>
-                        </div>
-                        <button class="remove-btn" onclick="removeFromCart(${index})">ลบ</button>
-                    </div>
-                `;
-                total += item.price;
-            });
-
-            cartItemsDiv.innerHTML = html;
-            cartTotalDiv.innerHTML = `<strong>รวมทั้งหมด: ฿${total.toLocaleString()}</strong>`;
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartCount();
-            displayCart();
-        }
-
-        function showPayment() {
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
+    function displayCart() {
+        const cartItemsDiv = document.getElementById('cartItems');
+        const cartTotalDiv = document.getElementById('cartTotal');
+        
+        if (cart.length === 0) {
+            cartItemsDiv.innerHTML = '<div class="empty-cart">ตะกร้าว่างเปล่า</div>';
+            cartTotalDiv.innerHTML = '';
             document.getElementById('checkoutBtn').style.display = 'none';
-            document.getElementById('paymentSection').style.display = 'block';
+            return;
         }
 
-        function confirmPayment() {
-            if (confirm('คุณได้ทำการชำระเงินเรียบร้อยแล้วใช่หรือไม่?')) {
-                document.getElementById('paymentSection').style.display = 'none';
-                document.getElementById('downloadSection').style.display = 'block';
-                document.getElementById('approvedDownload').style.display = 'none';
-                isPurchaseApproved = false;
+        document.getElementById('checkoutBtn').style.display = 'block';
+        let html = '';
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            html += `
+                <div class="cart-item">
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        <span style="color: #20b89a;">฿${item.price.toLocaleString()}</span>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromCart(${index})">ลบ</button>
+                </div>`;
+            total += item.price;
+        });
+
+        cartItemsDiv.innerHTML = html;
+        cartTotalDiv.innerHTML = `<strong>รวมทั้งหมด: ฿${total.toLocaleString()}</strong>`;
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartCount();
+        displayCart();
+    }
+
+    // --- ฟังก์ชันการชำระเงินจริง (Production) ---
+    function showPayment() {
+        const total = cart.reduce((sum, item) => sum + item.price, 0);
+        document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
+        
+        // ซ่อนส่วนตะกร้า แสดงส่วนชำระเงิน
+        document.getElementById('cartItems').style.display = 'none';
+        document.getElementById('cartTotal').style.display = 'none';
+        document.getElementById('checkoutBtn').style.display = 'none';
+        document.getElementById('paymentSection').style.display = 'block';
+    }
+
+    async function confirmPayment() {
+        const email = document.getElementById('payEmail').value;
+        const fileInput = document.getElementById('slipFile');
+        const file = fileInput.files[0];
+        const btn = document.getElementById('confirmBtn');
+        const loader = document.getElementById('loader');
+
+        // Validation
+        if (!email || !email.includes('@')) {
+            alert('กรุณากรอกอีเมลที่ถูกต้องเพื่อรับลิงก์ดาวน์โหลด');
+            return;
+        }
+        if (!file) {
+            alert('กรุณาแนบสลิปหลักฐานการโอนเงิน');
+            return;
+        }
+
+        // แสดงสถานะ Loading
+        btn.disabled = true;
+        btn.innerText = "⏳ กำลังส่งข้อมูล...";
+        loader.style.display = 'block';
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async function () {
+            const payload = {
+                email: email,
+                fileName: file.name,
+                mimeType: file.type,
+                slipBase64: reader.result
+            };
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === "success") {
+                    // แสดงหน้าความสำเร็จ
+                    document.getElementById('targetEmail').textContent = email;
+                    document.getElementById('paymentSection').style.display = 'none';
+                    document.getElementById('downloadSection').style.display = 'block';
+                    cart = []; // ล้างตะกร้าหลังซื้อสำเร็จ
+                    updateCartCount();
+                } else {
+                    alert("เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: " + result.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่ภายหลัง");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "✓ ยืนยันและส่งหลักฐานจริง";
+                loader.style.display = 'none';
             }
-        }
+        };
+    }
 
-        function simulatePurchaseApproval() {
-            isPurchaseApproved = true;
-            document.querySelector('#downloadSection .pending-message').style.display = 'none';
-            document.querySelector('#downloadSection > p').style.display = 'none';
-            document.getElementById('approvedDownload').style.display = 'block';
-            alert('✓ Admin อนุมัติแล้ว! คุณสามารถดาวน์โหลด EA ได้แล้ว');
-        }
+    // --- ฟังก์ชันการลงทะเบียนทดลองใช้ (Trial) ---
+    function submitTrial(event) {
+        event.preventDefault();
+        const name = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const strategyText = document.getElementById('strategy').options[document.getElementById('strategy').selectedIndex].text;
 
-        function resetCartModal() {
-            document.getElementById('paymentSection').style.display = 'none';
-            document.getElementById('downloadSection').style.display = 'none';
-            document.getElementById('checkoutBtn').style.display = 'block';
-            isPurchaseApproved = false;
-        }
+        document.getElementById('displayName').textContent = name;
+        document.getElementById('displayEmail').textContent = email;
+        document.getElementById('displayStrategy').textContent = strategyText;
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const cartModal = document.getElementById('cartModal');
-            const trialModal = document.getElementById('trialModal');
-            
-            if (event.target == cartModal) {
-                closeCart();
-            }
-            if (event.target == trialModal) {
-                closeTrialModal();
-            }
-        }
-    </script>
+        // ในระบบจริงคุณควรส่งข้อมูลนี้ไป GAS เช่นกัน 
+        // แต่ในที่นี้เน้นแจ้งเตือนว่าลงทะเบียนสำเร็จแล้ว
+        document.getElementById('trialModal').style.display = 'block';
+        document.getElementById('trialForm').reset();
+    }
+
+    function closeTrialModal() {
+        document.getElementById('trialModal').style.display = 'none';
+    }
+
+    function resetCartStatus() {
+        // คืนค่าหน้าตา Modal กลับเป็นปกติ
+        document.getElementById('cartItems').style.display = 'block';
+        document.getElementById('cartTotal').style.display = 'block';
+        document.getElementById('paymentSection').style.display = 'none';
+        document.getElementById('downloadSection').style.display = 'none';
+    }
+
+    // ปิดโมดอลเมื่อคลิกนอกกรอบ
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('cartModal')) closeCart();
+        if (event.target == document.getElementById('trialModal')) closeTrialModal();
+    }
+</script>
 </body>
 </html>
         /* เพิ่มเติม Style สำหรับสถานะการส่ง */
