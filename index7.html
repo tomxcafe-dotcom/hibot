@@ -974,73 +974,98 @@
         </div>
     </div>
 
-    <!-- Cart Modal -->
     <div id="cartModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeCart()">&times;</span>
-            <h2>🛒 ตะกร้าสินค้า</h2>
-            
-            <div id="cartItems"></div>
-            <div id="cartTotal" class="cart-total"></div>
-            
-            <button id="checkoutBtn" class="checkout-btn" onclick="showPayment()">ชำระเงิน</button>
+    <div class="modal-content">
+        <span class="close" onclick="closeCart()">&times;</span>
+        <h2>🛒 ตะกร้าสินค้า</h2>
+        <div id="cartItems"></div>
+        <div id="cartTotal" class="cart-total"></div>
+        <button id="checkoutBtn" class="checkout-btn" onclick="showPayment()">ชำระเงิน</button>
 
-            <div id="paymentSection" class="payment-section">
-                <h3>สแกน QR Code เพื่อชำระเงิน</h3>
-                <div class="qr-code">
-                    <svg width="250" height="250" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="250" height="250" fill="white"/>
-                        <g fill="black">
-                            <rect x="20" y="20" width="30" height="30"/>
-                            <rect x="60" y="20" width="30" height="30"/>
-                            <rect x="100" y="20" width="30" height="30"/>
-                            <rect x="180" y="20" width="30" height="30"/>
-                            <rect x="20" y="60" width="30" height="30"/>
-                            <rect x="100" y="60" width="30" height="30"/>
-                            <rect x="140" y="60" width="30" height="30"/>
-                            <rect x="180" y="60" width="30" height="30"/>
-                            <rect x="20" y="100" width="30" height="30"/>
-                            <rect x="60" y="100" width="30" height="30"/>
-                            <rect x="100" y="100" width="30" height="30"/>
-                            <rect x="140" y="100" width="30" height="30"/>
-                            <rect x="180" y="100" width="30" height="30"/>
-                            <rect x="60" y="140" width="30" height="30"/>
-                            <rect x="140" y="140" width="30" height="30"/>
-                            <rect x="20" y="180" width="30" height="30"/>
-                            <rect x="60" y="180" width="30" height="30"/>
-                            <rect x="100" y="180" width="30" height="30"/>
-                            <rect x="140" y="180" width="30" height="30"/>
-                            <rect x="180" y="180" width="30" height="30"/>
-                        </g>
-                    </svg>
+        <div id="paymentSection" class="payment-section">
+            <h3>สแกน QR Code เพื่อชำระเงิน</h3>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=YOUR_PROMPTPAY_ID" alt="QR Code">
+            </div>
+            <p>ยอดชำระ: <strong id="paymentAmount" style="color: #20b89a; font-size: 28px;"></strong></p>
+            
+            <div style="max-width: 400px; margin: 20px auto; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                <div class="form-group">
+                    <label for="payEmail">อีเมลสำหรับรับลิงก์ *</label>
+                    <input type="email" id="payEmail" placeholder="example@email.com" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #ddd;">
                 </div>
-                <p style="font-size: 18px; color: #495057;">ยอดชำระ: <strong id="paymentAmount" style="color: #20b89a; font-size: 28px;"></strong></p>
-                <p style="color: #6c757d; margin-top: 10px;">กรุณาชำระเงินและกดยืนยันการชำระเงิน</p>
-                <button class="confirm-payment-btn" onclick="confirmPayment()">✓ ยืนยันการชำระเงิน</button>
+                <div class="form-group" style="margin-top:15px;">
+                    <label for="slipFile">แนบสลิปการโอน (Slip) *</label>
+                    <input type="file" id="slipFile" accept="image/*" required style="padding: 10px;">
+                </div>
             </div>
 
-            <div id="downloadSection" class="download-section">
-                <p class="pending-message">⏳ รอ Admin อนุมัติการดาวน์โหลด</p>
-                <p style="margin: 20px 0; color: #6c757d;">การชำระเงินของคุณได้รับแล้ว<br>Admin กำลังตรวจสอบ คุณจะได้รับลิงก์ดาวน์โหลดทางอีเมลเมื่อได้รับการอนุมัติ</p>
-                
-                <div id="approvedDownload" style="display: none;">
-                    <p class="success-message">✓ ได้รับการอนุมัติแล้ว!</p>
-                    <h3 style="margin: 20px 0;">ดาวน์โหลด Expert Advisor</h3>
-                    <a href="https://drive.google.com/file/d/YOUR_MT4_FILE_ID/view" target="_blank" class="download-btn">
-                        📥 ดาวน์โหลด EA สำหรับ MT4
-                    </a>
-                    <a href="https://drive.google.com/file/d/YOUR_MT5_FILE_ID/view" target="_blank" class="download-btn">
-                        📥 ดาวน์โหลด EA สำหรับ MT5
-                    </a>
-                    <p style="margin-top: 20px; color: #6c757d;">คู่มือการติดตั้งได้ถูกส่งไปยังอีเมลของคุณแล้ว</p>
-                </div>
+            <div id="loader" style="display:none; color:#20b89a; margin-bottom:10px;">⏳ กำลังส่งข้อมูล...</div>
+            <button id="confirmBtn" class="confirm-payment-btn" onclick="confirmPayment()">✓ ยืนยันและส่งหลักฐานจริง</button>
+        </div>
 
-                <button class="confirm-payment-btn" onclick="simulatePurchaseApproval()" style="margin-top: 20px;">
-                    🔓 จำลองการอนุมัติของ Admin (สำหรับทดสอบ)
-                </button>
-            </div>
+        <div id="downloadSection" class="download-section">
+            <div class="success-message">🎉 ส่งหลักฐานเรียบร้อย!</div>
+            <p style="margin: 20px 0; color: #495057;">
+                ระบบได้รับข้อมูลของคุณแล้ว <br>
+                <strong>กรุณารอ Admin ตรวจสอบและส่งลิงก์ให้ทาง Email</strong>
+            </p>
+            <button class="trial-btn" onclick="closeCart()">ตกลง</button>
         </div>
     </div>
+</div>
+
+<script>
+    // ⚠️ นำ URL Web App จากการ Deploy ใน Apps Script มาใส่ที่นี่
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUAsjgwZXwNY03Evzn3YQFbjfXjxaI00tcv3K4dRedt1C8_QggRxq1tPQasgraKF4F/exec"; 
+
+    async function confirmPayment() {
+        const email = document.getElementById('payEmail').value;
+        const fileInput = document.getElementById('slipFile');
+        const file = fileInput.files[0];
+        const btn = document.getElementById('confirmBtn');
+        const loader = document.getElementById('loader');
+
+        if (!email || !file) {
+            alert('กรุณากรอกอีเมลและแนบสลิปให้ครบถ้วนครับ');
+            return;
+        }
+
+        btn.disabled = true;
+        loader.style.display = 'block';
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async function () {
+            const payload = {
+                email: email,
+                fileName: file.name,
+                mimeType: file.type,
+                slipBase64: reader.result
+            };
+
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    document.getElementById('paymentSection').style.display = 'none';
+                    document.getElementById('downloadSection').style.display = 'block';
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + result.error);
+                }
+            } catch (e) {
+                alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+            }
+        };
+    }
+    // ... ฟังก์ชัน addToCart, openCart อื่นๆ คงเดิม ...
+</script>
 
     <script>
         let cart = [];
@@ -1254,53 +1279,6 @@
         </div>
     </div>
 
-    <script>
-    // ⚠️ สำคัญ: นำ URL ที่ได้จากการ Deploy Web App มาใส่ที่นี่
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUAsjgwZXwNY03Evzn3YQFbjfXjxaI00tcv3K4dRedt1C8_QggRxq1tPQasgraKF4F/exec"; 
-
-    async function confirmPayment() {
-        const email = document.getElementById('payEmail').value;
-        const fileInput = document.getElementById('slipFile');
-        const file = fileInput.files[0];
-        const confirmBtn = document.querySelector('.confirm-payment-btn');
-
-        if (!email || !file) {
-            alert('กรุณากรอกอีเมลและแนบสลิปครับ');
-            return;
-        }
-
-        confirmBtn.disabled = true;
-        confirmBtn.innerText = "⏳ กำลังส่งข้อมูล...";
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async function () {
-            const payload = {
-                email: email,
-                fileName: file.name,
-                mimeType: file.type,
-                slipBase64: reader.result
-            };
-
-            try {
-                const response = await fetch(GAS_WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                if (result.status === "success") {
-                    document.getElementById('targetEmail').textContent = email;
-                    document.getElementById('paymentSection').style.display = 'none';
-                    document.getElementById('downloadSection').style.display = 'block';
-                }
-            } catch (e) {
-                alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
-            } finally {
-                confirmBtn.disabled = false;
-                confirmBtn.innerText = "✓ ยืนยันการชำระเงิน";
-            }
-        };
-    }
-</script>
+    
 </body>
 </html>
