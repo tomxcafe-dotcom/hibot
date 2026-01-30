@@ -947,250 +947,162 @@
     <div class="form-container"> <!-- วางโค้ด iframe ที่ Google Forms ให้มา --> 
         <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScD9WuBRuDxSlQzYU7xaTdqt7vesiB19o4lbMQ6U2XiRUbk2A/viewform?usp=dialog" width="600" height="600" frameborder="0" marginheight="0" marginwidth="0"> กำลังโหลด… </iframe> </div>
 
-    <!-- Trial Modal -->
-    <div id="trialModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeTrialModal()">&times;</span>
-            <h2>📧 ลงทะเบียนสำเร็จ!</h2>
-            <p class="pending-message">⏳ รอ Admin อนุมัติการดาวน์โหลด<br>คุณจะได้รับอีเมลยืนยันเมื่อได้รับการอนุมัติ</p>
-            <div id="trialInfo" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left;">
-                <p><strong>ชื่อ:</strong> <span id="displayName"></span></p>
-                <p><strong>อีเมล:</strong> <span id="displayEmail"></span></p>
-                <p><strong>กลยุทธ์:</strong> <span id="displayStrategy"></span></p>
-            </div>
-            <div id="downloadLinks" style="display: none;">
-                <p class="success-message">✓ ได้รับการอนุมัติแล้ว!</p>
-                <a href="https://drive.google.com/file/d/YOUR_FILE_ID/view" target="_blank" class="download-btn">
-                    📥 ดาวน์โหลด EA ทดลองใช้
-                </a>
-                <p style="margin-top: 15px; color: #6c757d; font-size: 14px;">
-                    * ลิงก์นี้จะเชื่อมต่อไปยัง Google Drive<br>
-                    * คุณจะได้รับคู่มือการใช้งานทางอีเมล
-                </p>
-            </div>
-            <button class="trial-btn" onclick="simulateAdminApproval()" style="margin-top: 20px;">
-                🔓 จำลองการอนุมัติของ Admin (สำหรับทดสอบ)
-            </button>
-        </div>
     </div>
 
     <div id="cartModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeCart()">&times;</span>
-        <h2>🛒 ตะกร้าสินค้า</h2>
-        <div id="cartItems"></div>
-        <div id="cartTotal" class="cart-total"></div>
-        <button id="checkoutBtn" class="checkout-btn" onclick="showPayment()">ชำระเงิน</button>
-
-        <div id="paymentSection" class="payment-section">
-            <h3>สแกน QR Code เพื่อชำระเงิน</h3>
-            <div class="qr-code">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=YOUR_PROMPTPAY_ID" alt="QR Code">
-            </div>
-            <p>ยอดชำระ: <strong id="paymentAmount" style="color: #20b89a; font-size: 28px;"></strong></p>
-            
-            <div style="max-width: 400px; margin: 20px auto; text-align: left; background: #f8f9fa; padding: 20px; border-radius: 10px;">
-                <div class="form-group">
-                    <label for="payEmail">อีเมลสำหรับรับลิงก์ *</label>
-                    <input type="email" id="payEmail" placeholder="example@email.com" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #ddd;">
-                </div>
-                <div class="form-group" style="margin-top:15px;">
-                    <label for="slipFile">แนบสลิปการโอน (Slip) *</label>
-                    <input type="file" id="slipFile" accept="image/*" required style="padding: 10px;">
-                </div>
+        <div class="modal-content">
+            <span class="close" onclick="closeCart()">&times;</span>
+            <div id="cartView">
+                <h2>🛒 ตะกร้าสินค้า</h2>
+                <div id="cartItems" style="margin:20px 0;"></div>
+                <div id="cartTotal" class="cart-total"></div>
+                <button id="checkoutBtn" class="add-to-cart-btn" onclick="showPayment()">ชำระเงิน</button>
             </div>
 
-            <div id="loader" style="display:none; color:#20b89a; margin-bottom:10px;">⏳ กำลังส่งข้อมูล...</div>
-            <button id="confirmBtn" class="confirm-payment-btn" onclick="confirmPayment()">✓ ยืนยันและส่งหลักฐานจริง</button>
-        </div>
+            <div id="paymentSection" class="payment-section">
+                <h3>สแกน QR Code เพื่อชำระเงิน</h3>
+                <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=YOUR_PROMPTPAY_ID" style="margin:20px 0; width:250px;">
+                <p>ยอดชำระ: <strong id="paymentAmount" style="color:#20b89a; font-size:24px;"></strong></p>
+                
+                <div style="background:#f8f9fa; padding:20px; border-radius:10px; margin-top:20px;">
+                    <div class="form-group">
+                        <label>อีเมลสำหรับรับลิงก์ไฟล์จริง *</label>
+                        <input type="email" id="payEmail" required placeholder="example@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>แนบสลิปการโอน (Slip) *</label>
+                        <input type="file" id="slipFile" accept="image/*" required>
+                    </div>
+                </div>
+                <div id="loader" class="loading-spinner"></div>
+                <button id="confirmBtn" class="confirm-payment-btn" style="margin-top:20px;" onclick="confirmPayment()">✓ ยืนยันและส่งสลิปจริง</button>
+            </div>
 
-        <div id="downloadSection" class="download-section">
-            <div class="success-message">🎉 ส่งหลักฐานเรียบร้อย!</div>
-            <p style="margin: 20px 0; color: #495057;">
-                ระบบได้รับข้อมูลของคุณแล้ว <br>
-                <strong>กรุณารอ Admin ตรวจสอบและส่งลิงก์ให้ทาง Email</strong>
-            </p>
-            <button class="trial-btn" onclick="closeCart()">ตกลง</button>
+            <div id="downloadSection" class="download-section">
+                <div style="font-size:50px; margin-bottom:20px;">🎉</div>
+                <h2 style="color:#20b89a;">ส่งหลักฐานเรียบร้อย!</h2>
+                <p style="margin:20px 0; color:#666;">
+                    แอดมินได้รับข้อมูลแล้ว กำลังตรวจสอบสลิป <br>
+                    เมื่อผ่านแล้ว ลิงก์ไฟล์จะส่งไปที่อีเมล: <br>
+                    <strong id="targetEmail" style="color:#1e2a3a;"></strong>
+                </p>
+                <button class="trial-btn" onclick="closeCart()">ตกลง</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-  
+    <div id="trialModal" class="modal">
+        <div class="modal-content" style="text-align:center;">
+            <span class="close" onclick="closeTrialModal()">&times;</span>
+            <h2>📧 ลงทะเบียนสำเร็จ</h2>
+            <p style="margin:20px 0;">รอ Admin อนุมัติสิทธิ์ทดลองใช้ <br> เราจะส่งอีเมลแจ้งเตือนท่านทันที</p>
+            <button class="trial-btn" onclick="closeTrialModal()">ตกลง</button>
+        </div>
+    </div>
 
     <script>
-        <script>
+       
     // ⚠️ นำ URL Web App จากการ Deploy ใน Apps Script มาใส่ที่นี่
     const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUAsjgwZXwNY03Evzn3YQFbjfXjxaI00tcv3K4dRedt1C8_QggRxq1tPQasgraKF4F/exec"; 
 
     let cart = [];
 
-    // --- ฟังก์ชันจัดการตะกร้าสินค้า ---
-    function addToCart(name, price) {
-        cart.push({name, price});
-        updateCartCount();
-        alert('เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
-    }
-
-    function updateCartCount() {
-        document.getElementById('cartCount').textContent = cart.length;
-    }
-
-    function openCart() {
-        displayCart();
-        document.getElementById('cartModal').style.display = 'block';
-    }
-
-    function closeCart() {
-        document.getElementById('cartModal').style.display = 'none';
-        resetCartStatus(); // ล้างค่าเมื่อปิดเพื่อความปลอดภัย
-    }
-
-    function displayCart() {
-        const cartItemsDiv = document.getElementById('cartItems');
-        const cartTotalDiv = document.getElementById('cartTotal');
-        
-        if (cart.length === 0) {
-            cartItemsDiv.innerHTML = '<div class="empty-cart">ตะกร้าว่างเปล่า</div>';
-            cartTotalDiv.innerHTML = '';
-            document.getElementById('checkoutBtn').style.display = 'none';
-            return;
+     // --- ระบบตะกร้า ---
+        function addToCart(name, price) {
+            cart.push({name, price});
+            document.getElementById('cartCount').textContent = cart.length;
+            alert('เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
         }
 
-        document.getElementById('checkoutBtn').style.display = 'block';
-        let html = '';
-        let total = 0;
-
-        cart.forEach((item, index) => {
-            html += `
-                <div class="cart-item">
-                    <div>
-                        <strong>${item.name}</strong><br>
-                        <span style="color: #20b89a;">฿${item.price.toLocaleString()}</span>
+        function openCart() {
+            const itemsDiv = document.getElementById('cartItems');
+            const totalDiv = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (cart.length === 0) {
+                itemsDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#999;">ไม่มีสินค้าในตะกร้า</div>';
+                totalDiv.innerHTML = '';
+                checkoutBtn.style.display = 'none';
+            } else {
+                itemsDiv.innerHTML = cart.map((item, i) => `
+                    <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
+                        <span>${item.name}</span>
+                        <span>฿${item.price.toLocaleString()} <span style="color:red; cursor:pointer;" onclick="remove(${i})">✖</span></span>
                     </div>
-                    <button class="remove-btn" onclick="removeFromCart(${index})">ลบ</button>
-                </div>`;
-            total += item.price;
-        });
-
-        cartItemsDiv.innerHTML = html;
-        cartTotalDiv.innerHTML = `<strong>รวมทั้งหมด: ฿${total.toLocaleString()}</strong>`;
-    }
-
-    function removeFromCart(index) {
-        cart.splice(index, 1);
-        updateCartCount();
-        displayCart();
-    }
-
-    // --- ฟังก์ชันการชำระเงินจริง (Production) ---
-    function showPayment() {
-        const total = cart.reduce((sum, item) => sum + item.price, 0);
-        document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
-        
-        // ซ่อนส่วนตะกร้า แสดงส่วนชำระเงิน
-        document.getElementById('cartItems').style.display = 'none';
-        document.getElementById('cartTotal').style.display = 'none';
-        document.getElementById('checkoutBtn').style.display = 'none';
-        document.getElementById('paymentSection').style.display = 'block';
-    }
-
-    async function confirmPayment() {
-        const email = document.getElementById('payEmail').value;
-        const fileInput = document.getElementById('slipFile');
-        const file = fileInput.files[0];
-        const btn = document.getElementById('confirmBtn');
-        const loader = document.getElementById('loader');
-
-        // Validation
-        if (!email || !email.includes('@')) {
-            alert('กรุณากรอกอีเมลที่ถูกต้องเพื่อรับลิงก์ดาวน์โหลด');
-            return;
-        }
-        if (!file) {
-            alert('กรุณาแนบสลิปหลักฐานการโอนเงิน');
-            return;
-        }
-
-        // แสดงสถานะ Loading
-        btn.disabled = true;
-        btn.innerText = "⏳ กำลังส่งข้อมูล...";
-        loader.style.display = 'block';
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = async function () {
-            const payload = {
-                email: email,
-                fileName: file.name,
-                mimeType: file.type,
-                slipBase64: reader.result
-            };
-
-            try {
-                const response = await fetch(GAS_WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                });
-                
-                const result = await response.json();
-                
-                if (result.status === "success") {
-                    // แสดงหน้าความสำเร็จ
-                    document.getElementById('targetEmail').textContent = email;
-                    document.getElementById('paymentSection').style.display = 'none';
-                    document.getElementById('downloadSection').style.display = 'block';
-                    cart = []; // ล้างตะกร้าหลังซื้อสำเร็จ
-                    updateCartCount();
-                } else {
-                    alert("เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: " + result.error);
-                }
-            } catch (e) {
-                console.error(e);
-                alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่ภายหลัง");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "✓ ยืนยันและส่งหลักฐานจริง";
-                loader.style.display = 'none';
+                `).join('');
+                const total = cart.reduce((sum, item) => sum + item.price, 0);
+                totalDiv.innerHTML = `<strong>ยอดรวม: ฿${total.toLocaleString()}</strong>`;
+                checkoutBtn.style.display = 'block';
             }
-        };
-    }
+            document.getElementById('cartModal').style.display = 'block';
+        }
 
-    // --- ฟังก์ชันการลงทะเบียนทดลองใช้ (Trial) ---
-    function submitTrial(event) {
-        event.preventDefault();
-        const name = document.getElementById('fullName').value;
-        const email = document.getElementById('email').value;
-        const strategyText = document.getElementById('strategy').options[document.getElementById('strategy').selectedIndex].text;
+        function remove(i) { cart.splice(i, 1); document.getElementById('cartCount').textContent = cart.length; openCart(); }
 
-        document.getElementById('displayName').textContent = name;
-        document.getElementById('displayEmail').textContent = email;
-        document.getElementById('displayStrategy').textContent = strategyText;
+        function showPayment() {
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
+            document.getElementById('cartView').style.display = 'none';
+            document.getElementById('paymentSection').style.display = 'block';
+        }
 
-        // ในระบบจริงคุณควรส่งข้อมูลนี้ไป GAS เช่นกัน 
-        // แต่ในที่นี้เน้นแจ้งเตือนว่าลงทะเบียนสำเร็จแล้ว
-        document.getElementById('trialModal').style.display = 'block';
-        document.getElementById('trialForm').reset();
-    }
+        // --- ระบบส่งข้อมูลไป Google Sheets จริง ---
+        async function confirmPayment() {
+            const email = document.getElementById('payEmail').value;
+            const fileInput = document.getElementById('slipFile');
+            const file = fileInput.files[0];
+            const btn = document.getElementById('confirmBtn');
+            const loader = document.getElementById('loader');
 
-    function closeTrialModal() {
-        document.getElementById('trialModal').style.display = 'none';
-    }
+            if (!email.includes('@') || !file) {
+                alert('กรุณากรอกอีเมลและแนบรูปสลิปด้วยครับ');
+                return;
+            }
 
-    function resetCartStatus() {
-        // คืนค่าหน้าตา Modal กลับเป็นปกติ
-        document.getElementById('cartItems').style.display = 'block';
-        document.getElementById('cartTotal').style.display = 'block';
-        document.getElementById('paymentSection').style.display = 'none';
-        document.getElementById('downloadSection').style.display = 'none';
-    }
+            btn.disabled = true;
+            loader.style.display = 'block';
 
-    // ปิดโมดอลเมื่อคลิกนอกกรอบ
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('cartModal')) closeCart();
-        if (event.target == document.getElementById('trialModal')) closeTrialModal();
-    }
-</script>
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async function() {
+                const payload = {
+                    email: email,
+                    fileName: file.name,
+                    mimeType: file.type,
+                    slipBase64: reader.result
+                };
+
+                try {
+                    const response = await fetch(GAS_WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    });
+                    const res = await response.json();
+                    if (res.status === "success") {
+                        document.getElementById('targetEmail').textContent = email;
+                        document.getElementById('paymentSection').style.display = 'none';
+                        document.getElementById('downloadSection').style.display = 'block';
+                        cart = [];
+                        document.getElementById('cartCount').textContent = "0";
+                    } else { alert("เกิดข้อผิดพลาด: " + res.error); }
+                } catch (e) { alert("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้"); }
+                finally { btn.disabled = false; loader.style.display = 'none'; }
+            };
+        }
+
+        function submitTrial(e) { e.preventDefault(); document.getElementById('trialModal').style.display = 'block'; }
+        function closeCart() { 
+            document.getElementById('cartModal').style.display = 'none';
+            document.getElementById('cartView').style.display = 'block';
+            document.getElementById('paymentSection').style.display = 'none';
+            document.getElementById('downloadSection').style.display = 'none';
+        }
+        function closeTrialModal() { document.getElementById('trialModal').style.display = 'none'; }
+        
+        window.onclick = function(e) { 
+            if (e.target.className === 'modal') { closeCart(); closeTrialModal(); } 
+        }
+    </script>
 </body>
 </html>
         /* เพิ่มเติม Style สำหรับสถานะการส่ง */
