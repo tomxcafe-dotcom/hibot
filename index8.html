@@ -106,7 +106,6 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><path d="M0 50 Q25 25 50 50 T100 50" stroke="rgba(255,255,255,0.1)" fill="none" stroke-width="2"/></svg>');
             opacity: 0.3;
         }
 
@@ -142,123 +141,97 @@
             font-weight: bold;
         }
 
-        .featured-images {
-            padding: 80px 20px;
-            background: #fff;
-        }
-
-        .featured-images h2 {
-            text-align: center;
-            font-size: 42px;
-            margin-bottom: 50px;
-            color: #1e2a3a;
-        }
-
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .featured-image {
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s;
-            position: relative;
-        }
-
-        .featured-image:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(77, 212, 172, 0.3);
-        }
-
-        .featured-image img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .image-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        .trial-section {
+            background: linear-gradient(135deg, #1e2a3a 0%, #2d3e50 100%);
             color: #fff;
-            padding: 30px 20px 20px;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .trial-section h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        .trial-section p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .trial-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid rgba(77, 212, 172, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4dd4ac;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(77, 212, 172, 0.3);
+            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e2a3a;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4dd4ac;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+
+        .trial-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
             font-size: 18px;
             font-weight: bold;
-        }
-
-        /* ปรับปรุง LINE Group Section ให้กะทัดรัด */
-        .line-group-section {
-            background: #f4f7f6; /* เปลี่ยนเป็นสีอ่อนเพื่อให้หน้าเว็บดูโปร่ง */
-            padding: 50px 20px;
-            text-align: center;
-        }
-
-        .line-card {
-            background: #fff;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 450px; /* จำกัดความกว้างให้เล็กลง */
-            margin: 0 auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid #eee;
-        }
-
-        .line-qr-code img {
-            width: 180px; /* ลดขนาด QR Code */
-            height: 180px;
-            margin-bottom: 15px;
-            border: 1px solid #eee;
-            padding: 5px;
-        }
-
-        .line-btn-small {
-            display: inline-flex;
-            align-items: center;
-            background: #06C755;
-            color: #fff;
-            padding: 8px 20px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        .line-btn-small:hover {
-            background: #05a346;
-            transform: scale(1.05);
-        }
-
-        .line-mini-list {
-            text-align: left;
+            cursor: pointer;
             margin-top: 20px;
-            font-size: 14px;
-            color: #555;
-            border-top: 1px dashed #ddd;
-            padding-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
         }
 
-        .line-mini-list li {
-            list-style: none;
-            margin-bottom: 5px;
+        .trial-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
         }
 
-        .line-mini-list li:before {
-            content: "•";
-            color: #06C755;
-            font-weight: bold;
-            display: inline-block; 
-            width: 1em;
-        }
         .about-section {
             background: #fff;
             padding: 80px 20px;
@@ -618,27 +591,6 @@
             margin-top: 30px;
         }
 
-        .download-btn {
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            padding: 20px 50px;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 15px 10px;
-            display: inline-block;
-            text-decoration: none;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
-        }
-
         .success-message {
             color: #20b89a;
             font-size: 28px;
@@ -646,42 +598,20 @@
             font-weight: bold;
         }
 
-        .pending-message {
-            color: #ffc107;
-            font-size: 20px;
-            margin: 20px 0;
-            font-weight: bold;
+        .loading-spinner {
+            display: none;
+            margin: 10px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #20b89a;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
         }
 
-        .empty-cart {
-            text-align: center;
-            padding: 40px;
-            color: #adb5bd;
-        }
-
-        .modal h2 {
-            color: #1e2a3a;
-            margin-bottom: 30px;
-        }
-
-        .modal h3 {
-            color: #1e2a3a;
-            margin: 20px 0;
-        }
-
-        .form-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 40px auto;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        iframe {
-            width: 100%;
-            height: 600px;
-            border: none;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -691,19 +621,22 @@
             .hero p {
                 font-size: 18px;
             }
-            .images-grid {
-                grid-template-columns: 1fr;
-            }
-            .featured-image img {
-                height: 300px;
-            }
-            .about-section h2, .products h2, .how-it-works h2, .line-group-section h2 {
+            .about-section h2, .products h2, .how-it-works h2 {
                 font-size: 32px;
             }
-            .line-qr-code img {
-                width: 250px;
-                height: 250px;
-            }
+        }
+        footer {
+            background: #1e2a3a;
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -713,9 +646,13 @@
             <nav class="nav">
                 <div class="logo">
                     <img src="https://drive.google.com/uc?export=view&id=1qhSnFySudYEDvrdCYKUQj_7MNLmolreM" alt="Logo" class="logo-img">
-                    <div>
-                        <span class="logo-text">HIBOT</span>
-                        <h3>HIBOT Expert Advisor</h3>
+                    <div style="text-align: left;">
+                        <span class="logo-text">HIBOT Expert Advisor</span>
+                         <p>เครื่องมือที่ช่วยเทรดอัตโนมัติทำคำสั่งซื้อขายให้คุณแบบอัตโนมัติ</p>
+                         <p>และเก็บกำไรแทนคุณได้ 24 ชั่วโมง</p>
+
+
+                        
                     </div>
                 </div>
                 <button class="cart-btn" onclick="openCart()">
@@ -741,44 +678,39 @@
                 "HIBOT" คือ Expert Advisor (EA) เป็นโปรแกรมที่เขียนขึ้นเพื่อเป็นเครื่องมือที่ช่วยเทรดอัตโนมัติ ช่วยให้ผู้เทรดสามารถทำการซื้อ-ขายในตลาด Forex 
                 และเก็บกำไรแทนผู้เทรดได้ 24 ชั่วโมง โดยผู้เทรดไม่จำเป็นต้องอยู่หน้าจอตลอดเวลา 
             </p>
-        </div>
-        <div class="container">
             <p class="about-description"> "⚠️ ทุกการลงทุนมีความเสี่ยง ผู้ลงทุนควรศึกษาข้อมูลก่อนตัดสินใจลงทุน" </p>
-        </div>  
-        
-        <div class="container">
-            <p class="about-description"> <h3>Expert Advisor (EA) นี้เหมาะกับใคร</h3> </p>
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">⏰</div>
-                <h3>ผู้ที่ไม่มีเวลา</h3>
-                <p>ไม่สามารถเฝ้ากราฟได้ตลอดเวลา</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>เพิ่มประสิทธิภาพกำไร</h3>
-                <p>มีท่าเทรดที่ทำซ้ำๆ แล้วทำกำไรได้ตามระบบ</p>
-            </div>
+            <p class="about-description"><h3>Expert Advisor (EA) นี้เหมาะกับใคร</h3></p>
             
-            <div class="feature-card">
-                <div class="feature-icon">🧘</div>
-                <h3>การจัดการอารมณ์</h3>
-                <p>ผู้ที่ไม่สามารถจัดการอารมณ์ระหว่างเทรดได้</p>
-            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3>ผู้ที่ไม่มีเวลา</h3>
+                    <p>ไม่สามารถเฝ้ากราฟได้ตลอดเวลา</p>
+                </div>
 
-            <div class="feature-card">
-                <div class="feature-icon">💰</div>
-                <h3>Passive Income</h3>
-                <p>ผู้ที่ต้องการสร้างรายได้แบบ Passive ที่มีผลตอบแทนอย่างสม่ำเสมอ</p>
-            </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>เพิ่มประสิทธิภาพกำไร</h3>
+                    <p>มีท่าเทรดที่ทำซ้ำๆ แล้วทำกำไรได้ตามระบบ</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🧘</div>
+                    <h3>การจัดการอารมณ์</h3>
+                    <p>ผู้ที่ไม่สามารถจัดการอารมณ์ระหว่างเทรดได้</p>
+                </div>
 
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>เทรดอัตโนมัติ</h3>
-                <p>ระบบเทรดอัตโนมัติที่ทำงานแทนคุณตลอด 24 ชั่วโมง</p>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Passive Income</h3>
+                    <p>ผู้ที่ต้องการสร้างรายได้แบบ Passive ที่มีผลตอบแทนอย่างสม่ำเสมอ</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>เทรดอัตโนมัติ</h3>
+                    <p>ระบบเทรดอัตโนมัติที่ทำงานแทนคุณตลอด 24 ชั่วโมง</p>
+                </div>
             </div>
         </div>
     </section>
@@ -790,8 +722,7 @@
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3>วิเคราะห์ตลาด</h3>
-                    <p>วิเคราะห์แนวโน้มตลาดตามกลยุทธ์ที่ใช้</p>
-                    <p>ประกอบกับ Timeframe ที่เทรด แบบ Real-time</p>
+                    <p>วิเคราะห์แนวโน้มตลาดตามกลยุทธ์ที่ใช้ ประกอบกับ Timeframe ที่เทรด แบบ Real-time</p>
                 </div>
 
                 <div class="step">
@@ -810,36 +741,6 @@
                     <div class="step-number">4</div>
                     <h3>เก็บกำไร</h3>
                     <p>ตั้ง Stop Loss และ Take Profit อัตโนมัติ</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ส่วน LINE Group - ใหม่! -->
-    <section class="line-group-section">
-        <div class="container">
-            <div class="line-card">
-                <h3 style="margin-bottom: 10px; color: #1e2a3a;">💬 เข้าร่วมชุมชน HIBOT</h3>
-                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">สแกนเพื่อรับเทคนิคการเทรดและอัปเดต EA ฟรี</p>
-                
-                <div class="line-qr-code">
-                    <img src="https://via.placeholder.com/180x180?text=LINE+QR" alt="LINE QR Code">
-                </div>
-
-                <a href="YOUR_LINE_LINK_HERE" target="_blank" class="line-btn-small">
-                    <span style="margin-right: 8px;">➕</span> เพิ่มเพื่อนใน LINE
-                </a>
-
-               <div class="line-benefits">
-                    <h3>💎 สิทธิพิเศษสำหรับสมาชิกกลุ่ม LINE</h3>
-                    <ul>
-                        <li>รับข่าวสารและอัปเดตล่าสุดเกี่ยวกับ EA</li>
-                        <li>เทคนิคและคำแนะนำการใช้งาน EA</li>
-                        <li>แจ้งเตือนโปรโมชันพิเศษก่อนใคร</li>
-                        <li>ปรึกษาปัญหาการใช้งานได้ทันที</li>
-                        <li>แชร์ประสบการณ์กับเทรดเดอร์คนอื่นๆ</li>
-                        <li>ทดลองใช้ EA Strategy ใหม่ๆ ฟรี!</li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -897,221 +798,230 @@
         </div>
     </section>
 
+    <section class="trial-section">
+        <div class="container">
+            <h2>🎁 ทดลองใช้ EA ฟรี!</h2>
+            <p>ลงทะเบียนเพื่อรับ EA ทดลองฟรีจาก 5 กลยุทธ์</p>
+            
+          
+                        </select>
+                    </div>
+
+                    <button type="submit" class="trial-btn"><h3>📥 ลงทะเบียนและรับ EA ฟรี</h3></button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
     <!-- Cart Modal -->
     <div id="cartModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeCart()">&times;</span>
-            <h2>🛒 ตะกร้าสินค้า</h2>
-            
-            <div id="cartItems"></div>
-            <div id="cartTotal" class="cart-total"></div>
-            
-            <button id="checkoutBtn" class="checkout-btn" onclick="showPayment()">ชำระเงิน</button>
+            <div id="cartView">
+                <h2>🛒 ตะกร้าสินค้า</h2>
+                <div id="cartItems" style="margin:20px 0;"></div>
+                <div id="cartTotal" class="cart-total"></div>
+                <button id="checkoutBtn" class="checkout-btn" onclick="showPayment()">ชำระเงิน</button>
+            </div>
 
             <div id="paymentSection" class="payment-section">
                 <h3>สแกน QR Code เพื่อชำระเงิน</h3>
                 <div class="qr-code">
-                    <svg width="250" height="250" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="250" height="250" fill="white"/>
-                        <g fill="black">
-                            <rect x="20" y="20" width="30" height="30"/>
-                            <rect x="60" y="20" width="30" height="30"/>
-                            <rect x="100" y="20" width="30" height="30"/>
-                            <rect x="180" y="20" width="30" height="30"/>
-                            <rect x="20" y="60" width="30" height="30"/>
-                            <rect x="100" y="60" width="30" height="30"/>
-                            <rect x="140" y="60" width="30" height="30"/>
-                            <rect x="180" y="60" width="30" height="30"/>
-                            <rect x="20" y="100" width="30" height="30"/>
-                            <rect x="60" y="100" width="30" height="30"/>
-                            <rect x="100" y="100" width="30" height="30"/>
-                            <rect x="140" y="100" width="30" height="30"/>
-                            <rect x="180" y="100" width="30" height="30"/>
-                            <rect x="60" y="140" width="30" height="30"/>
-                            <rect x="140" y="140" width="30" height="30"/>
-                            <rect x="20" y="180" width="30" height="30"/>
-                            <rect x="60" y="180" width="30" height="30"/>
-                            <rect x="100" y="180" width="30" height="30"/>
-                            <rect x="140" y="180" width="30" height="30"/>
-                            <rect x="180" y="180" width="30" height="30"/>
-                        </g>
-                    </svg>
+                    <img src="https://drive.google.com/drive/folders/1u6l-ZRKU8V6NRQTdClXvVlVqIFDEU03j" alt="QR Code">
                 </div>
-                <p style="font-size: 18px; color: #495057;">ยอดชำระ: <strong id="paymentAmount" style="color: #20b89a; font-size: 28px;"></strong></p>
-                <p style="color: #6c757d; margin-top: 10px;">กรุณาชำระเงินและกดยืนยันการชำระเงิน</p>
-                <button class="confirm-payment-btn" onclick="confirmPayment()">✓ ยืนยันการชำระเงิน</button>
+                <p>ยอดชำระ: <strong id="paymentAmount" style="color:#20b89a; font-size:24px;"></strong></p>
+                
+                <div style="background:#f8f9fa; padding:20px; border-radius:10px; margin-top:20px;">
+                    <div class="form-group">
+                        <label>อีเมลสำหรับรับลิงก์ไฟล์ *</label>
+                        <input type="email" id="payEmail" required placeholder="example@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>แนบสลิปการโอน (Slip) *</label>
+                        <input type="file" id="slipFile" accept="image/*" required>
+                    </div>
+                </div>
+                <div id="loader" class="loading-spinner"></div>
+                <button id="confirmBtn" class="confirm-payment-btn" style="margin-top:20px;" onclick="confirmPayment()">✓ ยืนยันและส่งสลิป</button>
             </div>
 
             <div id="downloadSection" class="download-section">
-                <p class="pending-message">⏳ รอ Admin อนุมัติการดาวน์โหลด</p>
-                <p style="margin: 20px 0; color: #6c757d;">การชำระเงินของคุณได้รับแล้ว<br>Admin กำลังตรวจสอบ คุณจะได้รับลิงก์ดาวน์โหลดทางอีเมลเมื่อได้รับการอนุมัติ</p>
-                
-                <div id="approvedDownload" style="display: none;">
-                    <p class="success-message">✓ ได้รับการอนุมัติแล้ว!</p>
-                    <h3 style="margin: 20px 0;">ดาวน์โหลด Expert Advisor</h3>
-                    <a href="https://drive.google.com/file/d/YOUR_MT4_FILE_ID/view" target="_blank" class="download-btn">
-                        📥 ดาวน์โหลด EA สำหรับ MT4
-                    </a>
-                    <a href="https://drive.google.com/file/d/YOUR_MT5_FILE_ID/view" target="_blank" class="download-btn">
-                        📥 ดาวน์โหลด EA สำหรับ MT5
-                    </a>
-                    <p style="margin-top: 20px; color: #6c757d;">คู่มือการติดตั้งได้ถูกส่งไปยังอีเมลของคุณแล้ว</p>
+                <div style="font-size:50px; margin-bottom:20px;">🎉</div>
+                <h2 class="success-message">ส่งหลักฐานเรียบร้อย!</h2>
+                <p style="margin:20px 0; color:#666;">
+                    แอดมินได้รับข้อมูลแล้ว กำลังตรวจสอบสลิป <br>
+                    เมื่อผ่านแล้ว ลิงก์ไฟล์จะส่งไปที่อีเมล: <br>
+                    <strong id="targetEmail" style="color:#1e2a3a;"></strong>
+                </p>
+                <div style="background: #fff3cd; padding: 15px; border-radius: 10px; color: #856404; font-size: 14px; margin: 20px 0;">
+                    💡 ปกติ Admin จะตรวจสอบภายใน 15-30 นาที (เวลาทำการ)
                 </div>
-
-                <button class="confirm-payment-btn" onclick="simulatePurchaseApproval()" style="margin-top: 20px;">
-                    🔓 จำลองการอนุมัติของ Admin (สำหรับทดสอบ)
-                </button>
+                <button class="trial-btn" onclick="closeCart()">ตกลง</button>
             </div>
         </div>
     </div>
 
+    <!-- Trial Modal -->
+    <div id="trialModal" class="modal">
+        <div class="modal-content" style="text-align:center;">
+            <span class="close" onclick="closeTrialModal()">&times;</span>
+            <h2>📧 ลงทะเบียนสำเร็จ</h2>
+            <p style="margin:20px 0;">รอ Admin อนุมัติสิทธิ์ทดลองใช้ <br> เราจะส่งอีเมลแจ้งเตือนท่านทันที</p>
+            <button class="trial-btn" onclick="closeTrialModal()">ตกลง</button>
+        </div>
+    </div>
+
     <script>
-        // *** เพิ่ม URL ของ Google Apps Script Web App ***
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw1wvZs7jdyS52UYBjTT53aNq73R3VXiA7AlrFzdGJI513u32n0LYfBrZbn63l1Hp5k/exec';
+        // ⚠️ **สำคัญ**: ใส่ URL จาก Google Apps Script Web App ที่นี่
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_aH7m_4_ESGuu5nTpjM_WUHMTBIl4MpT_oDfq4S1Qy_xXwnwqqR9gMjQSLGqgHqhU/exec";
 
         let cart = [];
-        let isPurchaseApproved = false;
 
-        // Cart Functions
+        // ฟังก์ชันเพิ่มสินค้าลงตะกร้า
         function addToCart(name, price) {
             cart.push({name, price});
-            updateCartCount();
+            document.getElementById('cartCount').textContent = cart.length;
             alert('เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
         }
 
-        function updateCartCount() {
-            document.getElementById('cartCount').textContent = cart.length;
-        }
-
+        // ฟังก์ชันเปิดตะกร้า
         function openCart() {
-            displayCart();
+            const itemsDiv = document.getElementById('cartItems');
+            const totalDiv = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (cart.length === 0) {
+                itemsDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#999;">ไม่มีสินค้าในตะกร้า</div>';
+                totalDiv.innerHTML = '';
+                checkoutBtn.style.display = 'none';
+            } else {
+                itemsDiv.innerHTML = cart.map((item, i) => `
+                    <div class="cart-item">
+                        <span>${item.name}</span>
+                        <span>฿${item.price.toLocaleString()} <span style="color:red; cursor:pointer; margin-left:10px;" onclick="removeItem(${i})">✖</span></span>
+                    </div>
+                `).join('');
+                const total = cart.reduce((sum, item) => sum + item.price, 0);
+                totalDiv.innerHTML = `<strong>ยอดรวม: ฿${total.toLocaleString()}</strong>`;
+                checkoutBtn.style.display = 'block';
+            }
+            
+            document.getElementById('cartView').style.display = 'block';
+            document.getElementById('paymentSection').style.display = 'none';
+            document.getElementById('downloadSection').style.display = 'none';
             document.getElementById('cartModal').style.display = 'block';
         }
 
-        function closeCart() {
-            document.getElementById('cartModal').style.display = 'none';
-            resetCartModal();
-        }
-
-        function displayCart() {
-            const cartItemsDiv = document.getElementById('cartItems');
-            const cartTotalDiv = document.getElementById('cartTotal');
-            
-            if (cart.length === 0) {
-                cartItemsDiv.innerHTML = '<div class="empty-cart">ตะกร้าว่างเปล่า</div>';
-                cartTotalDiv.innerHTML = '';
-                document.getElementById('checkoutBtn').style.display = 'none';
-                return;
-            }
-
-            document.getElementById('checkoutBtn').style.display = 'block';
-            
-            let html = '';
-            let total = 0;
-
-            cart.forEach((item, index) => {
-                html += `
-                    <div class="cart-item">
-                        <div>
-                            <strong>${item.name}</strong><br>
-                            <span style="color: #20b89a;">฿${item.price.toLocaleString()}</span>
-                        </div>
-                        <button class="remove-btn" onclick="removeFromCart(${index})">ลบ</button>
-                    </div>
-                `;
-                total += item.price;
-            });
-
-            cartItemsDiv.innerHTML = html;
-            cartTotalDiv.innerHTML = `<strong>รวมทั้งหมด: ฿${total.toLocaleString()}</strong>`;
-        }
-
-        function removeFromCart(index) {
+        // ฟังก์ชันลบสินค้า
+        function removeItem(index) {
             cart.splice(index, 1);
-            updateCartCount();
-            displayCart();
+            document.getElementById('cartCount').textContent = cart.length;
+            openCart();
         }
 
+        // แสดงหน้าชำระเงิน
         function showPayment() {
             const total = cart.reduce((sum, item) => sum + item.price, 0);
             document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
-            document.getElementById('checkoutBtn').style.display = 'none';
+            document.getElementById('cartView').style.display = 'none';
             document.getElementById('paymentSection').style.display = 'block';
         }
 
-        function setupSlipUpload() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = async (event) => {
-                        const base64Data = event.target.result;
-                        
-                        const email = prompt('กรุณากรอกอีเมลของคุณ:');
-                        if (!email) return;
+        // ฟังก์ชันยืนยันการชำระเงินและส่งข้อมูล
+        async function confirmPayment() {
+            const email = document.getElementById('payEmail').value;
+            const fileInput = document.getElementById('slipFile');
+            const file = fileInput.files[0];
+            const btn = document.getElementById('confirmBtn');
+            const loader = document.getElementById('loader');
 
-                        try {
-                            const response = await fetch(SCRIPT_URL, {
-                                method: 'POST',
-                                mode: 'no-cors',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    type: 'payment',
-                                    email: email,
-                                    slipBase64: base64Data,
-                                    mimeType: file.type,
-                                    fileName: file.name
-                                })
-                            });
+            if (!email.includes('@') || !file) {
+                alert('กรุณากรอกอีเมลและแนบรูปสลิปด้วยครับ');
+                return;
+            }
 
-                            alert('✅ อัปโหลดสลิปสำเร็จ! รอการอนุมัติจาก Admin');
-                            document.getElementById('paymentSection').style.display = 'none';
-                            document.getElementById('downloadSection').style.display = 'block';
-                        } catch (error) {
-                            console.error('Error:', error);
-                            alert('❌ ไม่สามารถอัปโหลดสลิปได้ กรุณาลองใหม่อีกครั้ง');
-                        }
-                    };
-                    reader.readAsDataURL(file);
+            btn.disabled = true;
+            loader.style.display = 'block';
+
+            // อ่านไฟล์เป็น Base64
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async function() {
+                const total = cart.reduce((sum, item) => sum + item.price, 0);
+                const itemsList = cart.map(item => item.name).join(', ');
+                
+                const payload = {
+                    email: email,
+                    amount: total,
+                    items: itemsList,
+                    fileName: file.name,
+                    mimeType: file.type,
+                    slipBase64: reader.result
+                };
+
+                try {
+                    const response = await fetch(GAS_WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const res = await response.json();
+                    
+                    if (res.status === "success") {
+                        document.getElementById('targetEmail').textContent = email;
+                        document.getElementById('paymentSection').style.display = 'none';
+                        document.getElementById('downloadSection').style.display = 'block';
+                        cart = [];
+                        document.getElementById('cartCount').textContent = "0";
+                    } else {
+                        alert("เกิดข้อผิดพลาด: " + res.error);
+                    }
+                } catch (e) {
+                    alert("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้: " + e.message);
+                } finally {
+                    btn.disabled = false;
+                    loader.style.display = 'none';
                 }
             };
-            input.click();
         }
 
-        function confirmPayment() {
-            if (confirm('คุณได้ทำการชำระเงินเรียบร้อยแล้วใช่หรือไม่?')) {
-                setupSlipUpload();
-            }
+        // ฟังก์ชันส่งแบบฟอร์มทดลองใช้
+        function submitTrial(e) {
+            e.preventDefault();
+            document.getElementById('trialModal').style.display = 'block';
         }
 
-        function simulatePurchaseApproval() {
-            isPurchaseApproved = true;
-            document.querySelector('#downloadSection .pending-message').style.display = 'none';
-            document.querySelector('#downloadSection > p').style.display = 'none';
-            document.getElementById('approvedDownload').style.display = 'block';
-            alert('✓ Admin อนุมัติแล้ว! คุณสามารถดาวน์โหลด EA ได้แล้ว');
+        // ฟังก์ชันปิด Modal
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
         }
 
-        function resetCartModal() {
-            document.getElementById('paymentSection').style.display = 'none';
-            document.getElementById('downloadSection').style.display = 'none';
-            document.getElementById('checkoutBtn').style.display = 'block';
-            isPurchaseApproved = false;
+        function closeTrialModal() {
+            document.getElementById('trialModal').style.display = 'none';
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const cartModal = document.getElementById('cartModal');
-            
-            if (event.target == cartModal) {
+        // ปิด Modal เมื่อคลิกนอกกรอบ
+        window.onclick = function(e) {
+            if (e.target.className === 'modal') {
                 closeCart();
+                closeTrialModal();
             }
         }
+
+        <h2 style="text-align:center; padding: 40px 0;">ติดต่อเรา</h2>
+    <div class="form-container">
+        <iframe src="..."></iframe>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            © 2024 HIBOT Expert Advisor. All rights reserved. Trading involves risk.
+        </div>
+    </footer>
+
+
     </script>
+    
 </body>
 </html>
