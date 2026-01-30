@@ -1255,101 +1255,52 @@
     </div>
 
     <script>
-        // ใส่ URL ที่ได้จาก Google Apps Script (New Deployment)
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby7aT1hDm8pRsH7ZsmLQurpLmXKoH0cRNpVnFjcbFYGFY456I0OAlJxdiu4KTsggUO4/exec"; 
+    // ⚠️ สำคัญ: นำ URL ที่ได้จากการ Deploy Web App มาใส่ที่นี่
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxuxjx8l9CwJkMF49oQwbywrU0Uc1kVd_wfswRkJOoOI5Em6EaMmo9DRI28qhnH9SWJ/exec"; 
 
-        let cart = [];
+    async function confirmPayment() {
+        const email = document.getElementById('payEmail').value;
+        const fileInput = document.getElementById('slipFile');
+        const file = fileInput.files[0];
+        const confirmBtn = document.querySelector('.confirm-payment-btn');
 
-        // ฟังก์ชันส่งข้อมูลจริงไป GAS
-        async function confirmPayment() {
-            const email = document.getElementById('payEmail').value;
-            const fileInput = document.getElementById('slipFile');
-            const file = fileInput.files[0];
-            const confirmBtn = document.getElementById('confirmBtn');
-            const loader = document.getElementById('loader');
+        if (!email || !file) {
+            alert('กรุณากรอกอีเมลและแนบสลิปครับ');
+            return;
+        }
 
-            if (!email || !file) {
-                alert('กรุณากรอกอีเมลและแนบสลิปให้ครบถ้วนครับ');
-                return;
-            }
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = "⏳ กำลังส่งข้อมูล...";
 
-            // แสดงสถานะกำลังโหลด
-            confirmBtn.disabled = true;
-            confirmBtn.style.opacity = '0.5';
-            loader.style.display = 'block';
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async function () {
-                const base64File = reader.result;
-                const payload = {
-                    email: email,
-                    fileName: file.name,
-                    mimeType: file.type,
-                    slipBase64: base64File
-                };
-
-                try {
-                    const response = await fetch(GAS_WEB_APP_URL, {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    });
-
-                    const result = await response.json();
-                    if (result.status === "success") {
-                        document.getElementById('targetEmail').textContent = email;
-                        document.getElementById('paymentSection').style.display = 'none';
-                        document.getElementById('downloadSection').style.display = 'block';
-                    } else {
-                        alert("เกิดข้อผิดพลาด: " + result.error);
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
-                } finally {
-                    confirmBtn.disabled = false;
-                    confirmBtn.style.opacity = '1';
-                    loader.style.display = 'none';
-                }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async function () {
+            const payload = {
+                email: email,
+                fileName: file.name,
+                mimeType: file.type,
+                slipBase64: reader.result
             };
-        }
 
-        // ฟังก์ชันจัดการตะกร้า (เหมือนเดิม)
-        function addToCart(name, price) {
-            cart.push({name, price});
-            document.getElementById('cartCount').textContent = cart.length;
-            alert('เพิ่มลงตะกร้าแล้ว');
-        }
-
-        function openCart() {
-            const itemsDiv = document.getElementById('cartItems');
-            const totalDiv = document.getElementById('cartTotal');
-            if (cart.length === 0) {
-                itemsDiv.innerHTML = '<p class="empty-cart">ไม่มีสินค้า</p>';
-                totalDiv.innerHTML = '';
-                document.getElementById('checkoutBtn').style.display = 'none';
-            } else {
-                itemsDiv.innerHTML = cart.map((item, i) => `<div class="cart-item">${item.name} - ฿${item.price}</div>`).join('');
-                const total = cart.reduce((s, item) => s + item.price, 0);
-                totalDiv.innerHTML = `รวม: ฿${total.toLocaleString()}`;
-                document.getElementById('checkoutBtn').style.display = 'block';
+            try {
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    document.getElementById('targetEmail').textContent = email;
+                    document.getElementById('paymentSection').style.display = 'none';
+                    document.getElementById('downloadSection').style.display = 'block';
+                }
+            } catch (e) {
+                alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.innerText = "✓ ยืนยันการชำระเงิน";
             }
-            document.getElementById('cartModal').style.display = 'block';
-        }
-
-        function showPayment() {
-            const total = cart.reduce((s, item) => s + item.price, 0);
-            document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
-            document.getElementById('cartItems').style.display = 'none';
-            document.getElementById('cartTotal').style.display = 'none';
-            document.getElementById('checkoutBtn').style.display = 'none';
-            document.getElementById('paymentSection').style.display = 'block';
-        }
-
-        function closeCart() {
-            document.getElementById('cartModal').style.display = 'none';
-            location.reload(); // รีโหลดเพื่อล้างสถานะ
-        }
-    </script>
+        };
+    }
+</script>
 </body>
 </html>
