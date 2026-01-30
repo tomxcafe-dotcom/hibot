@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HIBOT - Expert Advisor สำหรับ MT4/MT5</title>
     <style>
-        /* --- Base Style --- */
+        /* --- CSS เดิมที่คุณทำไว้ (รักษาไว้ทั้งหมด) --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,88 +13,51 @@
             color: #1e2a3a;
             line-height: 1.6;
         }
+        .header { background: #fff; padding: 20px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        /* --- Header & Nav --- */
-        .header {
-            background: #fff; padding: 15px 0; position: sticky; top: 0;
-            z-index: 1000; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
         .nav { display: flex; justify-content: space-between; align-items: center; }
         .logo { display: flex; align-items: center; gap: 15px; }
-        .logo-text h3 { color: #20b89a; font-size: 24px; }
+        .logo-text { font-size: 42px; font-weight: bold; color: #1e2a3a; letter-spacing: 2px; }
         .cart-btn {
             background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff; padding: 10px 25px; border: none; border-radius: 25px;
-            cursor: pointer; font-weight: bold; position: relative; transition: 0.3s;
+            color: #fff; padding: 12px 30px; border: none; border-radius: 25px;
+            cursor: pointer; font-weight: bold; position: relative; transition: transform 0.3s;
+            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
         }
         .cart-count {
-            position: absolute; top: -5px; right: -5px; background: #ff4757;
-            color: #fff; border-radius: 50%; width: 22px; height: 22px;
-            display: flex; align-items: center; justify-content: center; font-size: 11px;
+            position: absolute; top: -8px; right: -8px; background: #ff4757;
+            color: #fff; border-radius: 50%; width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
+        }
+        .hero { background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%); color: #fff; text-align: center; padding: 100px 20px; }
+        .about-section, .how-it-works, .products, .trial-section { padding: 80px 20px; }
+        .about-description { text-align: center; font-size: 18px; max-width: 900px; margin: 0 auto 60px; color: #495057; }
+        .features-grid, .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
+        .feature-card, .product-card { background: #fff; border-radius: 20px; padding: 40px; border: 2px solid #e9ecef; transition: all 0.3s; text-align: center; }
+        .product-card.popular { border-color: #20b89a; box-shadow: 0 10px 30px rgba(77, 212, 172, 0.2); }
+        .price { font-size: 42px; color: #20b89a; margin: 20px 0; font-weight: bold; }
+        .add-to-cart-btn, .trial-btn, .confirm-payment-btn { 
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
+            color: #fff; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s;
         }
 
-        /* --- Hero Section --- */
-        .hero {
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff; text-align: center; padding: 80px 20px;
-        }
-        .hero h1 { font-size: 48px; margin-bottom: 10px; }
-
-        /* --- Products --- */
-        .products { padding: 60px 20px; }
-        .product-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px; margin-top: 40px;
-        }
-        .product-card {
-            background: #fff; border-radius: 20px; padding: 30px;
-            border: 2px solid #e9ecef; transition: 0.3s; position: relative;
-        }
-        .product-card:hover { transform: translateY(-10px); border-color: #4dd4ac; }
-        .price { font-size: 36px; color: #20b89a; font-weight: bold; margin: 15px 0; }
-        .product-card ul { list-style: none; margin-bottom: 20px; text-align: left; }
-        .product-card li:before { content: "✓ "; color: #20b89a; }
-        .add-to-cart-btn {
-            width: 100%; padding: 12px; background: #20b89a; color: #fff;
-            border: none; border-radius: 10px; cursor: pointer; font-weight: bold;
-        }
-
-        /* --- Trial Form --- */
-        .trial-section { background: #1e2a3a; color: #fff; padding: 60px 20px; text-align: center; }
-        .trial-form { max-width: 500px; margin: 30px auto; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 20px; }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 5px; color: #4dd4ac; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border-radius: 8px; border: none; }
-
-        /* --- Modal --- */
-        .modal {
-            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.7); overflow-y: auto;
-        }
-        .modal-content {
-            background: #fff; margin: 50px auto; padding: 30px;
-            border-radius: 20px; width: 90%; max-width: 500px; text-align: center;
-        }
-        .close { float: right; font-size: 28px; cursor: pointer; }
-        .cart-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; }
-        .remove-btn { color: #ff4757; cursor: pointer; border: none; background: none; }
+        /* --- Modal Styles --- */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); overflow-y: auto; }
+        .modal-content { background: #fff; margin: 50px auto; padding: 40px; border-radius: 20px; width: 90%; max-width: 600px; }
+        .close { color: #adb5bd; float: right; font-size: 35px; font-weight: bold; cursor: pointer; }
+        .payment-section, .download-section { display: none; text-align: center; }
         
-        /* --- Payment & Status --- */
-        .payment-section, .download-section { display: none; margin-top: 20px; }
-        .qr-code img { width: 200px; margin: 20px 0; }
+        /* Loading Spinner */
         .loading-spinner {
-            display: none; margin: 10px auto; border: 4px solid #f3f3f3;
+            display: none; margin: 20px auto; border: 4px solid #f3f3f3;
             border-top: 4px solid #20b89a; border-radius: 50%;
-            width: 30px; height: 30px; animation: spin 1s linear infinite;
+            width: 40px; height: 40px; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .success-message { color: #20b89a; font-size: 24px; font-weight: bold; }
-        .confirm-payment-btn { 
-            background: #20b89a; color: #fff; width: 100%; padding: 15px; 
-            border: none; border-radius: 10px; cursor: pointer; font-size: 18px; margin-top: 15px;
-        }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -103,10 +66,11 @@
         <div class="container">
             <nav class="nav">
                 <div class="logo">
-                    <span class="logo-text"><h3>HIBOT EA</h3></span>
+                    <img src="https://drive.google.com/uc?export=view&id=1qhSnFySudYEDvrdCYKUQj_7MNLmolreM" alt="Logo" width="100">
+                    <span class="logo-text">HIBOT</span>
                 </div>
                 <button class="cart-btn" onclick="openCart()">
-                    🛒 ตะกร้า <span class="cart-count" id="cartCount">0</span>
+                    <h3>🛒 ตะกร้า <span class="cart-count" id="cartCount">0</span></h3>
                 </button>
             </nav>
         </div>
@@ -115,7 +79,7 @@
     <section class="hero">
         <div class="container">
             <h1>HIBOT Expert Advisor</h1>
-            <p>ระบบเทรดอัตโนมัติ ทำกำไรแทนคุณ 24 ชั่วโมง</p>
+            <p>เครื่องมือเทรดอัตโนมัติ ทำกำไรแทนคุณ 24 ชั่วโมง</p>
         </div>
     </section>
 
@@ -124,21 +88,12 @@
             <div class="product-card">
                 <h3>EURUSD Basic</h3>
                 <div class="price">฿499</div>
-                <ul>
-                    <li>EA สำหรับ MT4</li>
-                    <li>ใช้ได้ไม่จำกัดบัญชี</li>
-                    <li>ตลอดชีพ</li>
-                </ul>
                 <button class="add-to-cart-btn" onclick="addToCart('Basic Package', 499)">เพิ่มลงตะกร้า</button>
             </div>
-            <div class="product-card">
+            <div class="product-card popular">
+                <span style="background:#20b89a; color:#fff; padding:5px 10px; border-radius:15px; font-size:12px;">⭐ ยอดนิยม</span>
                 <h3>EURUSD Pro</h3>
                 <div class="price">฿999</div>
-                <ul>
-                    <li>EA สำหรับ MT4 + Source Code</li>
-                    <li>แถมกลยุทธ์พิเศษ</li>
-                    <li>ตลอดชีพ</li>
-                </ul>
                 <button class="add-to-cart-btn" onclick="addToCart('Pro Package', 999)">เพิ่มลงตะกร้า</button>
             </div>
         </div>
@@ -146,25 +101,18 @@
 
     <section class="trial-section">
         <div class="container">
-            <h2>🎁 ลงทะเบียนทดลองใช้ฟรี</h2>
-            <div class="trial-form">
+            <h2 style="text-align:center; margin-bottom:30px;">🎁 ทดลองใช้ EA ฟรี!</h2>
+            <div style="max-width:600px; margin:0 auto; background:rgba(255,255,255,0.1); padding:40px; border-radius:20px;">
                 <form id="trialForm" onsubmit="submitTrial(event)">
                     <div class="form-group">
-                        <label>ชื่อ-นามสกุล</label>
+                        <label>ชื่อ-นามสกุล *</label>
                         <input type="text" id="fullName" required>
                     </div>
                     <div class="form-group">
-                        <label>อีเมล</label>
+                        <label>อีเมล *</label>
                         <input type="email" id="email" required>
                     </div>
-                    <div class="form-group">
-                        <label>กลยุทธ์ที่สนใจ</label>
-                        <select id="strategy">
-                            <option value="scalping">Scalping Strategy</option>
-                            <option value="grid">Grid Trading</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="add-to-cart-btn">ลงทะเบียนรับ EA ฟรี</button>
+                    <button type="submit" class="trial-btn">ลงทะเบียนรับไฟล์ฟรี</button>
                 </form>
             </div>
         </div>
@@ -173,64 +121,65 @@
     <div id="cartModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeCart()">&times;</span>
-            <h2 id="modalTitle">🛒 ตะกร้าสินค้า</h2>
-            <hr style="margin: 15px 0;">
-            
-            <div id="cartContent">
-                <div id="cartItems"></div>
-                <div id="cartTotal" style="font-weight: bold; font-size: 20px; margin: 20px 0;"></div>
-                <button id="checkoutBtn" class="confirm-payment-btn" onclick="showPayment()">ไปที่หน้าชำระเงิน</button>
+            <div id="cartView">
+                <h2>🛒 ตะกร้าสินค้า</h2>
+                <div id="cartItems" style="margin:20px 0;"></div>
+                <div id="cartTotal" class="cart-total"></div>
+                <button id="checkoutBtn" class="add-to-cart-btn" onclick="showPayment()">ชำระเงิน</button>
             </div>
 
             <div id="paymentSection" class="payment-section">
-                <h3>💰 ชำระเงินผ่าน PromptPay</h3>
-                <div class="qr-code">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=YOUR_PROMPTPAY_ID" alt="QR Code">
-                </div>
-                <p>ยอดที่ต้องโอน: <strong id="paymentAmount" style="color:#20b89a;"></strong></p>
+                <h3>สแกน QR Code เพื่อชำระเงิน</h3>
+                <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=YOUR_PROMPTPAY_ID" style="margin:20px 0; width:250px;">
+                <p>ยอดชำระ: <strong id="paymentAmount" style="color:#20b89a; font-size:24px;"></strong></p>
                 
-                <div style="text-align: left; margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px;">
+                <div style="background:#f8f9fa; padding:20px; border-radius:10px; margin-top:20px;">
                     <div class="form-group">
-                        <label style="color:#333;">อีเมลรับไฟล์ *</label>
-                        <input type="email" id="payEmail" required>
+                        <label>อีเมลสำหรับรับลิงก์ไฟล์จริง *</label>
+                        <input type="email" id="payEmail" required placeholder="example@email.com">
                     </div>
                     <div class="form-group">
-                        <label style="color:#333;">แนบสลิปการโอน *</label>
+                        <label>แนบสลิปการโอน (Slip) *</label>
                         <input type="file" id="slipFile" accept="image/*" required>
                     </div>
                 </div>
                 <div id="loader" class="loading-spinner"></div>
-                <button id="confirmBtn" class="confirm-payment-btn" onclick="confirmPayment()">✓ ยืนยันการโอนเงินจริง</button>
+                <button id="confirmBtn" class="confirm-payment-btn" style="margin-top:20px;" onclick="confirmPayment()">✓ ยืนยันและส่งสลิปจริง</button>
             </div>
 
             <div id="downloadSection" class="download-section">
-                <div class="success-message">🎉 ส่งข้อมูลเรียบร้อย!</div>
-                <p style="margin-top: 15px;">Admin กำลังตรวจสอบสลิปของท่าน <br> ลิงก์ดาวน์โหลดจะส่งไปที่อีเมล:</p>
-                <p id="targetEmail" style="font-weight: bold; color: #20b89a;"></p>
-                <button class="confirm-payment-btn" onclick="closeCart()">ตกลง</button>
+                <div style="font-size:50px; margin-bottom:20px;">🎉</div>
+                <h2 style="color:#20b89a;">ส่งหลักฐานเรียบร้อย!</h2>
+                <p style="margin:20px 0; color:#666;">
+                    แอดมินได้รับข้อมูลแล้ว กำลังตรวจสอบสลิป <br>
+                    เมื่อผ่านแล้ว ลิงก์ไฟล์จะส่งไปที่อีเมล: <br>
+                    <strong id="targetEmail" style="color:#1e2a3a;"></strong>
+                </p>
+                <button class="trial-btn" onclick="closeCart()">ตกลง</button>
             </div>
         </div>
     </div>
 
     <div id="trialModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="text-align:center;">
             <span class="close" onclick="closeTrialModal()">&times;</span>
-            <div class="success-message">📧 ลงทะเบียนสำเร็จ!</div>
-            <p style="margin: 15px 0;">ระบบกำลังรอ Admin อนุมัติสิทธิ์ทดลองใช้ <br> เมื่ออนุมัติแล้วเราจะส่งไฟล์ให้ท่านทางอีเมลครับ</p>
-            <button class="confirm-payment-btn" onclick="closeTrialModal()">ตกลง</button>
+            <h2>📧 ลงทะเบียนสำเร็จ</h2>
+            <p style="margin:20px 0;">รอ Admin อนุมัติสิทธิ์ทดลองใช้ <br> เราจะส่งอีเมลแจ้งเตือนท่านทันที</p>
+            <button class="trial-btn" onclick="closeTrialModal()">ตกลง</button>
         </div>
     </div>
 
     <script>
-        // ⚠️ ใส่ URL จากการ Deploy "Web App" ใน Google Apps Script ของคุณ
+        // ⚠️ ต้องนำลิงก์ที่ได้จาก "การทำให้ใช้งานได้เป็นเว็บแอป" มาวางที่นี่
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwUAsjgwZXwNY03Evzn3YQFbjfXjxaI00tcv3K4dRedt1C8_QggRxq1tPQasgraKF4F/exec"; 
 
         let cart = [];
 
+        // --- ระบบตะกร้า ---
         function addToCart(name, price) {
             cart.push({name, price});
             document.getElementById('cartCount').textContent = cart.length;
-            alert('เพิ่ม ' + name + ' เข้าตะกร้าแล้ว');
+            alert('เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
         }
 
         function openCart() {
@@ -239,37 +188,33 @@
             const checkoutBtn = document.getElementById('checkoutBtn');
             
             if (cart.length === 0) {
-                itemsDiv.innerHTML = "ตะกร้าว่างเปล่า";
-                totalDiv.innerHTML = "";
-                checkoutBtn.style.display = "none";
+                itemsDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#999;">ไม่มีสินค้าในตะกร้า</div>';
+                totalDiv.innerHTML = '';
+                checkoutBtn.style.display = 'none';
             } else {
                 itemsDiv.innerHTML = cart.map((item, i) => `
-                    <div class="cart-item">
+                    <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
                         <span>${item.name}</span>
-                        <span>฿${item.price} <button class="remove-btn" onclick="remove(${i})">✖</button></span>
+                        <span>฿${item.price.toLocaleString()} <span style="color:red; cursor:pointer;" onclick="remove(${i})">✖</span></span>
                     </div>
                 `).join('');
                 const total = cart.reduce((sum, item) => sum + item.price, 0);
-                totalDiv.innerHTML = "ยอดรวม: ฿" + total.toLocaleString();
-                checkoutBtn.style.display = "block";
+                totalDiv.innerHTML = `<strong>ยอดรวม: ฿${total.toLocaleString()}</strong>`;
+                checkoutBtn.style.display = 'block';
             }
             document.getElementById('cartModal').style.display = 'block';
         }
 
-        function remove(index) {
-            cart.splice(index, 1);
-            document.getElementById('cartCount').textContent = cart.length;
-            openCart();
-        }
+        function remove(i) { cart.splice(i, 1); document.getElementById('cartCount').textContent = cart.length; openCart(); }
 
         function showPayment() {
             const total = cart.reduce((sum, item) => sum + item.price, 0);
             document.getElementById('paymentAmount').textContent = '฿' + total.toLocaleString();
-            document.getElementById('cartContent').style.display = 'none';
+            document.getElementById('cartView').style.display = 'none';
             document.getElementById('paymentSection').style.display = 'block';
-            document.getElementById('modalTitle').textContent = "ชำระเงิน";
         }
 
+        // --- ระบบส่งข้อมูลไป Google Sheets จริง ---
         async function confirmPayment() {
             const email = document.getElementById('payEmail').value;
             const fileInput = document.getElementById('slipFile');
@@ -277,11 +222,13 @@
             const btn = document.getElementById('confirmBtn');
             const loader = document.getElementById('loader');
 
-            if (!email || !file) { return alert("กรุณากรอกข้อมูลและแนบสลิปให้ครบถ้วน"); }
+            if (!email.includes('@') || !file) {
+                alert('กรุณากรอกอีเมลและแนบรูปสลิปด้วยครับ');
+                return;
+            }
 
             btn.disabled = true;
-            btn.style.opacity = "0.5";
-            loader.style.display = "block";
+            loader.style.display = 'block';
 
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -294,8 +241,11 @@
                 };
 
                 try {
-                    const resp = await fetch(GAS_WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) });
-                    const res = await resp.json();
+                    const response = await fetch(GAS_WEB_APP_URL, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    });
+                    const res = await response.json();
                     if (res.status === "success") {
                         document.getElementById('targetEmail').textContent = email;
                         document.getElementById('paymentSection').style.display = 'none';
@@ -304,32 +254,21 @@
                         document.getElementById('cartCount').textContent = "0";
                     } else { alert("เกิดข้อผิดพลาด: " + res.error); }
                 } catch (e) { alert("ไม่สามารถติดต่อเซิร์ฟเวอร์ได้"); }
-                finally {
-                    btn.disabled = false;
-                    btn.style.opacity = "1";
-                    loader.style.display = "none";
-                }
+                finally { btn.disabled = false; loader.style.display = 'none'; }
             };
         }
 
-        function submitTrial(e) {
-            e.preventDefault();
-            document.getElementById('trialModal').style.display = 'block';
-            document.getElementById('trialForm').reset();
-        }
-
-        function closeCart() {
+        function submitTrial(e) { e.preventDefault(); document.getElementById('trialModal').style.display = 'block'; }
+        function closeCart() { 
             document.getElementById('cartModal').style.display = 'none';
-            document.getElementById('cartContent').style.display = 'block';
+            document.getElementById('cartView').style.display = 'block';
             document.getElementById('paymentSection').style.display = 'none';
             document.getElementById('downloadSection').style.display = 'none';
-            document.getElementById('modalTitle').textContent = "🛒 ตะกร้าสินค้า";
         }
-
         function closeTrialModal() { document.getElementById('trialModal').style.display = 'none'; }
         
-        window.onclick = function(e) {
-            if (e.target.className === 'modal') { closeCart(); closeTrialModal(); }
+        window.onclick = function(e) { 
+            if (e.target.className === 'modal') { closeCart(); closeTrialModal(); } 
         }
     </script>
 </body>
