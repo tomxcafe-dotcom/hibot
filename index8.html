@@ -159,77 +159,35 @@
             opacity: 0.9;
         }
 
-        .trial-form {
+        .qr-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
             border: 1px solid rgba(77, 212, 172, 0.3);
         }
 
-        .form-group {
-            margin-bottom: 25px;
-            text-align: left;
+        .qr-code {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 20px 0;
         }
 
-        .form-group label {
+        .qr-code img {
+            width: 300px;
+            height: 300px;
             display: block;
-            margin-bottom: 8px;
+        }
+
+        .line-instruction {
+            font-size: 18px;
+            margin-top: 20px;
             color: #4dd4ac;
             font-weight: bold;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid rgba(77, 212, 172, 0.3);
-            border-radius: 10px;
-            font-size: 16px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1e2a3a;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #4dd4ac;
-        }
-
-        .form-container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        iframe {
-            width: 100%;
-            height: 600px;
-            border: none;
-        }
-
-        .trial-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(77, 212, 172, 0.3);
-        }
-
-        .trial-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(77, 212, 172, 0.4);
         }
 
         .about-section {
@@ -552,20 +510,6 @@
             margin-top: 30px;
         }
 
-        .qr-code {
-            background: #fff;
-            padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            margin: 20px 0;
-            border: 2px solid #e9ecef;
-        }
-
-        .qr-code img {
-            width: 250px;
-            height: 250px;
-        }
-
         .confirm-payment-btn {
             background: linear-gradient(135deg, #4dd4ac 0%, #20b89a 100%);
             color: #fff;
@@ -614,17 +558,21 @@
             100% { transform: rotate(360deg); }
         }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 36px;
-            }
-            .hero p {
-                font-size: 18px;
-            }
-            .about-section h2, .products h2, .how-it-works h2 {
-                font-size: 32px;
-            }
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
         }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+
         footer {
             background: #1e2a3a;
             color: #ffffff;
@@ -638,39 +586,18 @@
             margin: 0 auto;
             opacity: 0.8;
         }
-        .line-free-section {
-    background: linear-gradient(135deg, #06C755 0%, #00b84f 100%);
-    color: #fff;
-    padding: 80px 20px;
-    text-align: center;
-}
 
-.line-free-box {
-    background: #fff;
-    color: #1e2a3a;
-    max-width: 500px;
-    margin: 0 auto;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.line-free-box img {
-    width: 250px;
-    height: 250px;
-    margin: 20px 0;
-}
-
-.line-free-box h2 {
-    color: #06C755;
-    margin-bottom: 15px;
-}
-
-.line-free-box p {
-    font-size: 16px;
-    line-height: 1.7;
-}
-
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            .hero p {
+                font-size: 18px;
+            }
+            .about-section h2, .products h2, .how-it-works h2 {
+                font-size: 32px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -683,9 +610,6 @@
                         <span class="logo-text">HIBOT Expert Advisor</span>
                          <p>เครื่องมือที่ช่วยเทรดอัตโนมัติทำคำสั่งซื้อขายให้คุณแบบอัตโนมัติ</p>
                          <p>และเก็บกำไรแทนคุณได้ 24 ชั่วโมง</p>
-
-
-                        
                     </div>
                 </div>
                 <button class="cart-btn" onclick="openCart()">
@@ -831,7 +755,25 @@
         </div>
     </section>
 
-   
+    <section class="trial-section">
+        <div class="container">
+            <h2>🎁 ทดลองใช้ EA ฟรี!</h2>
+            <p>สแกน QR Code เพื่อติดต่อทดลองใช้งาน EA ฟรี</p>
+            
+            <div class="qr-container">
+                <div class="qr-code">
+                    <img src="https://qr-official.line.me/gs/M_851zgvxi_GW.png" alt="LINE QR Code">
+                </div>
+                <p class="line-instruction">📱 สแกน QR Code เพื่อเพิ่มเพื่อนใน LINE<br>และรับ EA ทดลองใช้ฟรี!</p>
+            </div>
+        </div>
+    </section>
+
+    <h2 style="text-align:center; padding: 40px 0;">ติดต่อเรา</h2>
+    <div class="form-container">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScD9WuBRuDxSlQzYU7xaTdqt7vesiB19o4lbMQ6U2XiRUbk2A/viewform?usp=dialog" frameborder="0" marginheight="0" marginwidth="0">กำลังโหลด…</iframe>
+    </div>
+
     <!-- Cart Modal -->
     <div id="cartModal" class="modal">
         <div class="modal-content">
@@ -846,7 +788,7 @@
             <div id="paymentSection" class="payment-section">
                 <h3>สแกน QR Code เพื่อชำระเงิน</h3>
                 <div class="qr-code">
-                    <img src="https://drive.google.com/drive/folders/1u6l-ZRKU8V6NRQTdClXvVlVqIFDEU03j" alt="QR Code">
+                    <img src="https://via.placeholder.com/250?text=QR+Code+Payment" alt="QR Code">
                 </div>
                 <p>ยอดชำระ: <strong id="paymentAmount" style="color:#20b89a; font-size:24px;"></strong></p>
                 
@@ -875,16 +817,20 @@
                 <div style="background: #fff3cd; padding: 15px; border-radius: 10px; color: #856404; font-size: 14px; margin: 20px 0;">
                     💡 ปกติ Admin จะตรวจสอบภายใน 15-30 นาที (เวลาทำการ)
                 </div>
-                <button class="trial-btn" onclick="closeCart()">ตกลง</button>
+                <button class="checkout-btn" onclick="closeCart()">ตกลง</button>
             </div>
         </div>
     </div>
 
-   
+    <footer>
+        <div class="footer-content">
+            © 2024 HIBOT Expert Advisor. All rights reserved. Trading involves risk.
+        </div>
+    </footer>
 
     <script>
         // ⚠️ **สำคัญ**: ใส่ URL จาก Google Apps Script Web App ที่นี่
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_aH7m_4_ESGuu5nTpjM_WUHMTBIl4MpT_oDfq4S1Qy_xXwnwqqR9gMjQSLGqgHqhU/exec";
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw1wvZs7jdyS52UYBjTT53aNq73R3VXiA7AlrFzdGJI513u32n0LYfBrZbn63l1Hp5k/exec";
 
         let cart = [];
 
@@ -995,40 +941,18 @@
                 }
             };
         }
-<section class="line-free-section">
-    <div class="container">
-        <div class="line-free-box">
-            <h2>🎁 รับ EA Free</h2>
-            <p>
-                แอด LINE เพื่อขอรับ <strong>EA ฟรี</strong><br>
-                พร้อมคำแนะนำการติดตั้ง และการใช้งานเบื้องต้น
-            </p>
 
-            <!-- เปลี่ยนลิงก์ QR เป็นของคุณ -->
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://line.me/ti/p/~YOUR_LINE_ID" alt="LINE QR Code">
+        // ฟังก์ชันปิด Modal
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
 
-            <p style="margin-top:15px;">
-                📌 แอดแล้วทักคำว่า <strong>EA FREE</strong>
-            </p>
-
-            <a href="https://line.me/ti/p/~YOUR_LINE_ID" target="_blank" class="btn-line" style="justify-content:center; margin-top:20px;">
-                ➕ แอด LINE ตอนนี้
-            </a>
-        </div>
-    </div>
-</section>
-       
-
-    <footer>
-        <div class="footer-content">
-            © 2024 HIBOT Expert Advisor. All rights reserved. Trading involves risk.
-        </div>
-    </footer>
-
-        
-
-
-
+        // ปิด Modal เมื่อคลิกนอกกรอบ
+        window.onclick = function(e) {
+            if (e.target.className === 'modal') {
+                closeCart();
+            }
+        }
     </script>
     
 </body>
