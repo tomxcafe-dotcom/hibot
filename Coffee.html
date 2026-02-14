@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Delivery - สั่งกาแฟออนไลน์</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8b4513;
+            --primary-light: #a0522d;
+            --secondary: #d4a574;
+            --accent: #f4e4d7;
+            --dark: #2c1810;
+            --text: #333;
+            --bg: #fff9f5;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(139, 69, 19, 0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-btn {
+            background: white;
+            color: var(--primary);
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+        }
+
+        .cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(36px, 6vw, 64px);
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+
+        .hero p {
+            font-size: clamp(16px, 2.5vw, 24px);
+            color: var(--primary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Menu Section */
+        .menu-section {
+            padding: 80px 20px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 5vw, 48px);
+            color: var(--dark);
+            text-align: center;
+            margin-bottom: 50px;
+            font-weight: 800;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .menu-item-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10%, 10%); }
+        }
+
+        .menu-item-content {
+            padding: 25px;
+        }
+
+        .menu-item-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .menu-item-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .menu-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .price {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #999;
+            float: right;
+            font-size: 35px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: var(--primary);
+        }
+
+        .modal h2 {
+            color: var(--dark);
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .cart-item {
+            background: var(--accent);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        .cart-item-price {
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        .cart-total {
+            font-size: 32px;
+            text-align: right;
+            margin: 30px 0;
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .checkout-form {
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+
+        .empty-cart-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 80px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">
+                    ☕ Coffee Delivery
+                </div>
+                <button class="cart-btn" onclick="openCart()">
+                    🛒 ตะกร้า (<span id="cartCount">0</span>)
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>☕ สั่งกาแฟออนไลน์</h1>
+            <p>เมนูกาแฟคุณภาพ จัดส่งถึงบ้าน สด ใหม่ ร้อนๆ ทุกวัน</p>
+        </div>
+    </section>
+
+    <!-- Coffee Menu -->
+    <section class="menu-section">
+        <div class="container">
+            <h2 class="section-title">☕ เมนูกาแฟ</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="menu-item-image">☕</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Espresso</div>
+                        <div class="menu-item-description">เอสเพรสโซ่เข้มข้น หอมกรุ่น จากเมล็ดกาแฟคัดพิเศษ</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿65</div>
+                            <button class="add-btn" onclick="addToCart('Espresso', 65)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-image">🥤</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Americano</div>
+                        <div class="menu-item-description">อเมริกาโน่ เข้มกลมกล่อม เติมพลังตื่นตัวตลอดวัน</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿75</div>
+                            <button class="add-btn" onclick="addToCart('Americano', 75)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-image">🍵</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Latte</div>
+                        <div class="menu-item-description">ลาเต้นมสด นุ่มละมุน กลมกล่อม หอมนม</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿85</div>
+                            <button class="add-btn" onclick="addToCart('Latte', 85)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-image">☕</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Cappuccino</div>
+                        <div class="menu-item-description">คาปูชิโน่ โฟมนุ่ม หอมกลิ่นกาแฟ ชวนดื่ม</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿85</div>
+                            <button class="add-btn" onclick="addToCart('Cappuccino', 85)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Non-Coffee Menu -->
+            <h2 class="section-title">🥤 ไม่ใช่กาแฟ</h2>
+            <div class="menu-grid">
+                <div class="menu-item">
+                    <div class="menu-item-image">🥤</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Lemon Soda</div>
+                        <div class="menu-item-description">โซดามะนาว สดชื่น ชื่นใจ เติมวิตามินซี</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿55</div>
+                            <button class="add-btn" onclick="addToCart('Lemon Soda', 55)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-image">🧃</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Peach Soda</div>
+                        <div class="menu-item-description">โซดาพีช หวานชื่น สีสวย รสชาติเข้มข้น</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿60</div>
+                            <button class="add-btn" onclick="addToCart('Peach Soda', 60)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-image">🍵</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Green Tea</div>
+                        <div class="menu-item-description">ชาเขียวญี่ปุ่น หอมชา กลิ่นชาแท้ ไม่หวานเกิน</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿65</div>
+                            <button class="add-btn" onclick="addToCart('Green Tea', 65)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="menu-item">
+                    <div class="menu-item-image">🧋</div>
+                    <div class="menu-item-content">
+                        <div class="menu-item-name">Matcha Latte</div>
+                        <div class="menu-item-description">มัทฉะลาเต้ นมสด เข้มข้น หอมชาเขียว</div>
+                        <div class="menu-item-footer">
+                            <div class="price">฿80</div>
+                            <button class="add-btn" onclick="addToCart('Matcha Latte', 80)">เพิ่ม +</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCart()">&times;</span>
+            
+            <div id="cartView">
+                <h2>🛒 ตะกร้าสินค้า</h2>
+                <div id="cartItems"></div>
+                <div id="cartTotal"></div>
+                <button id="checkoutBtn" class="checkout-btn" onclick="showCheckout()">สั่งซื้อเลย</button>
+            </div>
+
+            <div id="checkoutView" style="display: none;">
+                <h2>📋 ข้อมูลการจัดส่ง</h2>
+                <form class="checkout-form" onsubmit="confirmOrder(event)">
+                    <div class="form-group">
+                        <label>ชื่อ-นามสกุล *</label>
+                        <input type="text" id="customerName" required placeholder="กรอกชื่อ-นามสกุล">
+                    </div>
+                    <div class="form-group">
+                        <label>เบอร์โทร *</label>
+                        <input type="tel" id="customerPhone" required placeholder="0XX-XXX-XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>ที่อยู่จัดส่ง *</label>
+                        <textarea id="customerAddress" required placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>หมายเหตุ (ถ้าม)</label>
+                        <textarea id="orderNote" placeholder="เช่น หวานน้อย เย็นปกติ"></textarea>
+                    </div>
+                    <div class="cart-total" id="checkoutTotal"></div>
+                    <button type="submit" class="checkout-btn">✓ ยืนยันการสั่งซื้อ</button>
+                </form>
+            </div>
+
+            <div id="successView" style="display: none;">
+                <div class="success-message">
+                    <div class="success-icon">✓</div>
+                    <h2>สั่งซื้อสำเร็จ!</h2>
+                    <p style="color: #666; margin: 20px 0;">ขอบคุณที่สั่งซื้อกับเรา</p>
+                    <p style="color: #666;">เราจะติดต่อกลับเพื่อยืนยันคำสั่งซื้อในไม่ช้า</p>
+                    <button class="checkout-btn" style="margin-top: 30px;" onclick="closeCart()">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2024 Coffee Delivery - จัดส่งความสุขในทุกแก้ว</p>
+            <p style="margin-top: 10px; color: #999;">📍 จัดส่งภายในเขตกรุงเทพและปริมณฑล</p>
+        </div>
+    </footer>
+
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartCount();
+            
+            // Animation feedback
+            const cartBtn = document.querySelector('.cart-btn');
+            cartBtn.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                cartBtn.style.transform = 'scale(1)';
+            }, 200);
+            
+            alert('✓ เพิ่ม ' + name + ' ลงตะกร้าแล้ว!');
+        }
+
+        function updateCartCount() {
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+
+        function openCart() {
+            const modal = document.getElementById('cartModal');
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            
+            // Reset views
+            document.getElementById('cartView').style.display = 'block';
+            document.getElementById('checkoutView').style.display = 'none';
+            document.getElementById('successView').style.display = 'none';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <p>ไม่มีสินค้าในตะกร้า</p>
+                    </div>
+                `;
+                cartTotal.innerHTML = '';
+                checkoutBtn.style.display = 'none';
+            } else {
+                cartItems.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">฿${item.price}</div>
+                        </div>
+                        <button class="remove-btn" onclick="removeItem(${index})">ลบ</button>
+                    </div>
+                `).join('');
+                
+                const total = cart.reduce((sum, item) => sum + item.price, 0);
+                cartTotal.innerHTML = `ยอดรวม: ฿${total}`;
+                checkoutBtn.style.display = 'block';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartCount();
+            openCart();
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function showCheckout() {
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('checkoutTotal').innerHTML = `ยอดรวม: ฿${total}`;
+            document.getElementById('cartView').style.display = 'none';
+            document.getElementById('checkoutView').style.display = 'block';
+        }
+
+        function confirmOrder(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('customerName').value;
+            const phone = document.getElementById('customerPhone').value;
+            const address = document.getElementById('customerAddress').value;
+            const note = document.getElementById('orderNote').value;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const items = cart.map(item => item.name).join(', ');
+            
+            // Here you can send order to backend/API
+            console.log('Order:', {
+                name,
+                phone,
+                address,
+                note,
+                items,
+                total
+            });
+            
+            // Show success
+            document.getElementById('checkoutView').style.display = 'none';
+            document.getElementById('successView').style.display = 'block';
+            
+            // Clear cart
+            cart = [];
+            updateCartCount();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('cartModal');
+            if (event.target === modal) {
+                closeCart();
+            }
+        }
+    </script>
+</body>
+</html>
