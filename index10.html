@@ -145,7 +145,8 @@
             position: relative;
             background: var(--primary-gradient);
             color: white;
-            padding: 18px 40px;
+            padding: 18px 50px;
+            min-width: 180px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -183,27 +184,9 @@
             transform: translateY(-1px);
         }
 
-        .cart-count {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: var(--secondary-gradient);
-            color: white;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
+        #cartCount {
             font-weight: 800;
-            animation: pulse 2s infinite;
-            border: 3px solid white;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            color: white;
         }
 
         /* Parallax Hero Section */
@@ -778,8 +761,9 @@
             }
             
             .cart-btn {
-                padding: 15px 30px;
+                padding: 15px 35px;
                 font-size: 16px;
+                min-width: 150px;
             }
             
             .features-grid,
@@ -841,8 +825,7 @@
                     </div>
                 </div>
                 <button class="cart-btn" onclick="openCart()">
-                    🛒 ตะกร้า
-                    <span class="cart-count" id="cartCount">0</span>
+                    🛒 ตะกร้า (<span id="cartCount">0</span>)
                 </button>
             </nav>
         </div>
