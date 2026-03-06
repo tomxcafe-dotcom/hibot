@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard แผนงาน</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:20px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom:20px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  th { background-color: #f2f2f2; }
+  .status-done { background-color: green; color:white; }
+  .status-progress { background-color: yellow; }
+  .status-pending { background-color: red; color:white; }
+  .editable { background-color: #fff8dc; }
+</style>
+</head>
+<body>
+
+<h2>Dashboard แผนงาน</h2>
+
+<div style="margin-bottom:10px;">
+  <strong>Legend:</strong>
+  <span style="background-color:green; color:white; padding:2px 6px;">เสร็จสิ้น</span>
+  <span style="background-color:yellow; padding:2px 6px;">กำลังทำ</span>
+  <span style="background-color:red; color:white; padding:2px 6px;">รอดำเนินการ</span>
+</div>
+
+<table id="taskTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Task Name</th>
+      <th>Duration (Days)</th>
+      <th>Start</th>
+      <th>Finish</th>
+      <th>ผู้รับผิดชอบ</th>
+      <th>สถานะ</th>
+      <th>หมายเหตุ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td contenteditable="true">ปรับปรุงระบบคลังข้อมูล</td>
+      <td contenteditable="true" onblur="validateDuration(this)">40</td>
+      <td><input type="date" onchange="updateFinish(this)" required></td>
+      <td></td>
+      <td contenteditable="true">ทีม A</td>
+      <td>
+        <select onchange="updateStatus(this)">
+          <option value="done">เสร็จสิ้น</option>
+          <option value="progress" selected>กำลังทำ</option>
+          <option value="pending">รอดำเนินการ</option>
+        </select>
+      </td>
+      <td contenteditable="true" oninput="validateNote(this)"></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td contenteditable="true">พัฒนา Dashboard</td>
+      <td contenteditable="true" onblur="validateDuration(this)">40</td>
+      <td><input type="date" onchange="updateFinish(this)" required></td>
+      <td></td>
+      <td contenteditable="true">ทีม B</td>
+      <td>
+        <select onchange="updateStatus(this)">
+          <option value="done">เสร็จสิ้น</option>
+          <option value="progress">กำลังทำ</option>
+          <option value="pending" selected>รอดำเนินการ</option>
+        </select>
+      </td>
+      <td contenteditable="true" oninput="validateNote(this)"></td>
+    </tr>
+  </tbody>
+</table>
+
+<button onclick="enableEdit()">✏️ Edit</button>
+<button onclick="disableEdit()">💾 Save</button>
+<button onclick="addRow()">➕ เพิ่มงานใหม่</button>
+<button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
+<button onclick="exportCSV()">📥 Export CSV</button>
+<button onclick="exportPDF()">📄 Export PDF</button>
+
+<script>
+function enableEdit() {
+  let cells = document.querySelectorAll("#taskTable td[contenteditable]");
+  cells.forEach(cell => {
+    cell.contentEditable = "true";
+    cell.classList.add("editable");
+  });
+}
+function disableEdit() {
+  let cells = document.querySelectorAll("#taskTable td[contenteditable]");
+  cells.forEach(cell => {
+    cell.contentEditable = "false";
+    cell.classList.remove("editable");
+  });
+}
+function addRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  let newRow = table.insertRow();
+  newRow.innerHTML = `
+    <td>${table.rows.length+1}</td>
+    <td contenteditable="true">New Task</td>
+    <td contenteditable="true" onblur="validateDuration(this)">0</td>
+    <td><input type="date" onchange="updateFinish(this)" required></td>
+    <td></td>
+    <td contenteditable="true">ทีม</td>
+    <td>
+      <select onchange="updateStatus(this)">
+        <option value="done">เสร็จสิ้น</option>
+        <option value="progress">กำลังทำ</option>
+        <option value="pending" selected>รอดำเนินการ</option>
+      </select>
+    </td>
+    <td contenteditable="true" oninput="validateNote(this)"></td>`;
+}
+function deleteRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  if(table.rows.length > 0) table.deleteRow(table.rows.length-1);
+}
+function validateDuration(cell) {
+  let value = cell.innerText.trim();
+  if(isNaN(value) || value === "") {
+    alert("Duration ต้องเป็นตัวเลขเท่านั้น");
+    cell.innerText = "0";
+  }
+}
+function updateFinish(input) {
+  let row = input.closest("tr");
+  let duration = parseInt(row.cells[2].innerText);
+  if(isNaN(duration)) {
+    alert("Duration ต้องเป็นตัวเลขเท่านั้น");
+    return;
+  }
+  if(!input.value) {
+    alert("Start ต้องเลือกวันเสมอ");
+    return;
+  }
+  let startDate = new Date(input.value);
+  let finishDate = new Date(startDate);
+  finishDate.setDate(finishDate.getDate() + duration);
+  row.cells[4].innerText = finishDate.toISOString().split('T')[0];
+}
+function updateStatus(select) {
+  let cell = select.parentElement;
+  cell.className = "";
+  if(select.value === "done") cell.classList.add("status-done");
+  if(select.value === "progress") cell.classList.add("status-progress");
+  if(select.value === "pending") cell.classList.add("status-pending");
+}
+function validateNote(cell) {
+  if(cell.innerText.length > 1000) {
+    alert("หมายเหตุห้ามเกิน 1000 ตัวอักษร");
+    cell.innerText = cell.innerText.substring(0,1000);
+  }
+}
+function exportCSV() {
+  let rows = document.querySelectorAll("table tr");
+  let csv = [];
+  rows.forEach(row => {
+    let cols = row.querySelectorAll("td, th");
+    let data = [];
+    cols.forEach(col => {
+      if(col.querySelector("input")) {
+        data.push(col.querySelector("input").value);
+      } else if(col.querySelector("select")) {
+        data.push(col.querySelector("select").options[col.querySelector("select").selectedIndex].text);
+      } else {
+        data.push(col.innerText);
+      }
+    });
+    csv.push(data.join(","));
+  });
+  let blob = new Blob([csv.join("\n")], { type: "text/csv" });
+  let link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "tasks.csv";
+  link.click();
+}
+function exportPDF() {
+  let printContents = document.getElementById("taskTable").outerHTML;
+  let win = window.open("", "", "height=700,width=900");
+  win.document.write("<html><head><title>Tasks PDF</title></head><body>");
+  win.document.write(printContents);
+  win.document.write("</body></html>");
+  win.document.close();
+  win.print();
+}
+</script>
+
+</body>
+</html>
