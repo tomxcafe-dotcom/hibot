@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard แผนงาน</title>
+<style>
+:root {
+  --font-body: 'Segoe UI','Tahoma','Thonburi','Leelawadee UI',Arial,sans-serif;
+  --font-mono: 'Consolas','Courier New',monospace;
+  --bg:      #0f1117;
+  --surface: #1a1d27;
+  --surf2:   #22263a;
+  --border:  #2e3347;
+  --accent:  #4f8ef7;
+  --acc2:    #7c5cbf;
+  --green:   #22c55e;
+  --yellow:  #eab308;
+  --red:     #ef4444;
+  --text:    #e2e8f0;
+  --muted:   #64748b;
+  --done-bg: rgba(34,197,94,.15);  --done-tx: #86efac;
+  --prog-bg: rgba(234,179,8,.15);  --prog-tx: #fde047;
+  --pend-bg: rgba(239,68,68,.15);  --pend-tx: #fca5a5;
+  --edit-bg: rgba(79,142,247,.07);
+  --edit-bd: rgba(79,142,247,.45);
+  --r: 10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;padding:22px 18px 60px;}
+
+/* HEADER */
+.header{display:flex;align-items:center;gap:13px;margin-bottom:20px;flex-wrap:wrap;}
+.h-icon{width:42px;height:42px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--acc2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.h-text h2{font-family:var(--font-mono);font-size:clamp(.95rem,4vw,1.35rem);font-weight:700;letter-spacing:-.3px;}
+.h-text small{font-size:.7rem;color:var(--muted);}
+.badge{margin-left:auto;padding:5px 13px;border-radius:99px;font-size:.7rem;font-weight:700;font-family:var(--font-mono);letter-spacing:.4px;transition:all .3s;white-space:nowrap;}
+.badge.locked {background:rgba(239,68,68,.15);color:var(--red);  border:1px solid rgba(239,68,68,.3);}
+.badge.editing{background:rgba(79,142,247,.15);color:var(--accent);border:1px solid rgba(79,142,247,.3);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* STATS */
+.stats{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:9px 15px;min-width:75px;}
+.sc .lbl{font-size:.62rem;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.sc .val{font-size:1.35rem;font-family:var(--font-mono);font-weight:700;}
+.sc-total .val{color:var(--accent)}.sc-done .val{color:var(--green)}.sc-prog .val{color:var(--yellow)}.sc-pend .val{color:var(--red)}
+
+/* LEGEND */
+.legend{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:14px;}
+.li{display:flex;align-items:center;gap:6px;font-size:.76rem;}
+.ldot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+button{font-family:var(--font-body);font-size:.8rem;padding:9px 14px;border-radius:var(--r);border:1px solid var(--border);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;background:var(--surface);color:var(--text);font-weight:600;white-space:nowrap;min-height:40px;}
+button:active{transform:scale(.97);}
+button:hover{background:var(--surf2);border-color:var(--accent);color:var(--accent);}
+button:disabled{opacity:.3;cursor:not-allowed;pointer-events:none;}
+.btn-p{background:linear-gradient(135deg,var(--accent),var(--acc2));border-color:transparent;color:#fff;}
+.btn-p:hover{opacity:.88;color:#fff;}
+.btn-d{border-color:rgba(239,68,68,.4);color:var(--red);}
+.btn-d:hover{background:rgba(239,68,68,.1);border-color:var(--red);}
+.btn-e{border-color:rgba(34,197,94,.4);color:var(--green);}
+.btn-e:hover{background:rgba(34,197,94,.1);border-color:var(--green);}
+.btn-clr{margin-left:auto;font-size:.7rem;color:var(--muted);}
+
+/* TABLE (desktop) */
+.table-wrap{background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow-x:auto;box-shadow:0 4px 40px rgba(0,0,0,.4);}
+table{border-collapse:collapse;width:100%;min-width:740px;}
+thead tr{background:var(--surf2);border-bottom:2px solid var(--border);}
+th{padding:12px 11px;text-align:left;font-size:.66rem;font-family:var(--font-mono);font-weight:700;color:var(--muted);letter-spacing:.7px;text-transform:uppercase;white-space:nowrap;}
+td{padding:10px 11px;font-size:.83rem;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text);transition:background .2s;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+
+.c-chk{width:34px;text-align:center;}
+.c-id {width:38px;font-family:var(--font-mono);font-size:.76rem;color:var(--muted);}
+.c-task{min-width:130px;}
+.c-dur{width:85px;text-align:center;}
+.c-date{width:125px;}
+.c-resp{min-width:85px;}
+.c-stat{width:144px;}
+.c-note{min-width:130px;}
+
+input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--accent);}
+
+td[contenteditable="true"]{background:var(--edit-bg);outline:none;border-left:2px solid var(--edit-bd)!important;caret-color:var(--accent);}
+td[contenteditable="true"]:focus{background:rgba(79,142,247,.12);box-shadow:inset 0 0 0 1px var(--accent);}
+td[contenteditable="false"]{background:transparent;border-left:2px solid transparent!important;cursor:default;user-select:text;}
+
+input[type="date"]{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-mono);font-size:.74rem;padding:4px 7px;width:100%;cursor:pointer;transition:border .2s;-webkit-appearance:none;}
+input[type="date"]:focus{outline:none;border-color:var(--accent);}
+input[type="date"]:disabled{opacity:.4;cursor:not-allowed;}
+
+select{background:var(--surf2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-body);font-size:.78rem;padding:4px 7px;width:100%;cursor:pointer;transition:border .2s;}
+select:focus{outline:none;border-color:var(--accent);}
+select:disabled{opacity:.4;cursor:not-allowed;}
+
+td.status-done    {background:var(--done-bg);}
+td.status-done select{background:var(--done-bg);color:var(--done-tx);border-color:rgba(34,197,94,.3);}
+td.status-progress{background:var(--prog-bg);}
+td.status-progress select{background:var(--prog-bg);color:var(--prog-tx);border-color:rgba(234,179,8,.3);}
+td.status-pending {background:var(--pend-bg);}
+td.status-pending select{background:var(--pend-bg);color:var(--pend-tx);border-color:rgba(239,68,68,.3);}
+.status-done-row     td{border-left:3px solid var(--green)!important;}
+.status-progress-row td{border-left:3px solid var(--yellow)!important;}
+.status-pending-row  td{border-left:3px solid var(--red)!important;}
+.fcell{font-family:var(--font-mono);font-size:.74rem;color:var(--muted);}
+
+/* MOBILE CARDS */
+.cards-wrap{display:none;}
+.task-card{background:var(--surface);border-radius:14px;border:1px solid var(--border);margin-bottom:11px;overflow:hidden;}
+.cbar{height:4px;}
+.status-done     .cbar{background:var(--green);}
+.status-progress .cbar{background:var(--yellow);}
+.status-pending  .cbar{background:var(--red);}
+.cheader{display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid var(--border);}
+.cid{width:26px;height:26px;border-radius:7px;flex-shrink:0;background:var(--surf2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.72rem;font-weight:700;color:var(--muted);}
+.ctitle{flex:1;font-weight:600;font-size:.88rem;padding:2px 0;outline:none;}
+.ctitle[contenteditable="true"]{border-bottom:1px dashed var(--accent);}
+.cbody{padding:11px 13px;display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.cfield label{display:block;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-mono);margin-bottom:3px;}
+.cfield input[type="date"],.cfield select{width:100%;font-size:.8rem;padding:6px 8px;min-height:36px;}
+.inledit{background:transparent;border-bottom:1px solid var(--border);color:var(--text);font-family:var(--font-body);font-size:.83rem;padding:3px 0;width:100%;outline:none;display:block;min-height:24px;}
+.inledit[contenteditable="true"]{border-bottom-color:var(--accent);}
+.fval{font-family:var(--font-mono);font-size:.78rem;color:var(--muted);padding-top:3px;}
+.cfield-full{grid-column:1/-1;}
+.cnote textarea{width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-body);font-size:.8rem;padding:6px 8px;resize:vertical;min-height:52px;line-height:1.5;}
+.cnote textarea:disabled{opacity:.38;}
+.cnote textarea:focus{outline:none;border-color:var(--accent);}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--surf2);border:1px solid var(--border);border-radius:var(--r);padding:10px 20px;font-size:.82rem;color:var(--text);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;max-width:90vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error  {border-color:rgba(239,68,68,.5);}
+.toast.success{border-color:rgba(34,197,94,.5);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  body{padding:12px 11px 60px;}
+  .table-wrap{display:none;}
+  .cards-wrap{display:block;}
+  .h-text h2{font-size:.95rem;}
+  .sc .val{font-size:1.15rem;}
+  button{font-size:.75rem;padding:8px 11px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="h-icon">📋</div>
+  <div class="h-text">
+    <h2>Dashboard แผนงาน</h2>
+    <small>Project Task Manager · บันทึกข้อมูลในเครื่อง (Offline)</small>
+  </div>
+  <span class="badge locked" id="editBadge">🔒 READ ONLY</span>
+</div>
+
+<div class="stats" id="statsBar"></div>
+
+<div class="legend">
+  <div class="li"><div class="ldot" style="background:var(--green)"></div>เสร็จสิ้น</div>
+  <div class="li"><div class="ldot" style="background:var(--yellow)"></div>กำลังทำ</div>
+  <div class="li"><div class="ldot" style="background:var(--red)"></div>รอดำเนินการ</div>
+</div>
+
+<div class="toolbar">
+  <button id="btnEdit"   class="btn-p" onclick="enableEdit()">✏️ แก้ไข</button>
+  <button id="btnSave"   onclick="disableEdit()" disabled>💾 บันทึก</button>
+  <button id="btnAdd"    onclick="addRow()"      disabled>➕ เพิ่มงาน</button>
+  <button id="btnDelete" class="btn-d" onclick="deleteSelected()" disabled>🗑️ ลบที่เลือก</button>
+  <button onclick="exportCSV()" class="btn-e">📥 CSV</button>
+  <button onclick="exportPDF()" class="btn-e">📄 PDF</button>
+  <button onclick="clearData()" class="btn-clr">⚠️ ล้างข้อมูล</button>
+</div>
+
+<!-- Desktop table -->
+<div class="table-wrap">
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th class="c-chk"><input type="checkbox" id="checkAll" onclick="toggleAll(this)" disabled></th>
+        <th class="c-id">ID</th>
+        <th class="c-task">Task Name</th>
+        <th class="c-dur">Duration (วัน)</th>
+        <th class="c-date">Start</th>
+        <th class="c-date">Finish</th>
+        <th class="c-resp">ผู้รับผิดชอบ</th>
+        <th class="c-stat">สถานะ</th>
+        <th class="c-note">หมายเหตุ</th>
+      </tr>
+    </thead>
+    <tbody id="taskBody"></tbody>
+  </table>
+</div>
+
+<!-- Mobile cards -->
+<div class="cards-wrap" id="cardsWrap"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── STORAGE ─────────────────────────────────────────────────── */
+const KEY = "task_dashboard_v1";
+
+const DEFAULTS = [
+  {name:"ปรับปรุงระบบคลังข้อมูล",duration:40,start:"",responsible:"ทีม A",status:"progress",note:""},
+  {name:"พัฒนา Dashboard",         duration:40,start:"",responsible:"ทีม B",status:"pending", note:""}
+];
+
+function load()  { try{ const r=localStorage.getItem(KEY); if(r) return JSON.parse(r); }catch(e){} return JSON.parse(JSON.stringify(DEFAULTS)); }
+function save()  { try{ localStorage.setItem(KEY, JSON.stringify(tasks)); }catch(e){} }
+
+let tasks = load();
+let isEditing = false;
+
+function clearData() {
+  if(!confirm("ล้างข้อมูลทั้งหมด แล้วเริ่มต้นใหม่?")) return;
+  localStorage.removeItem(KEY);
+  tasks = JSON.parse(JSON.stringify(DEFAULTS));
+  renderAll();
+  showToast("🗑 ล้างข้อมูลแล้ว","success");
+}
+
+/* ── DATE ────────────────────────────────────────────────────── */
+function calcFinish(s, dur) {
+  if (!s) return "";
+  const d = Math.round(Number(dur));
+  if (isNaN(d) || d < 0) return "";
+  const [y,m,dd] = s.split("-").map(Number);
+  const dt = new Date(y, m-1, dd);        // local — no UTC offset shift
+  dt.setDate(dt.getDate() + d);
+  const p = n => String(n).padStart(2,"0");
+  return `${dt.getFullYear()}-${p(dt.getMonth()+1)}-${p(dt.getDate())}`;
+}
+function fmt(s) {
+  if (!s) return "-";
+  const [y,m,d] = s.split("-");
+  return `${d}/${m}/${y}`;
+}
+
+/* ── UTILS ───────────────────────────────────────────────────── */
+let _tt;
+function showToast(msg, type="info") {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "toast show "+type;
+  clearTimeout(_tt); _tt = setTimeout(()=>t.className="toast",3000);
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function setRowStatus(row, st) { row.classList.remove("status-done-row","status-progress-row","status-pending-row"); row.classList.add("status-"+st+"-row"); }
+
+/* ── RENDER TABLE ────────────────────────────────────────────── */
+function renderTable() {
+  const tb = document.getElementById("taskBody");
+  tb.innerHTML = "";
+  tasks.forEach((t,i) => {
+    const fin = calcFinish(t.start, t.duration);
+    const tr = document.createElement("tr");
+    tr.dataset.idx = i;
+    setRowStatus(tr, t.status);
+    tr.innerHTML = `
+      <td class="c-chk"><input type="checkbox" class="row-check" data-idx="${i}" ${isEditing?"":"disabled"} onchange="onCheck(this)"></td>
+      <td class="c-id">${i+1}</td>
+      <td class="c-task" contenteditable="${isEditing}" onblur="sc(${i},'name',this)">${esc(t.name)}</td>
+      <td class="c-dur"  contenteditable="${isEditing}" onblur="sdur(${i},this)">${t.duration}</td>
+      <td class="c-date"><input type="date" value="${t.start}" ${isEditing?"":"disabled"} onchange="sstart(${i},this)"></td>
+      <td class="c-date fcell">${fmt(fin)}</td>
+      <td class="c-resp" contenteditable="${isEditing}" onblur="sc(${i},'responsible',this)">${esc(t.responsible)}</td>
+      <td class="c-stat status-${t.status}">
+        <select onchange="sstat(${i},this)" ${isEditing?"":"disabled"}>
+          <option value="done"     ${t.status==="done"     ?"selected":""}>✅ เสร็จสิ้น</option>
+          <option value="progress" ${t.status==="progress" ?"selected":""}>🔄 กำลังทำ</option>
+          <option value="pending"  ${t.status==="pending"  ?"selected":""}>⏳ รอดำเนินการ</option>
+        </select>
+      </td>
+      <td class="c-note" contenteditable="${isEditing}" oninput="chkNote(this)" onblur="sc(${i},'note',this)">${esc(t.note)}</td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+/* ── RENDER CARDS ────────────────────────────────────────────── */
+function renderCards() {
+  const w = document.getElementById("cardsWrap");
+  w.innerHTML = "";
+  tasks.forEach((t,i) => {
+    const fin = calcFinish(t.start, t.duration);
+    const card = document.createElement("div");
+    card.className = "task-card status-"+t.status;
+    card.dataset.idx = i;
+    card.innerHTML = `
+      <div class="cbar"></div>
+      <div class="cheader">
+        <div class="cid">${i+1}</div>
+        <div class="ctitle" contenteditable="${isEditing}" onblur="sc(${i},'name',this)">${esc(t.name)}</div>
+        <input type="checkbox" class="row-check" data-idx="${i}" ${isEditing?"":"disabled"} onchange="onCheck(this)" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;">
+      </div>
+      <div class="cbody">
+        <div class="cfield">
+          <label>Duration (วัน)</label>
+          <div class="inledit" contenteditable="${isEditing}" onblur="sdur(${i},this)">${t.duration}</div>
+        </div>
+        <div class="cfield">
+          <label>ผู้รับผิดชอบ</label>
+          <div class="inledit" contenteditable="${isEditing}" onblur="sc(${i},'responsible',this)">${esc(t.responsible)}</div>
+        </div>
+        <div class="cfield">
+          <label>Start</label>
+          <input type="date" value="${t.start}" ${isEditing?"":"disabled"} onchange="sstart(${i},this)">
+        </div>
+        <div class="cfield">
+          <label>Finish</label>
+          <div class="fval">${fmt(fin)}</div>
+        </div>
+        <div class="cfield cfield-full">
+          <label>สถานะ</label>
+          <select onchange="sstat(${i},this)" ${isEditing?"":"disabled"}>
+            <option value="done"     ${t.status==="done"     ?"selected":""}>✅ เสร็จสิ้น</option>
+            <option value="progress" ${t.status==="progress" ?"selected":""}>🔄 กำลังทำ</option>
+            <option value="pending"  ${t.status==="pending"  ?"selected":""}>⏳ รอดำเนินการ</option>
+          </select>
+        </div>
+        <div class="cfield cfield-full cnote">
+          <label>หมายเหตุ</label>
+          <textarea ${isEditing?"":"disabled"} oninput="chkNoteTA(this)" onblur="sc(${i},'note',this,true)">${esc(t.note)}</textarea>
+        </div>
+      </div>
+    `;
+    w.appendChild(card);
+  });
+}
+
+function renderAll() { renderTable(); renderCards(); updateStats(); updateDeleteBtn(); }
+
+/* ── SAVE HANDLERS ───────────────────────────────────────────── */
+function sc(i, field, el, isTA=false) {
+  tasks[i][field] = isTA ? el.value.trim() : el.innerText.trim();
+  save();
+}
+function sdur(i, el) {
+  const v = (el.innerText!==undefined ? el.innerText : el.value).trim();
+  if (v===""||isNaN(v)||Number(v)<0) {
+    showToast("⚠️ Duration ต้องเป็นตัวเลขที่ไม่ติดลบ","error");
+    el.innerText!==undefined ? (el.innerText=tasks[i].duration) : (el.value=tasks[i].duration);
+    return;
+  }
+  tasks[i].duration = Math.round(Number(v));
+  save();
+  refreshFin(i);
+}
+function sstart(i, inp) { tasks[i].start=inp.value; save(); refreshFin(i); }
+function sstat(i, sel) {
+  tasks[i].status = sel.value; save();
+  const td=sel.closest("td"); if(td) td.className="c-stat status-"+sel.value;
+  const tr=sel.closest("tr"); if(tr) setRowStatus(tr,sel.value);
+  const card=sel.closest(".task-card"); if(card) card.className="task-card status-"+sel.value;
+  updateStats();
+}
+function refreshFin(i) {
+  const fin = calcFinish(tasks[i].start, tasks[i].duration);
+  const tr = document.querySelector(`#taskBody tr[data-idx="${i}"]`);
+  if (tr) tr.cells[5].textContent = fmt(fin);
+  const card = document.querySelector(`#cardsWrap .task-card[data-idx="${i}"]`);
+  if (card) { const fv=card.querySelector(".fval"); if(fv) fv.textContent=fmt(fin); }
+}
+function chkNote(el) {
+  if(el.innerText.length>1000){ showToast("⚠️ หมายเหตุห้ามเกิน 1000 ตัวอักษร","error"); el.innerText=el.innerText.substring(0,1000); }
+}
+function chkNoteTA(ta) {
+  if(ta.value.length>1000){ showToast("⚠️ หมายเหตุห้ามเกิน 1000 ตัวอักษร","error"); ta.value=ta.value.substring(0,1000); }
+}
+
+/* ── EDIT MODE ───────────────────────────────────────────────── */
+function enableEdit() {
+  isEditing=true;
+  document.getElementById("editBadge").textContent="✏️ EDIT MODE";
+  document.getElementById("editBadge").className="badge editing";
+  document.getElementById("btnEdit").disabled=true;
+  document.getElementById("btnSave").disabled=false;
+  document.getElementById("btnAdd").disabled=false;
+  document.getElementById("btnDelete").disabled=false;
+  document.getElementById("checkAll").disabled=false;
+  renderAll();
+  showToast("✏️ เปิดโหมดแก้ไข","success");
+}
+function disableEdit() {
+  document.activeElement?.blur();
+  isEditing=false;
+  document.getElementById("editBadge").textContent="🔒 READ ONLY";
+  document.getElementById("editBadge").className="badge locked";
+  document.getElementById("btnEdit").disabled=false;
+  document.getElementById("btnSave").disabled=true;
+  document.getElementById("btnAdd").disabled=true;
+  document.getElementById("btnDelete").disabled=true;
+  document.getElementById("checkAll").disabled=true;
+  document.getElementById("checkAll").checked=false;
+  save();
+  renderAll();
+  showToast("💾 บันทึกแล้ว — ข้อมูลอยู่ในเครื่องของคุณ","success");
+}
+
+/* ── ADD / DELETE ────────────────────────────────────────────── */
+function addRow() {
+  tasks.push({name:"New Task",duration:0,start:"",responsible:"ทีม",status:"pending",note:""});
+  save(); renderAll();
+  showToast("➕ เพิ่มงานใหม่แล้ว","success");
+}
+function toggleAll(m) { document.querySelectorAll(".row-check").forEach(c=>c.checked=m.checked); updateDeleteBtn(); }
+function onCheck(cb) {
+  const all=[...document.querySelectorAll(".row-check")];
+  const m=document.getElementById("checkAll");
+  m.checked=all.every(c=>c.checked);
+  m.indeterminate=!m.checked&&all.some(c=>c.checked);
+  updateDeleteBtn();
+}
+function updateDeleteBtn() {
+  const any=[...document.querySelectorAll(".row-check")].some(c=>c.checked);
+  document.getElementById("btnDelete").disabled=!isEditing||!any;
+}
+function deleteSelected() {
+  const checked=[...document.querySelectorAll(".row-check:checked")];
+  if(!checked.length){ showToast("⚠️ กรุณาเลือก ID ที่ต้องการลบก่อน","error"); return; }
+  checked.map(c=>Number(c.dataset.idx)).sort((a,b)=>b-a).forEach(i=>tasks.splice(i,1));
+  document.getElementById("checkAll").checked=false;
+  save(); renderAll();
+  showToast(`🗑️ ลบ ${checked.length} รายการ — ID เรียงใหม่แล้ว`,"success");
+}
+
+/* ── STATS ───────────────────────────────────────────────────── */
+function updateStats() {
+  const done=tasks.filter(t=>t.status==="done").length;
+  const prog=tasks.filter(t=>t.status==="progress").length;
+  const pend=tasks.filter(t=>t.status==="pending").length;
+  document.getElementById("statsBar").innerHTML=`
+    <div class="sc sc-total"><div class="lbl">ทั้งหมด</div><div class="val">${tasks.length}</div></div>
+    <div class="sc sc-done"> <div class="lbl">เสร็จสิ้น</div><div class="val">${done}</div></div>
+    <div class="sc sc-prog"> <div class="lbl">กำลังทำ</div><div class="val">${prog}</div></div>
+    <div class="sc sc-pend"> <div class="lbl">รอดำเนินการ</div><div class="val">${pend}</div></div>`;
+}
+
+/* ── EXPORT ──────────────────────────────────────────────────── */
+function exportCSV() {
+  const sl={done:"เสร็จสิ้น",progress:"กำลังทำ",pending:"รอดำเนินการ"};
+  const hdr=["ID","Task Name","Duration (Days)","Start","Finish","ผู้รับผิดชอบ","สถานะ","หมายเหตุ"];
+  const rows=tasks.map((t,i)=>[i+1,`"${t.name.replace(/"/g,'""')}"`,t.duration,t.start,calcFinish(t.start,t.duration),`"${t.responsible.replace(/"/g,'""')}"`,sl[t.status],`"${t.note.replace(/"/g,'""')}"`]);
+  const csv=[hdr,...rows].map(r=>r.join(",")).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"}));
+  a.download="tasks.csv"; a.click();
+  showToast("📥 Export CSV สำเร็จ","success");
+}
+function exportPDF() {
+  const sl={done:"✅ เสร็จสิ้น",progress:"🔄 กำลังทำ",pending:"⏳ รอดำเนินการ"};
+  const rows=tasks.map((t,i)=>`<tr><td>${i+1}</td><td>${t.name}</td><td style="text-align:center">${t.duration}</td><td>${fmt(t.start)}</td><td>${fmt(calcFinish(t.start,t.duration))}</td><td>${t.responsible}</td><td>${sl[t.status]}</td><td>${t.note}</td></tr>`).join("");
+  const w=window.open("","","height=700,width=1050");
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>แผนงาน</title><style>body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;padding:22px;font-size:13px;}h2{margin-bottom:12px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #bbb;padding:7px 9px;text-align:left;}th{background:#f3f4f6;font-weight:700;}tr:nth-child(even)td{background:#fafafa;}</style></head><body><h2>📋 Dashboard แผนงาน</h2><p style="margin-bottom:12px;font-size:11px;color:#777;">พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p><table><thead><tr><th>ID</th><th>Task Name</th><th>Duration</th><th>Start</th><th>Finish</th><th>ผู้รับผิดชอบ</th><th>สถานะ</th><th>หมายเหตุ</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+  w.document.close(); w.focus(); setTimeout(()=>w.print(),600);
+  showToast("📄 Export PDF สำเร็จ","success");
+}
+
+/* ── INIT ────────────────────────────────────────────────────── */
+renderAll();
+</script>
+</body>
+</html>
