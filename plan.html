@@ -12,23 +12,6 @@
   .status-progress { background-color: yellow; }
   .status-pending { background-color: red; color:white; }
   .editable { background-color: #fff8dc; }
-  .filter-input { width: 90%; }
-  .timeline { display:flex; margin-bottom:10px; }
-  .bar { height:20px; margin:2px; flex:1; background-color:#eee; }
-  .active { background-color:orange; }
-  @media screen and (max-width: 600px) {
-    table, thead, tbody, th, td, tr { display: block; }
-    thead tr { display: none; }
-    td { text-align: left; padding-left: 50%; position: relative; }
-    td::before { position: absolute; left: 10px; font-weight: bold; }
-    td:nth-of-type(1)::before { content: "ID"; }
-    td:nth-of-type(2)::before { content: "Task Name"; }
-    td:nth-of-type(3)::before { content: "Duration"; }
-    td:nth-of-type(4)::before { content: "Start"; }
-    td:nth-of-type(5)::before { content: "Finish"; }
-    td:nth-of-type(6)::before { content: "ผู้รับผิดชอบ"; }
-    td:nth-of-type(7)::before { content: "สถานะ"; }
-  }
 </style>
 </head>
 <body>
@@ -45,13 +28,13 @@
 <table id="taskTable">
   <thead>
     <tr>
-      <th>ID<br><input class="filter-input" onkeyup="filterTable(0)" placeholder="Filter"></th>
-      <th>Task Name<br><input class="filter-input" onkeyup="filterTable(1)" placeholder="Filter"></th>
-      <th>Duration<br><input class="filter-input" onkeyup="filterTable(2)" placeholder="Filter"></th>
-      <th>Start<br><input class="filter-input" onkeyup="filterTable(3)" placeholder="Filter"></th>
-      <th>Finish<br><input class="filter-input" onkeyup="filterTable(4)" placeholder="Filter"></th>
-      <th>ผู้รับผิดชอบ<br><input class="filter-input" onkeyup="filterTable(5)" placeholder="Filter"></th>
-      <th>สถานะ<br><input class="filter-input" onkeyup="filterTable(6)" placeholder="Filter"></th>
+      <th>ID</th>
+      <th>Task Name</th>
+      <th>Duration</th>
+      <th>Start</th>
+      <th>Finish</th>
+      <th>ผู้รับผิดชอบ</th>
+      <th>สถานะ</th>
     </tr>
   </thead>
   <tbody>
@@ -81,14 +64,6 @@
 <button onclick="addRow()">➕ เพิ่มงานใหม่</button>
 <button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
 
-<h3>Timeline (ตัวอย่าง)</h3>
-<div class="timeline">
-  <div class="bar active" style="flex:2"></div>
-  <div class="bar"></div>
-  <div class="bar active" style="flex:3"></div>
-  <div class="bar"></div>
-</div>
-
 <script>
 function enableEdit() {
   let cells = document.querySelectorAll("#taskTable td");
@@ -115,19 +90,6 @@ function addRow() {
 function deleteRow() {
   let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
   if(table.rows.length > 0) table.deleteRow(table.rows.length-1);
-}
-function filterTable(colIndex) {
-  let input = document.getElementsByClassName("filter-input")[colIndex];
-  let filter = input.value.toUpperCase();
-  let table = document.getElementById("taskTable");
-  let tr = table.getElementsByTagName("tr");
-  for (let i = 1; i < tr.length; i++) {
-    let td = tr[i].getElementsByTagName("td")[colIndex];
-    if (td) {
-      let txtValue = td.textContent || td.innerText;
-      tr[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
-    }
-  }
 }
 </script>
 
