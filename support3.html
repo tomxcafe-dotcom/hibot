@@ -5,63 +5,54 @@
     <title>Executive Project Progress Overview</title>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --header-color: #03a9f4; --bg-light: #f8fbff; --text-dark: #2c3e50;
-            --success: #4caf50; --progress: #ff9800; --danger: #f44336;
-        }
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg-light); margin: 0; padding: 20px; color: var(--text-dark); }
-        .container { max-width: 1600px; margin: auto; }
+        :root { --main-blue: #00aaff; --bg-gray: #f4f7f9; --text: #2c3e50; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg-gray); margin: 0; padding: 20px; color: var(--text); }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        /* Header & Charts Section */
-        .summary-section { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 25px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        /* Layout */
+        .top-section { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        .upload-area { border: 2px dashed var(--main-blue); padding: 30px; text-align: center; border-radius: 10px; }
         
-        .upload-zone { text-align: center; border: 2px dashed var(--header-color); padding: 20px; border-radius: 10px; margin-bottom: 15px; }
+        /* Table Style - เหมือนในรูป */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1500px; font-size: 13px; background: white; }
+        th { background: var(--main-blue); color: white; padding: 12px 5px; border: 1px solid #ddd; font-weight: bold; }
+        td { border: 1px solid #eee; padding: 10px 5px; vertical-align: middle; text-align: center; }
+        td:nth-child(4) { text-align: left; } /* Detail/Task ชิดซ้าย */
+        
+        /* Status Colors */
+        .status-tag { padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .bg-progress { background: #fff3e0; color: #e65100; }
+        .bg-done { background: #e8f5e9; color: #2e7d32; }
+        .check-mark { color: #27ae60; font-size: 18px; font-weight: bold; }
 
-        /* Table Styling - Matching the uploaded image */
-        .table-wrapper { background: white; padding: 15px; border-radius: 12px; overflow-x: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; min-width: 1400px; font-size: 13px; }
-        th { background: var(--header-color); color: white; border: 1px solid #fff; padding: 12px 8px; font-weight: bold; text-align: center; }
-        td { border: 1px solid #e0e0e0; padding: 10px 8px; vertical-align: middle; }
-        
-        /* Specific Column Colors */
-        .col-system { font-weight: bold; width: 120px; }
-        .col-module { font-weight: bold; color: #01579b; background: #e1f5fe; width: 150px; }
-        .col-detail { color: #333; max-width: 300px; }
-        
-        /* Badges & Icons */
-        .badge { padding: 4px 10px; border-radius: 4px; font-weight: bold; display: inline-block; font-size: 11px; }
-        .status-in-progress { background: #fff3e0; color: #e65100; }
-        .status-completed { background: #e8f5e9; color: #2e7d32; }
-        .check-icon { color: var(--success); font-size: 18px; text-align: center; display: block; }
-        
-        /* System Progress List */
-        .sys-list-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 8px; border-bottom: 1px solid #f0f0f0; }
+        .sys-progress-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #f0f0f0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="summary-section">
+    <div class="top-section">
         <div class="card">
-            <div class="upload-zone">
+            <div class="upload-area">
                 <h3 style="margin-top:0">📁 อัปเดตข้อมูลความคืบหน้า</h3>
-                <input type="file" id="upload" accept=".xlsx, .xls">
+                <input type="file" id="uploadFile" accept=".xlsx, .xls">
             </div>
-            <div style="height: 250px;"><canvas id="overallChart"></canvas></div>
-            <h3 id="totalPercent" style="text-align:center; color:var(--success)">0% ทั้งโครงการ</h3>
+            <div style="height: 200px; margin-top:20px;"><canvas id="chartOverall"></canvas></div>
+            <h2 id="overallText" style="text-align:center; color:#27ae60; margin-top:10px;">0% ทั้งโครงการ</h2>
         </div>
 
         <div class="card">
             <h3>📈 ความคืบหน้าแยกตามระบบ (Systems)</h3>
-            <div id="systemProgressList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div id="systemList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 </div>
         </div>
     </div>
 
-    <div class="table-wrapper">
-        <h3 style="margin-top:0">📋 รายละเอียดแผนดำเนินงาน</h3>
+    <div class="card table-container">
+        <h3>📋 รายละเอียดแผนดำเนินงาน</h3>
         <table>
             <thead>
                 <tr>
@@ -80,51 +71,128 @@
                     <th>Remark</th>
                 </tr>
             </thead>
-            <tbody id="table-body">
-                <tr><td colspan="13" style="text-align:center; padding:50px; color:#999;">กรุณานำเข้าไฟล์ Excel เพื่อประมวลผล</td></tr>
+            <tbody id="tableBody">
+                <tr><td colspan="13" style="padding:50px; color:#999;">กรุณาเลือกไฟล์ Excel เพื่อแสดงผล</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
 <script>
-let myChart; // ตัวแปรสำหรับ Chart
+let mainChart;
 
-document.getElementById('upload').addEventListener('change', function(e) {
+document.getElementById('uploadFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const reader = new FileReader();
+
     reader.onload = function(evt) {
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, {type: 'array'});
-        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {defval: ""});
-        renderDashboard(rows);
+        try {
+            const data = new Uint8Array(evt.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            
+            // แปลงข้อมูลโดยใช้แถวที่ 1 เป็น Header
+            const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+            
+            if (json.length === 0) {
+                alert("ไม่พบข้อมูลในไฟล์ Excel");
+                return;
+            }
+            processAndRender(json);
+        } catch (err) {
+            console.error(err);
+            alert("เกิดข้อผิดพลาดในการอ่านไฟล์ กรุณาตรวจสอบรูปแบบไฟล์");
+        }
     };
     reader.readAsArrayBuffer(file);
 });
 
-function renderDashboard(data) {
-    const tbody = document.getElementById('table-body');
-    const systemList = document.getElementById('systemProgressList');
+function processAndRender(data) {
+    const tbody = document.getElementById('tableBody');
+    const sysContainer = document.getElementById('systemList');
     tbody.innerHTML = '';
-    systemList.innerHTML = '';
+    sysContainer.innerHTML = '';
 
-    const stats = { total: data.length, done: 0 };
-    const sysMap = {};
+    let totalTasks = data.length;
+    let completedTasks = 0;
+    let systems = {};
 
     data.forEach((row, index) => {
-        const sys = row['System'] || 'N/A';
-        const isDone = (row['Status'] === 'Completed' || row['Complete'] === '✔');
-        
-        if (isDone) stats.done++;
-        
-        // เก็บสถิติราย System
-        if (!sysMap[sys]) sysMap[sys] = { total: 0, done: 0 };
-        sysMap[sys].total++;
-        if (isDone) sysMap[sys].done++;
+        // ดึงค่าโดยไม่สนชื่อคอลัมน์เป๊ะๆ (Case Insensitive / Trim)
+        const getVal = (names) => {
+            for (let name of names) {
+                if (row[name] !== undefined) return row[name];
+            }
+            return "";
+        };
 
-        // ตรวจสอบเครื่องหมายถูก
-        const checkValid = (row['เหลือตรวจสอบความถูกต้อง'] === '✔' || row['เหลือตรวจสอบความถูกต้อง'] === true) ? '<span class="check-icon">✔</span>' : '';
-        const consultIcon = (row['Consult พี่เก่ง'] === '✔' || row['Consult พี่เก่ง'] === true) ? '<span class="check-icon">✔</span>' : '';
-        const completeIcon = (row['Complete'] === '✔' || row['Complete'] === true) ? '<span class="check-icon">✔</span>' : '';
+        const sys = getVal(['System', 'ระบบงาน']);
+        const status = getVal(['Status', 'สถานะ']);
+        const isDone = status.toLowerCase().includes('complete') || getVal(['Complete']) === '✔';
 
+        if (isDone) completedTasks++;
+        
+        // สถิติรายระบบ
+        if (sys) {
+            if (!systems[sys]) systems[sys] = { total: 0, done: 0 };
+            systems[sys].total++;
+            if (isDone) systems[sys].done++;
+        }
+
+        // สร้างแถวตาราง
         const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td><strong>${sys}</strong></td>
+            <td style="background:#e1f5fe; color:#01579b; font-weight:bold;">${getVal(['Module'])}</td>
+            <td>${getVal(['Detail/Task', 'รายละเอียด'])}</td>
+            <td>${getVal(['เหลือตรวจสอบความถูกต้อง']) ? '<span class="check-mark">✔</span>' : ''}</td>
+            <td>${getVal(['Complete']) ? '<span class="check-mark">✔</span>' : ''}</td>
+            <td>${getVal(['Owner'])}</td>
+            <td>${getVal(['Consult พี่เก่ง', 'Consult']) ? '<span class="check-mark">✔</span>' : ''}</td>
+            <td><span class="status-tag ${isDone ? 'bg-done' : 'bg-progress'}">${status || 'In Progress'}</span></td>
+            <td>${getVal(['Start Date'])}</td>
+            <td>${getVal(['End Date'])}</td>
+            <td>${getVal(['Manday'])}</td>
+            <td style="font-size:11px; color:#777; text-align:left;">${getVal(['Remark'])}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // อัปเดตกราฟ
+    const percent = Math.round((completedTasks / totalTasks) * 100);
+    document.getElementById('overallText').innerText = percent + "% ทั้งโครงการ";
+    updateDonut(completedTasks, totalTasks - completedTasks);
+
+    // อัปเดตรายชื่อระบบ
+    for (let s in systems) {
+        let p = Math.round((systems[s].done / systems[s].total) * 100);
+        sysContainer.innerHTML += `
+            <div class="sys-progress-item">
+                <span><strong>${s}</strong></span>
+                <span style="color:#00aaff">${p}%</span>
+            </div>
+        `;
+    }
+}
+
+function updateDonut(done, pending) {
+    if (mainChart) mainChart.destroy();
+    const ctx = document.getElementById('chartOverall').getContext('2d');
+    mainChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['เสร็จแล้ว', 'กำลังทำ'],
+            datasets: [{
+                data: [done, pending],
+                backgroundColor: ['#27ae60', '#eeeeee'],
+                borderWidth: 0
+            }]
+        },
+        options: { cutout: '80%', plugins: { legend: { display: false } } }
+    });
+}
+</script>
+</body>
+</html>
