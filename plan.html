@@ -13,9 +13,22 @@
   .status-pending { background-color: red; color:white; }
   .editable { background-color: #fff8dc; }
   .filter-input { width: 90%; }
-  .timeline { margin-top:20px; }
-  .task-bar { margin:5px 0; height:20px; background-color:#eee; position:relative; }
-  .bar { position:absolute; height:100%; background-color:orange; }
+  .timeline { display:flex; margin-bottom:10px; }
+  .bar { height:20px; margin:2px; flex:1; background-color:#eee; }
+  .active { background-color:orange; }
+  @media screen and (max-width: 600px) {
+    table, thead, tbody, th, td, tr { display: block; }
+    thead tr { display: none; }
+    td { text-align: left; padding-left: 50%; position: relative; }
+    td::before { position: absolute; left: 10px; font-weight: bold; }
+    td:nth-of-type(1)::before { content: "ID"; }
+    td:nth-of-type(2)::before { content: "Task Name"; }
+    td:nth-of-type(3)::before { content: "Duration"; }
+    td:nth-of-type(4)::before { content: "Start"; }
+    td:nth-of-type(5)::before { content: "Finish"; }
+    td:nth-of-type(6)::before { content: "ผู้รับผิดชอบ"; }
+    td:nth-of-type(7)::before { content: "สถานะ"; }
+  }
 </style>
 </head>
 <body>
@@ -46,8 +59,8 @@
       <td>1</td>
       <td>ปรับปรุงระบบคลังข้อมูล</td>
       <td>40</td>
-      <td>2026-03-01</td>
-      <td>2026-03-20</td>
+      <td>29-Aug-68</td>
+      <td>07-Oct-68</td>
       <td>ทีม A</td>
       <td class="status-progress">กำลังทำ</td>
     </tr>
@@ -55,8 +68,8 @@
       <td>2</td>
       <td>พัฒนา Dashboard</td>
       <td>40</td>
-      <td>2026-03-10</td>
-      <td>2026-03-30</td>
+      <td>18-Sep-68</td>
+      <td>27-Oct-68</td>
       <td>ทีม B</td>
       <td class="status-pending">รอดำเนินการ</td>
     </tr>
@@ -68,8 +81,13 @@
 <button onclick="addRow()">➕ เพิ่มงานใหม่</button>
 <button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
 
-<h3>Timeline (Gantt Chart)</h3>
-<div id="timeline" class="timeline"></div>
+<h3>Timeline (ตัวอย่าง)</h3>
+<div class="timeline">
+  <div class="bar active" style="flex:2"></div>
+  <div class="bar"></div>
+  <div class="bar active" style="flex:3"></div>
+  <div class="bar"></div>
+</div>
 
 <script>
 function enableEdit() {
@@ -85,7 +103,6 @@ function disableEdit() {
     cell.contentEditable = "false";
     cell.classList.remove("editable");
   });
-  updateTimeline();
 }
 function addRow() {
   let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
@@ -112,36 +129,6 @@ function filterTable(colIndex) {
     }
   }
 }
-function updateTimeline() {
-  let timeline = document.getElementById("timeline");
-  timeline.innerHTML = "";
-  let rows = document.querySelectorAll("#taskTable tbody tr");
-  let minDate = null, maxDate = null;
-  let tasks = [];
-  rows.forEach(row => {
-    let start = new Date(row.cells[3].innerText);
-    let finish = new Date(row.cells[4].innerText);
-    if(!isNaN(start) && !isNaN(finish)) {
-      if(!minDate || start < minDate) minDate = start;
-      if(!maxDate || finish > maxDate) maxDate = finish;
-      tasks.push({name: row.cells[1].innerText, start, finish});
-    }
-  });
-  let totalDays = (maxDate - minDate)/(1000*60*60*24);
-  tasks.forEach(task => {
-    let barContainer = document.createElement("div");
-    barContainer.className = "task-bar";
-    let bar = document.createElement("div");
-    bar.className = "bar";
-    let offset = (task.start - minDate)/(1000*60*60*24);
-    let duration = (task.finish - task.start)/(1000*60*60*24);
-    bar.style.left = (offset/totalDays*100) + "%";
-    bar.style.width = (duration/totalDays*100) + "%";
-    barContainer.appendChild(bar);
-    timeline.appendChild(barContainer);
-  });
-}
-updateTimeline();
 </script>
 
 </body>
