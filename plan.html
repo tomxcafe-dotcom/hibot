@@ -12,6 +12,9 @@
   .status-done { background-color: green; color:white; }
   .status-progress { background-color: yellow; }
   .status-pending { background-color: red; color:white; }
+  .timeline { display:flex; margin-bottom:10px; }
+  .bar { height:20px; margin:2px; flex:1; background-color:#eee; }
+  .active { background-color:orange; }
   @media screen and (max-width: 600px) {
     table, thead, tbody, th, td, tr { display: block; }
     thead tr { display: none; }
@@ -74,6 +77,14 @@
 
 <button onclick="addRow()">➕ เพิ่มงานใหม่</button>
 <button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
+
+<h3>Timeline (ตัวอย่าง)</h3>
+<div class="timeline">
+  <div class="bar active" style="flex:2"></div>
+  <div class="bar"></div>
+  <div class="bar active" style="flex:3"></div>
+  <div class="bar"></div>
+</div>
 
 <script>
 function addRow() {
