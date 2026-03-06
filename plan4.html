@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard แผนงาน</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:20px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom:20px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  th { background-color: #f2f2f2; }
+  .status-done { background-color: green; color:white; }
+  .status-progress { background-color: yellow; }
+  .status-pending { background-color: red; color:white; }
+  .editable { background-color: #fff8dc; }
+</style>
+</head>
+<body>
+
+<h2>Dashboard แผนงาน</h2>
+
+<table id="taskTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Task Name</th>
+      <th>Duration (Days)</th>
+      <th>Start</th>
+      <th>Finish</th>
+      <th>ผู้รับผิดชอบ</th>
+      <th>สถานะ</th>
+      <th>หมายเหตุ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ปรับปรุงระบบคลังข้อมูล</td>
+      <td>40</td>
+      <td><input type="date" onchange="updateFinish(this)" disabled></td>
+      <td></td>
+      <td>ทีม A</td>
+      <td>
+        <select onchange="updateStatus(this)" disabled>
+          <option value="done">เสร็จสิ้น</option>
+          <option value="progress" selected>กำลังทำ</option>
+          <option value="pending">รอดำเนินการ</option>
+        </select>
+      </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>พัฒนา Dashboard</td>
+      <td>40</td>
+      <td><input type="date" onchange="updateFinish(this)" disabled></td>
+      <td></td>
+      <td>ทีม B</td>
+      <td>
+        <select onchange="updateStatus(this)" disabled>
+          <option value="done">เสร็จสิ้น</option>
+          <option value="progress">กำลังทำ</option>
+          <option value="pending" selected>รอดำเนินการ</option>
+        </select>
+      </td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<button onclick="enableEdit()">✏️ Edit</button>
+<button onclick="disableEdit()">💾 Save</button>
+<button onclick="addRow()">➕ เพิ่มงานใหม่</button>
+<button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
+
+<script>
+function enableEdit() {
+  let rows = document.querySelectorAll("#taskTable tbody tr");
+  rows.forEach(row => {
+    for(let i=1; i<row.cells.length; i++) {
+      if(i===3) row.cells[i].querySelector("input").disabled = false;
+      else if(i===6) row.cells[i].querySelector("select").disabled = false;
+      else row.cells[i].contentEditable = "true";
+      row.cells[i].classList.add("editable");
+    }
+  });
+}
+function disableEdit() {
+  let rows = document.querySelectorAll("#taskTable tbody tr");
+  rows.forEach(row => {
+    for(let i=1; i<row.cells.length; i++) {
+      if(i===3) row.cells[i].querySelector("input").disabled = true;
+      else if(i===6) row.cells[i].querySelector("select").disabled = true;
+      else row.cells[i].contentEditable = "false";
+      row.cells[i].classList.remove("editable");
+    }
+  });
+  resetIDs();
+}
+function addRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  let newRow = table.insertRow();
+  newRow.innerHTML = `
+    <td></td>
+    <td contenteditable="true">New Task</td>
+    <td contenteditable="true">0</td>
+    <td><input type="date" onchange="updateFinish(this)" disabled></td>
+    <td></td>
+    <td contenteditable="true">ทีม</td>
+    <td>
+      <select onchange="updateStatus(this)" disabled>
+        <option value="done">เสร็จสิ้น</option>
+        <option value="progress">กำลังทำ</option>
+        <option value="pending" selected>รอดำเนินการ</option>
+      </select>
+    </td>
+    <td contenteditable="true"></td>`;
+  resetIDs();
+}
+function deleteRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  if(table.rows.length > 0) table.deleteRow(table.rows.length-1);
+  resetIDs();
+}
+function resetIDs() {
+  let rows = document.querySelectorAll("#taskTable tbody tr");
+  rows.forEach((row, index) => {
+    row.cells[0].innerText = index+1;
+  });
+}
+function updateFinish(input) {
+  let row = input.closest("tr");
+  let duration = parseInt(row.cells[2].innerText);
+  if(isNaN(duration)) {
+    alert("Duration ต้องเป็นตัวเลขเท่านั้น");
+    row.cells[2].innerText = "0";
+    return;
+  }
+  if(!input.value) {
+    alert("Start ต้องเลือกวันเสมอ");
+    row.cells[4].innerText = "";
+    return;
+  }
+  let startDate = new Date(input.value + "T00:00:00");
+  let finishDate = new Date(startDate);
+  finishDate.setDate(finishDate.getDate() + duration);
+  let yyyy = finishDate.getFullYear();
+  let mm = String(finishDate.getMonth()+1).padStart(2,"0");
+  let dd = String(finishDate.getDate()).padStart(2,"0");
+  row.cells[4].innerText = `${yyyy}-${mm}-${dd}`;
+}
+function updateStatus(select) {
+  let cell = select.parentElement;
+  cell.className = "";
+  if(select.value === "done") cell.classList.add("status-done");
+  if(select.value === "progress") cell.classList.add("status-progress");
+  if(select.value === "pending") cell.classList.add("status-pending");
+}
+</script>
+
+</body>
+</html>
