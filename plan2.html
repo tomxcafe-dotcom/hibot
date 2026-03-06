@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard แผนงาน</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:20px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom:20px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  th { background-color: #f2f2f2; }
+  .status-done { background-color: green; color:white; }
+  .status-progress { background-color: yellow; }
+  .status-pending { background-color: red; color:white; }
+  .editable { background-color: #fff8dc; }
+</style>
+</head>
+<body>
+
+<h2>Dashboard แผนงาน</h2>
+
+<div style="margin-bottom:10px;">
+  <strong>Legend:</strong>
+  <span style="background-color:green; color:white; padding:2px 6px;">เสร็จสิ้น</span>
+  <span style="background-color:yellow; padding:2px 6px;">กำลังทำ</span>
+  <span style="background-color:red; color:white; padding:2px 6px;">รอดำเนินการ</span>
+</div>
+
+<table id="taskTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Task Name</th>
+      <th>Duration</th>
+      <th>Start</th>
+      <th>Finish</th>
+      <th>ผู้รับผิดชอบ</th>
+      <th>สถานะ</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ปรับปรุงระบบคลังข้อมูล</td>
+      <td>40</td>
+      <td>29-Aug-68</td>
+      <td>07-Oct-68</td>
+      <td>ทีม A</td>
+      <td class="status-progress">กำลังทำ</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>พัฒนา Dashboard</td>
+      <td>40</td>
+      <td>18-Sep-68</td>
+      <td>27-Oct-68</td>
+      <td>ทีม B</td>
+      <td class="status-pending">รอดำเนินการ</td>
+    </tr>
+  </tbody>
+</table>
+
+<button onclick="enableEdit()">✏️ Edit</button>
+<button onclick="disableEdit()">💾 Save</button>
+<button onclick="addRow()">➕ เพิ่มงานใหม่</button>
+<button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
+
+<script>
+function enableEdit() {
+  let cells = document.querySelectorAll("#taskTable td");
+  cells.forEach(cell => {
+    cell.contentEditable = "true";
+    cell.classList.add("editable");
+  });
+}
+function disableEdit() {
+  let cells = document.querySelectorAll("#taskTable td");
+  cells.forEach(cell => {
+    cell.contentEditable = "false";
+    cell.classList.remove("editable");
+  });
+}
+function addRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  let newRow = table.insertRow();
+  for (let i=0; i<7; i++) {
+    let cell = newRow.insertCell(i);
+    cell.innerHTML = (i===0) ? table.rows.length : "";
+  }
+}
+function deleteRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  if(table.rows.length > 0) table.deleteRow(table.rows.length-1);
+}
+</script>
+
+</body>
+</html>
