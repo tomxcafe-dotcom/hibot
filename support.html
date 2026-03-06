@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>BI Project Tracking - Type & Status</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --defect-bg: #ffebee; --defect-text: #c62828;
+            --cr-bg: #e3f2fd; --cr-text: #1565c0;
+            --success: #4caf50;
+        }
+        body { font-family: 'Sarabun', sans-serif; background: #f8f9fa; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1300px; margin: auto; }
+        .header { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
+        
+        .main-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        /* Stats & Progress */
+        .stat-item { margin-bottom: 15px; padding: 10px; border-radius: 8px; border-left: 5px solid #ccc; }
+        .stat-defect { border-color: var(--defect-text); background: var(--defect-bg); }
+        .stat-cr { border-color: var(--cr-text); background: var(--cr-bg); }
+        
+        .progress-wrapper { background: #eee; border-radius: 20px; height: 25px; position: relative; overflow: hidden; margin: 15px 0; }
+        .progress-fill { background: var(--success); height: 100%; width: 0%; transition: width 1s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; top: 2px; font-weight: bold; font-size: 14px; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        th { background: #34495e; color: white; padding: 12px; text-align: left; font-weight: 400; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; line-height: 1.5; }
+        
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
+        .type-defect { background: var(--defect-bg); color: var(--defect-text); }
+        .type-cr { background: var(--cr-bg); color: var(--cr-text); }
+        .status-done { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📊 Project Delivery Dashboard</h1>
+        <p>อัปโหลดไฟล์ Excel เพื่อสรุปสถานะ Defect และ Change Request</p>
+        <input type="file" id="upload" accept=".xlsx, .xls">
+    </div>
+
+    <div class="main-grid">
+        <div class="card">
+            <h3>📈 ภาพรวมโปรเจกต์</h3>
+            <div class="progress-wrapper">
+                <div id="pb" class="progress-fill"></div>
+                <div id="pb-text" class="progress-text">0% Completed</div>
+            </div>
+            
+            <div id="stat-defect" class="stat-item stat-defect">
+                <strong>Defects:</strong> <span id="count-defect">0</span> รายการ
+            </div>
+            <div id="stat-cr" class="stat-item stat-cr">
+                <strong>Change Requests:</strong> <span id="count-cr">0</span> รายการ
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📋 รายการรวบรวมข้อมูล</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="15%">ระบบงาน</th>
+                        <th width="40%">รายละเอียด</th>
+                        <th>ประเภท</th>
+                        <th>Status</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="5" style="text-align:center">กรุณาอัปโหลดไฟล์...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet);
+        processData(rows);
+    };
+    reader.readAsArrayBuffer(file);
+});
+
+function processData(data) {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+    
+    let defects = 0;
+    let crs = 0;
+    let completed = 0;
+
+    data.forEach(row => {
+        // นับจำนวน
+        const typeStr = (row['ประเภท'] || '').toString().toLowerCase();
+        const isDefect = typeStr.includes('defect');
+        const isCR = typeStr.includes('change request') || typeStr.includes('customer'); // ปรับตามคำใน Excel
+        
+        if(isDefect) defects++;
+        if(isCR) crs++;
+        if(row['Status'] === 'Completed') completed++;
+
+        // กำหนด Class สำหรับสี
+        const typeClass = isDefect ? 'type-defect' : (isCR ? 'type-cr' : '');
+        const statusClass = row['Status'] === 'Completed' ? 'status-done' : '';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${row['ระบบงาน'] || '-'}</strong></td>
+            <td>${row['รายละเอียด'] || row['หัวข้อรายละเอียด'] || '-'}</td>
+            <td><span class="badge ${typeClass}">${row['ประเภท'] || 'N/A'}</span></td>
+            <td><span class="badge ${statusClass}">${row['Status'] || 'Pending'}</span></td>
+            <td style="color:#666; font-size:12px">${row['Remark'] || ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // อัปเดต Summary
+    const percent = data.length > 0 ? Math.round((completed / data.length) * 100) : 0;
+    document.getElementById('pb').style.width = percent + '%';
+    document.getElementById('pb-text').innerText = percent + '% Completed';
+    document.getElementById('count-defect').innerText = defects;
+    document.getElementById('count-cr').innerText = crs;
+}
+</script>
+
+</body>
+</html>
