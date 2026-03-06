@@ -2,86 +2,94 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>แผนงาน Mobile Version</title>
+<title>Dashboard แผนงาน</title>
 <style>
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    text-align: center;
-  }
-  th, td {
-    padding: 8px;
-    border: 1px solid #ddd;
-  }
-  thead tr {
-    background-color: #f2f2f2;
-  }
-  /* Responsive */
+  body { font-family: Arial, sans-serif; margin:20px; }
+  table { border-collapse: collapse; width: 100%; margin-bottom:20px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  th { background-color: #f2f2f2; }
+  td[contenteditable="true"] { background-color: #fff8dc; }
+  .status-done { background-color: green; color:white; }
+  .status-progress { background-color: yellow; }
+  .status-pending { background-color: red; color:white; }
   @media screen and (max-width: 600px) {
-    table, thead, tbody, th, td, tr {
-      display: block;
-      width: 100%;
-    }
-    thead tr {
-      display: none;
-    }
-    td {
-      text-align: left;
-      padding-left: 50%;
-      position: relative;
-    }
-    td::before {
-      position: absolute;
-      left: 10px;
-      white-space: nowrap;
-      font-weight: bold;
-    }
-    td:nth-of-type(1)::before { content: "ช่วงเวลา"; }
-    td:nth-of-type(2)::before { content: "รายละเอียดงาน"; }
-    td:nth-of-type(3)::before { content: "ผู้รับผิดชอบ"; }
-    td:nth-of-type(4)::before { content: "สถานะ"; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead tr { display: none; }
+    td { text-align: left; padding-left: 50%; position: relative; }
+    td::before { position: absolute; left: 10px; font-weight: bold; }
+    td:nth-of-type(1)::before { content: "ID"; }
+    td:nth-of-type(2)::before { content: "Task Name"; }
+    td:nth-of-type(3)::before { content: "Duration"; }
+    td:nth-of-type(4)::before { content: "Start"; }
+    td:nth-of-type(5)::before { content: "Finish"; }
+    td:nth-of-type(6)::before { content: "ผู้รับผิดชอบ"; }
+    td:nth-of-type(7)::before { content: "สถานะ"; }
   }
 </style>
 </head>
 <body>
 
+<h2>Dashboard แผนงาน</h2>
+
 <div style="margin-bottom:10px;">
   <strong>Legend:</strong>
   <span style="background-color:green; color:white; padding:2px 6px;">เสร็จสิ้น</span>
-  <span style="background-color:yellow; padding:2px 6px;">กำลังดำเนินการ</span>
+  <span style="background-color:yellow; padding:2px 6px;">กำลังทำ</span>
   <span style="background-color:red; color:white; padding:2px 6px;">รอดำเนินการ</span>
 </div>
 
-<table>
+<table id="taskTable">
   <thead>
     <tr>
-      <th>ช่วงเวลา</th>
-      <th>รายละเอียดงาน</th>
+      <th>ID</th>
+      <th>Task Name</th>
+      <th>Duration</th>
+      <th>Start</th>
+      <th>Finish</th>
       <th>ผู้รับผิดชอบ</th>
       <th>สถานะ</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>9-13/3</td>
-      <td>สรุป Version 1.0.8 ล่าสุดที่แก้ไข Defect ทั้งหมดที่ Commit กันแล้ว</td>
-      <td>พี่เก่ง / ทีมเรา</td>
-      <td style="background-color:yellow;">กำลังดำเนินการ</td>
+      <td contenteditable="true">1</td>
+      <td contenteditable="true">ปรับปรุงระบบคลังข้อมูล</td>
+      <td contenteditable="true">40</td>
+      <td contenteditable="true">29-Aug-68</td>
+      <td contenteditable="true">07-Oct-68</td>
+      <td contenteditable="true">ทีม A</td>
+      <td class="status-progress" contenteditable="true">กำลังทำ</td>
     </tr>
     <tr>
-      <td>16-20/3</td>
-      <td>Run flow ETL Mobile และตรวจสอบความถูกต้องพร้อมกับลูกค้าทุกวัน</td>
-      <td>ทีมเรา + ลูกค้า</td>
-      <td style="background-color:red; color:white;">รอดำเนินการ</td>
-    </tr>
-    <tr>
-      <td>23-24/3</td>
-      <td>กรมฯ ประกาศใช้งาน Mobile Version แรก</td>
-      <td>กรมฯ</td>
-      <td style="background-color:red; color:white;">รอดำเนินการ</td>
+      <td contenteditable="true">2</td>
+      <td contenteditable="true">พัฒนา Dashboard</td>
+      <td contenteditable="true">40</td>
+      <td contenteditable="true">18-Sep-68</td>
+      <td contenteditable="true">27-Oct-68</td>
+      <td contenteditable="true">ทีม B</td>
+      <td class="status-pending" contenteditable="true">รอดำเนินการ</td>
     </tr>
   </tbody>
 </table>
+
+<button onclick="addRow()">➕ เพิ่มงานใหม่</button>
+<button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
+
+<script>
+function addRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  let newRow = table.insertRow();
+  for (let i=0; i<7; i++) {
+    let cell = newRow.insertCell(i);
+    cell.contentEditable = "true";
+    cell.innerHTML = (i===0) ? table.rows.length : "";
+  }
+}
+function deleteRow() {
+  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+  if(table.rows.length > 0) table.deleteRow(table.rows.length-1);
+}
+</script>
 
 </body>
 </html>
