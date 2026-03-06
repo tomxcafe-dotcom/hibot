@@ -3,159 +3,649 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard แผนงาน</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  body { font-family: Arial, sans-serif; margin:20px; }
-  table { border-collapse: collapse; width: 100%; margin-bottom:20px; }
-  th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-  th { background-color: #f2f2f2; }
-  .status-done { background-color: green; color:white; }
-  .status-progress { background-color: yellow; }
-  .status-pending { background-color: red; color:white; }
-  .editable { background-color: #fff8dc; }
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3347;
+    --accent: #4f8ef7;
+    --accent2: #7c5cbf;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --done-bg: rgba(34,197,94,0.15);
+    --done-text: #86efac;
+    --prog-bg: rgba(234,179,8,0.15);
+    --prog-text: #fde047;
+    --pend-bg: rgba(239,68,68,0.15);
+    --pend-text: #fca5a5;
+    --editable-bg: rgba(79,142,247,0.07);
+    --editable-border: rgba(79,142,247,0.4);
+    --radius: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .header-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .header-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .edit-badge {
+    margin-left: auto;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+  }
+  .edit-badge.locked {
+    background: rgba(239,68,68,0.15);
+    color: var(--red);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+  .edit-badge.editing {
+    background: rgba(79,142,247,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(79,142,247,0.3);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; }
+    50% { opacity:0.6; }
+  }
+
+  /* Legend */
+  .legend {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.8rem;
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  button {
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 600;
+  }
+  button:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+  button.btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-color: transparent;
+    color: #fff;
+  }
+  button.btn-primary:hover { opacity: 0.9; color: #fff; }
+  button.btn-danger { border-color: rgba(239,68,68,0.4); color: var(--red); }
+  button.btn-danger:hover { background: rgba(239,68,68,0.1); border-color: var(--red); }
+  button.btn-success { border-color: rgba(34,197,94,0.4); color: var(--green); }
+  button.btn-success:hover { background: rgba(34,197,94,0.1); border-color: var(--green); }
+
+  /* Table wrapper */
+  .table-wrap {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: auto;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 800px;
+  }
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 2px solid var(--border);
+  }
+  th {
+    padding: 13px 14px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  td {
+    padding: 11px 14px;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    color: var(--text);
+    transition: background 0.2s;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Checkbox col */
+  .col-check { width: 38px; text-align: center; }
+  .col-id { width: 44px; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--text-muted); }
+  .col-task { min-width: 160px; }
+  .col-dur { width: 110px; text-align: center; }
+  .col-date { width: 140px; }
+  .col-resp { min-width: 100px; }
+  .col-status { width: 140px; }
+  .col-note { min-width: 160px; }
+
+  /* Checkbox styling */
+  input[type="checkbox"] {
+    width: 16px; height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent);
+  }
+
+  /* Editable cell */
+  td[contenteditable="true"] {
+    background: var(--editable-bg);
+    outline: none;
+    border-left: 2px solid var(--editable-border) !important;
+    caret-color: var(--accent);
+  }
+  td[contenteditable="true"]:focus {
+    background: rgba(79,142,247,0.12);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+  td[contenteditable="false"], td[contenteditable="false"]:focus {
+    background: transparent;
+    border-left: 2px solid transparent !important;
+    cursor: default;
+    user-select: none;
+  }
+
+  /* Date input */
+  input[type="date"] {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    padding: 4px 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: border 0.2s;
+  }
+  input[type="date"]:focus { outline: none; border-color: var(--accent); }
+  input[type="date"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: transparent;
+  }
+
+  /* Status select */
+  select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 0.82rem;
+    padding: 4px 8px;
+    width: 100%;
+    cursor: pointer;
+    transition: border 0.2s;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+  select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Status badge in status cell */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 99px;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .status-done-row td { border-left: 3px solid var(--green) !important; }
+  .status-progress-row td { border-left: 3px solid var(--yellow) !important; }
+  .status-pending-row td { border-left: 3px solid var(--red) !important; }
+
+  td.status-done { background: var(--done-bg); }
+  td.status-done select { background: var(--done-bg); color: var(--done-text); border-color: rgba(34,197,94,0.3); }
+  td.status-progress { background: var(--prog-bg); }
+  td.status-progress select { background: var(--prog-bg); color: var(--prog-text); border-color: rgba(234,179,8,0.3); }
+  td.status-pending { background: var(--pend-bg); }
+  td.status-pending select { background: var(--pend-bg); color: var(--pend-text); border-color: rgba(239,68,68,0.3); }
+
+  /* Finish date cell */
+  .finish-cell {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  /* Row selected */
+  tr.row-selected td { background: rgba(79,142,247,0.08) !important; }
+
+  /* Stat bar */
+  .stats {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    min-width: 110px;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-size: 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+  }
+  .stat-done .stat-value { color: var(--green); }
+  .stat-progress .stat-value { color: var(--yellow); }
+  .stat-pending .stat-value { color: var(--red); }
+  .stat-total .stat-value { color: var(--accent); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    font-size: 0.85rem;
+    color: var(--text);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.3s;
+    pointer-events: none;
+    max-width: 300px;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { border-color: rgba(239,68,68,0.5); }
+  .toast.success { border-color: rgba(34,197,94,0.5); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
 </head>
 <body>
 
-<h2>Dashboard แผนงาน</h2>
+<div class="header">
+  <div class="header-icon">📋</div>
+  <div>
+    <h2>Dashboard แผนงาน</h2>
+    <div class="header-sub">Project Task Manager</div>
+  </div>
+  <span class="edit-badge locked" id="editBadge">🔒 READ ONLY</span>
+</div>
 
-<table id="taskTable">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Task Name</th>
-      <th>Duration (Days)</th>
-      <th>Start</th>
-      <th>Finish</th>
-      <th>ผู้รับผิดชอบ</th>
-      <th>สถานะ</th>
-      <th>หมายเหตุ</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>ปรับปรุงระบบคลังข้อมูล</td>
-      <td>40</td>
-      <td><input type="date" onchange="updateFinish(this)" disabled></td>
-      <td></td>
-      <td>ทีม A</td>
-      <td>
-        <select onchange="updateStatus(this)" disabled>
-          <option value="done">เสร็จสิ้น</option>
-          <option value="progress" selected>กำลังทำ</option>
-          <option value="pending">รอดำเนินการ</option>
-        </select>
-      </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>พัฒนา Dashboard</td>
-      <td>40</td>
-      <td><input type="date" onchange="updateFinish(this)" disabled></td>
-      <td></td>
-      <td>ทีม B</td>
-      <td>
-        <select onchange="updateStatus(this)" disabled>
-          <option value="done">เสร็จสิ้น</option>
-          <option value="progress">กำลังทำ</option>
-          <option value="pending" selected>รอดำเนินการ</option>
-        </select>
-      </td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
+<!-- Stats -->
+<div class="stats" id="statsBar"></div>
 
-<button onclick="enableEdit()">✏️ Edit</button>
-<button onclick="disableEdit()">💾 Save</button>
-<button onclick="addRow()">➕ เพิ่มงานใหม่</button>
-<button onclick="deleteRow()">🗑️ ลบงานที่เลือก</button>
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span>เสร็จสิ้น</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div><span>กำลังทำ</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div><span>รอดำเนินการ</span></div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <button id="btnEdit" class="btn-primary" onclick="enableEdit()">✏️ แก้ไข</button>
+  <button id="btnSave" onclick="disableEdit()" disabled>💾 บันทึก</button>
+  <button id="btnAdd" onclick="addRow()" disabled>➕ เพิ่มงานใหม่</button>
+  <button id="btnDelete" class="btn-danger" onclick="deleteSelected()" disabled>🗑️ ลบที่เลือก</button>
+  <button onclick="exportCSV()" class="btn-success">📥 Export CSV</button>
+  <button onclick="exportPDF()" class="btn-success">📄 Export PDF</button>
+</div>
+
+<div class="table-wrap">
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th class="col-check"><input type="checkbox" id="checkAll" onclick="toggleAll(this)" disabled></th>
+        <th class="col-id">ID</th>
+        <th class="col-task">Task Name</th>
+        <th class="col-dur">Duration (วัน)</th>
+        <th class="col-date">Start</th>
+        <th class="col-date">Finish</th>
+        <th class="col-resp">ผู้รับผิดชอบ</th>
+        <th class="col-status">สถานะ</th>
+        <th class="col-note">หมายเหตุ</th>
+      </tr>
+    </thead>
+    <tbody id="taskBody"></tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-function enableEdit() {
-  let rows = document.querySelectorAll("#taskTable tbody tr");
-  rows.forEach(row => {
-    for(let i=1; i<row.cells.length; i++) {
-      if(i===3) row.cells[i].querySelector("input").disabled = false;
-      else if(i===6) row.cells[i].querySelector("select").disabled = false;
-      else row.cells[i].contentEditable = "true";
-      row.cells[i].classList.add("editable");
-    }
-  });
-}
-function disableEdit() {
-  let rows = document.querySelectorAll("#taskTable tbody tr");
-  rows.forEach(row => {
-    for(let i=1; i<row.cells.length; i++) {
-      if(i===3) row.cells[i].querySelector("input").disabled = true;
-      else if(i===6) row.cells[i].querySelector("select").disabled = true;
-      else row.cells[i].contentEditable = "false";
-      row.cells[i].classList.remove("editable");
-    }
-  });
-  resetIDs();
-}
-function addRow() {
-  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
-  let newRow = table.insertRow();
-  newRow.innerHTML = `
-    <td></td>
-    <td contenteditable="true">New Task</td>
-    <td contenteditable="true">0</td>
-    <td><input type="date" onchange="updateFinish(this)" disabled></td>
-    <td></td>
-    <td contenteditable="true">ทีม</td>
-    <td>
-      <select onchange="updateStatus(this)" disabled>
-        <option value="done">เสร็จสิ้น</option>
-        <option value="progress">กำลังทำ</option>
-        <option value="pending" selected>รอดำเนินการ</option>
-      </select>
-    </td>
-    <td contenteditable="true"></td>`;
-  resetIDs();
-}
-function deleteRow() {
-  let table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
-  if(table.rows.length > 0) table.deleteRow(table.rows.length-1);
-  resetIDs();
-}
-function resetIDs() {
-  let rows = document.querySelectorAll("#taskTable tbody tr");
-  rows.forEach((row, index) => {
-    row.cells[0].innerText = index+1;
-  });
-}
-function updateFinish(input) {
-  let row = input.closest("tr");
-  let duration = parseInt(row.cells[2].innerText);
-  if(isNaN(duration)) {
-    alert("Duration ต้องเป็นตัวเลขเท่านั้น");
-    row.cells[2].innerText = "0";
-    return;
-  }
-  if(!input.value) {
-    alert("Start ต้องเลือกวันเสมอ");
-    row.cells[4].innerText = "";
-    return;
-  }
-  let startDate = new Date(input.value + "T00:00:00");
-  let finishDate = new Date(startDate);
-  finishDate.setDate(finishDate.getDate() + duration);
-  let yyyy = finishDate.getFullYear();
-  let mm = String(finishDate.getMonth()+1).padStart(2,"0");
-  let dd = String(finishDate.getDate()).padStart(2,"0");
-  row.cells[4].innerText = `${yyyy}-${mm}-${dd}`;
-}
-function updateStatus(select) {
-  let cell = select.parentElement;
-  cell.className = "";
-  if(select.value === "done") cell.classList.add("status-done");
-  if(select.value === "progress") cell.classList.add("status-progress");
-  if(select.value === "pending") cell.classList.add("status-pending");
-}
-</script>
+// ─── DATA ─────────────────────────────────────────────────────────
+let isEditing = false;
+let tasks = [
+  { name: "ปรับปรุงระบบคลังข้อมูล", duration: 40, start: "", responsible: "ทีม A", status: "progress", note: "" },
+  { name: "พัฒนา Dashboard",          duration: 40, start: "", responsible: "ทีม B", status: "pending", note: "" }
+];
 
+// ─── HELPERS ──────────────────────────────────────────────────────
+function showToast(msg, type = "info") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show " + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = "toast", 3000);
+}
+
+/** คำนวณ Finish = Start + duration วันทำการปฏิทิน (calendar days) */
+function calcFinish(startStr, duration) {
+  if (!startStr || isNaN(duration) || duration < 0) return "";
+  // parse date ตรงๆ โดยไม่ให้ timezone ขยับวัน
+  const [y, m, d] = startStr.split("-").map(Number);
+  const start = new Date(y, m - 1, d);   // local time
+  const finish = new Date(start);
+  finish.setDate(finish.getDate() + Number(duration));
+  // format YYYY-MM-DD
+  const pad = n => String(n).padStart(2, "0");
+  return `${finish.getFullYear()}-${pad(finish.getMonth()+1)}-${pad(finish.getDate())}`;
+}
+
+function formatDateTH(dateStr) {
+  if (!dateStr) return "-";
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return `${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")}/${y}`;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById("taskBody");
+  tbody.innerHTML = "";
+
+  tasks.forEach((task, idx) => {
+    const finishStr = calcFinish(task.start, task.duration);
+    const row = document.createElement("tr");
+    row.dataset.idx = idx;
+    applyRowStatusClass(row, task.status);
+
+    row.innerHTML = `
+      <td class="col-check">
+        <input type="checkbox" class="row-check" data-idx="${idx}" ${isEditing ? "" : "disabled"} onchange="onCheckRow(this)">
+      </td>
+      <td class="col-id">${idx + 1}</td>
+      <td class="col-task" contenteditable="${isEditing}" onblur="saveCell(${idx},'name',this)">${esc(task.name)}</td>
+      <td class="col-dur" contenteditable="${isEditing}" onblur="saveDuration(${idx},this)">${task.duration}</td>
+      <td class="col-date"><input type="date" value="${task.start}" ${isEditing ? "" : "disabled"} onchange="saveStart(${idx},this)"></td>
+      <td class="col-date finish-cell">${finishStr ? formatDateTH(finishStr) : "-"}</td>
+      <td class="col-resp" contenteditable="${isEditing}" onblur="saveCell(${idx},'responsible',this)">${esc(task.responsible)}</td>
+      <td class="col-status status-${task.status}">
+        <select onchange="saveStatus(${idx},this)" ${isEditing ? "" : "disabled"}>
+          <option value="done"     ${task.status==="done"     ?"selected":""}>✅ เสร็จสิ้น</option>
+          <option value="progress" ${task.status==="progress" ?"selected":""}>🔄 กำลังทำ</option>
+          <option value="pending"  ${task.status==="pending"  ?"selected":""}>⏳ รอดำเนินการ</option>
+        </select>
+      </td>
+      <td class="col-note" contenteditable="${isEditing}" oninput="validateNote(this)" onblur="saveCell(${idx},'note',this)">${esc(task.note)}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  updateStats();
+  updateDeleteBtn();
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+function applyRowStatusClass(row, status) {
+  row.classList.remove("status-done-row","status-progress-row","status-pending-row");
+  row.classList.add(`status-${status}-row`);
+}
+
+// ─── SAVE CELL DATA ───────────────────────────────────────────────
+function saveCell(idx, field, el) {
+  tasks[idx][field] = el.innerText.trim();
+}
+
+function saveDuration(idx, el) {
+  const val = el.innerText.trim();
+  if (val === "" || isNaN(val) || Number(val) < 0) {
+    showToast("⚠️ Duration ต้องเป็นตัวเลขที่ไม่ติดลบ", "error");
+    el.innerText = tasks[idx].duration;
+    return;
+  }
+  tasks[idx].duration = Math.round(Number(val));
+  el.innerText = tasks[idx].duration;
+  // re-render row's finish date
+  refreshFinish(idx);
+}
+
+function saveStart(idx, input) {
+  tasks[idx].start = input.value;
+  refreshFinish(idx);
+}
+
+function saveStatus(idx, sel) {
+  tasks[idx].status = sel.value;
+  const td = sel.parentElement;
+  td.className = `col-status status-${sel.value}`;
+  applyRowStatusClass(sel.closest("tr"), sel.value);
+  updateStats();
+}
+
+function refreshFinish(idx) {
+  const row = document.querySelector(`tr[data-idx="${idx}"]`);
+  if (!row) return;
+  const finishTd = row.cells[5];
+  const finishStr = calcFinish(tasks[idx].start, tasks[idx].duration);
+  finishTd.textContent = finishStr ? formatDateTH(finishStr) : "-";
+}
+
+function validateNote(el) {
+  if (el.innerText.length > 1000) {
+    showToast("⚠️ หมายเหตุห้ามเกิน 1000 ตัวอักษร", "error");
+    el.innerText = el.innerText.substring(0, 1000);
+    // move cursor to end
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  }
+}
+
+// ─── EDIT MODE ────────────────────────────────────────────────────
+function enableEdit() {
+  isEditing = true;
+  document.getElementById("editBadge").textContent = "✏️ EDIT MODE";
+  document.getElementById("editBadge").className = "edit-badge editing";
+  document.getElementById("btnEdit").disabled = true;
+  document.getElementById("btnSave").disabled = false;
+  document.getElementById("btnAdd").disabled = false;
+  document.getElementById("btnDelete").disabled = false;
+  document.getElementById("checkAll").disabled = false;
+  renderTable();
+  showToast("✏️ เปิดโหมดแก้ไข", "success");
+}
+
+function disableEdit() {
+  // flush any pending contenteditable changes before saving
+  document.activeElement?.blur();
+
+  isEditing = false;
+  document.getElementById("editBadge").textContent = "🔒 READ ONLY";
+  document.getElementById("editBadge").className = "edit-badge locked";
+  document.getElementById("btnEdit").disabled = false;
+  document.getElementById("btnSave").disabled = true;
+  document.getElementById("btnAdd").disabled = true;
+  document.getElementById("btnDelete").disabled = true;
+  document.getElementById("checkAll").disabled = true;
+  document.getElementById("checkAll").checked = false;
+  renderTable();
+  showToast("💾 บันทึกเรียบร้อยแล้ว", "success");
+}
+
+// ─── ADD / DELETE ─────────────────────────────────────────────────
+function addRow() {
+  tasks.push({ name: "New Task", duration: 0, start: "", responsible: "ทีม", status: "pending", note: "" });
+  renderTable();
+  showToast("➕ เพิ่มงานใหม่แล้ว", "success");
+}
+
+function toggleAll(master) {
+  document.querySelectorAll(".row-check").forEach(cb => cb.checked = master.checked);
+  updateDeleteBtn();
+}
+
+function onCheckRow(cb) {
+  const allChecks = document.querySelectorAll(".row-check");
+  const master = document.getElementById("checkAll");
+  master.checked = [...allChecks].every(c => c.checked);
+  master.indeterminate = !master.checked && [...allChecks].some(c => c.checked);
+  updateDeleteBtn();
+}
+
+function updateDeleteBtn() {
+  const anyChecked = [...document.querySelectorAll(".row-check")].some(c => c.checked);
+  document.getElementById("btnDelete").disabled = !isEditing || !anyChecked;
+}
+
+function deleteSelected() {
+  const checked = [...document.querySelectorAll(".row-check:checked")];
+  if (checked.length === 0) { showToast("⚠️ กรุณาเลือก ID ที่ต้องการลบก่อน", "error"); return; }
+  const indices = checked.map(cb => Number(cb.dataset.idx)).sort((a,b) => b - a);
+  indices.forEach(i => tasks.splice(i, 1));
+  document.getElementById("checkAll").checked = false;
+  renderTable();
+  showToast(`🗑️ ลบ ${checked.length} รายการแล้ว`, "success");
+}
+
+// ─── STATS ────────────────────────────────────────────────────────
+function updateStats() {
+  const done     = tasks.filter(t => t.status === "done").length;
+  const progress = tasks.filter(t => t.status === "progress").length;
+  const pending  = tasks.filter(t => t.status === "pending").length;
+  document.getElementById("statsBar").innerHTML = `
+    <div class="stat-card stat-total"><div class="stat-label">ทั้งหมด</div><div class="stat-value">${tasks.length}</div></div>
+    <div class="stat-card stat-done"><div class="stat-label">เสร็จสิ้น</div><div class="stat-value">${done}</div></div>
+    <div class="stat-card stat-progress"><div class="stat-label">กำลังทำ</div><div class="stat-value">${progress}</div></div>
+    <div class="stat-card stat-pending"><div class="stat-label">รอดำเนินการ</div><div class="stat-value">${pending}</div></div>
+  `;
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────
+function exportCSV() {
+  const headers = ["ID","Task Name","Duration (Days)","Start","Finish","ผู้รับผิดชอบ","สถานะ","หมายเหตุ"];
+  const statusLabel = { done:"เสร็จสิ้น", progress:"กำลังทำ", pending:"รอดำเนินการ" };
+  const rows = tasks.map((t, i) => [
+    i+1,
+    `"${t.name.replace(/"/g,'""')}"`,
+    t.duration,
+    t.start,
+    calcFinish(t.start, t.duration),
+    `"${t.responsible.replace(/"/g,'""')}"`,
+    statusLabel[t.status],
+    `"${t.note.replace(/"/g,'""')}"`
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "tasks.csv";
+  a.click();
+  showToast("📥 Export CSV สำเร็จ", "success");
+}
+
+function exportPDF() {
+  const statusLabel = { done:"✅ เสร็จสิ้น", progress:"🔄 กำลังทำ", pending:"⏳ รอดำเนินการ" };
+  const rows = tasks.map((t, i) => `
+    <tr>
+      <td>${i+1}</td><td>${t.name}</td><td>${t.duration}</td>
+      <td>${t.start||"-"}</td><td>${calcFinish(t.start,t.duration)||"-"}</td>
+      <td>${t.responsible}</td><td>${statusLabel[t.status]}</td><td>${t.note}</td>
+    </tr>`).join("");
+  const win = window.open("","","height=700,width=1000");
+  win.document.write(`<html><head><title>Tasks</title>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: sans-serif; padding: 20px; font-size:13px; }
+    h2 { margin-bottom: 16px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 7px 10px; text-align:left; }
+    th { background: #f0f0f0; }
+  </style></head><body>
+  <h2>Dashboard แผนงาน</h2>
+  <table><thead><tr>
+    <th>ID</th><th>Task Name</th><th>Duration</th><th>Start</th><th>Finish</th>
+    <th>ผู้รับผิดชอบ</th><th>สถานะ</th><th>หมายเหตุ</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+  </body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 500);
+  showToast("📄 Export PDF สำเร็จ", "success");
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+renderTable();
+</script>
 </body>
 </html>
