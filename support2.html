@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Executive Project Progress Dashboard</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50; --accent: #3498db; --success: #27ae60; --warning: #f39c12; --bg: #f4f7f9;
+        }
+        body { font-family: 'Sarabun', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; }
+        
+        /* Header & Upload */
+        .header-panel { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; margin-bottom: 30px; }
+        input[type="file"] { margin-top: 15px; padding: 10px; border: 1px dashed var(--accent); border-radius: 8px; cursor: pointer; }
+
+        /* Dashboard Grid */
+        .system-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .system-card { background: white; padding: 20px; border-radius: 12px; border-top: 5px solid var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .system-name { font-size: 1.2em; font-weight: bold; color: var(--primary); margin-bottom: 15px; }
+        
+        /* Mini Progress Bar */
+        .progress-box { position: relative; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--success); transition: width 0.6s ease; }
+        .progress-val { font-size: 0.9em; font-weight: bold; color: var(--success); float: right; }
+
+        /* Table Style (Matched with Image) */
+        .table-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: #81d4fa; color: #333; padding: 12px; text-align: left; border: 1px solid #ddd; font-size: 0.9em; }
+        td { border: 1px solid #eee; padding: 10px; font-size: 0.85em; vertical-align: top; }
+        tr:nth-child(even) { background-color: #fafafa; }
+
+        /* Status Badges */
+        .badge { padding: 4px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8em; }
+        .status-in-progress { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+        .status-completed { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .check-mark { color: var(--success); font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-panel">
+        <h1 style="margin:0; color:var(--primary);">🚀 รายงานสรุปความคืบหน้าโครงการ</h1>
+        <p style="color:#666;">สำหรับผู้บริหาร (Update ข้อมูลผ่านไฟล์ Excel)</p>
+        <input type="file" id="upload" accept=".xlsx, .xls">
+    </div>
+
+    <div id="system-summaries" class="system-grid">
+        </div>
+
+    <div class="table-card">
+        <h3 style="margin-top:0;">📋 รายละเอียดการดำเนินงาน (Data View)</h3>
+        <table id="main-table">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>System</th>
+                    <th>Module</th>
+                    <th>Detail/Task</th>
+                    <th>ตรวจสอบ</th>
+                    <th>Status</th>
+                    <th>Owner</th>
+                    <th>Start - End Date</th>
+                    <th>Remark</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <tr><td colspan="9" style="text-align:center; padding:40px; color:#999;">กรุณาอัปโหลดไฟล์ Excel เพื่อแสดงผล</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.getElementById('upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, {defval: ""});
+        renderDashboard(rows);
+    };
+    reader.readAsArrayBuffer(file);
+});
+
+function renderDashboard(data) {
+    const tbody = document.getElementById('table-body');
+    const summaryContainer = document.getElementById('system-summaries');
+    tbody.innerHTML = '';
+    summaryContainer.innerHTML = '';
+
+    const systems = {}; // สำหรับเก็บข้อมูลสรุปราย System
+
+    data.forEach((row, index) => {
+        const sysName = row['System'] || 'Unknown';
+        const status = (row['Status'] || '').trim();
+        const isDone = status === 'Completed';
+
+        // จัดการข้อมูล Summary
+        if (!systems[sysName]) {
+            systems[sysName] = { total: 0, done: 0 };
+        }
+        systems[sysName].total++;
+        if (isDone) systems[sysName].done++;
+
+        // สร้างแถวตาราง (ตามรูปแบบรูปภาพ)
+        const tr = document.createElement('tr');
+        const statusClass = status === 'In Progress' ? 'status-in-progress' : (isDone ? 'status-completed' : '');
+        const checkIcon = row['เหลือตรวจสอบความถูกต้อง'] === '✔' || row['เหลือตรวจสอบความถูกต้อง'] === true ? '✔' : '';
+
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td><strong>${sysName}</strong></td>
+            <td style="color:#2980b9; font-weight:bold;">${row['Module'] || ''}</td>
+            <td style="max-width:300px">${row['Detail/Task'] || ''}</td>
+            <td class="check-mark">${checkIcon}</td>
+            <td><span class="badge ${statusClass}">${status || 'N/A'}</span></td>
+            <td>${row['Owner'] || ''}</td>
+            <td>${row['Start Date'] || ''} - ${row['End Date'] || ''}</td>
+            <td style="font-size:11px; color:#555;">${row['Remark'] || ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // สร้าง Summary Cards สำหรับผู้บริหาร
+    for (const sys in systems) {
+        const percent = Math.round((systems[sys].done / systems[sys].total) * 100);
+        const card = `
+            <div class="system-card">
+                <div class="system-name">${sys}</div>
+                <div style="margin-bottom: 5px;">
+                    Progress: <span class="progress-val">${percent}%</span>
+                </div>
+                <div class="progress-box">
+                    <div class="progress-fill" style="width: ${percent}%"></div>
+                </div>
+                <p style="font-size:0.8em; color:#666; margin-top:10px;">
+                    เสร็จสิ้น ${systems[sys].done} จาก ${systems[sys].total} งานทั้งหมด
+                </p>
+            </div>
+        `;
+        summaryContainer.innerHTML += card;
+    }
+}
+</script>
+
+</body>
+</html>
