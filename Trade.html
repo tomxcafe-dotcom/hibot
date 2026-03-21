@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Barista Trader | InstaJournal V2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;
+  --surface:#13131a;
+  --surface2:#1c1c27;
+  --border:rgba(255,255,255,0.07);
+  --neon:#00ff87;
+  --pink:#ff006e;
+  --blue:#4d9fff;
+  --text:#f0f0f5;
+  --muted:#6b6b80;
+  --card-glow:rgba(0,255,135,0.08);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:clamp(13px,1vw+11px,16px);}
+body{
+  font-family:'Noto Sans Thai',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:80px;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* NOISE TEXTURE OVERLAY */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;opacity:.6;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--neon);border-radius:4px;}
+
+/* HEADER */
+.app-header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:54px;
+  background:rgba(10,10,15,0.85);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(14px,4vw,24px);
+}
+.brand{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(15px,3vw,19px);
+  font-weight:800;
+  letter-spacing:-0.5px;
+  background:linear-gradient(90deg,var(--neon),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  display:flex;align-items:center;gap:8px;
+}
+.brand-cup{font-size:1.3em;-webkit-text-fill-color:initial;}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--neon);
+  box-shadow:0 0 8px var(--neon);
+  animation:pulse-dot 2s infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+
+/* STATS BAR */
+.stats-bar{
+  margin-top:54px;
+  padding:clamp(12px,3vw,18px) clamp(14px,4vw,24px);
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.stat-card{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:clamp(10px,2vw,16px) clamp(8px,2vw,14px);
+  position:relative;
+  overflow:hidden;
+  transition:transform .2s;
+}
+.stat-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--neon);
+  opacity:.7;
+}
+.stat-card:nth-child(2)::before{background:var(--blue);}
+.stat-card:nth-child(3)::before{background:var(--pink);}
+.stat-val{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(18px,4vw,26px);
+  font-weight:800;
+  line-height:1;
+  margin-bottom:4px;
+}
+.stat-val.profit{color:var(--neon);}
+.stat-val.loss{color:var(--pink);}
+.stat-lbl{
+  font-size:clamp(9px,1.5vw,11px);
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  font-weight:600;
+}
+
+/* MAIN CONTAINER */
+.main{
+  max-width:520px;
+  margin:0 auto;
+  padding:clamp(14px,3vw,20px) clamp(14px,4vw,20px);
+}
+
+/* INPUT CARD */
+.form-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:clamp(16px,3vw,22px);
+  margin-bottom:20px;
+  position:relative;
+  overflow:hidden;
+}
+.form-card::after{
+  content:'';
+  position:absolute;top:-60px;right:-40px;
+  width:140px;height:140px;
+  background:radial-gradient(circle,rgba(0,255,135,0.12),transparent 70%);
+  pointer-events:none;
+}
+.form-section-label{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(13px,2vw,15px);
+  font-weight:800;
+  color:var(--neon);
+  margin-bottom:14px;
+  letter-spacing:-.3px;
+  display:flex;align-items:center;gap:6px;
+}
+
+.field-group{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:8px;
+}
+.field-group.full{grid-template-columns:1fr;}
+.field-group.trio{grid-template-columns:1fr 1fr 2fr;}
+
+.g-input{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:clamp(9px,1.5vw,12px) clamp(10px,2vw,14px);
+  color:var(--text);
+  font-family:'Noto Sans Thai',sans-serif;
+  font-size:clamp(12px,1.5vw,14px);
+  width:100%;
+  transition:border-color .2s,box-shadow .2s;
+  outline:none;
+  -webkit-appearance:none;
+}
+.g-input::placeholder{color:var(--muted);}
+.g-input:focus{
+  border-color:rgba(0,255,135,.5);
+  box-shadow:0 0 0 3px rgba(0,255,135,.08);
+}
+textarea.g-input{resize:none;min-height:60px;}
+
+.post-btn{
+  width:100%;
+  padding:clamp(12px,2vw,15px);
+  border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--neon),var(--blue));
+  color:#0a0a0f;
+  font-family:'Syne',sans-serif;
+  font-size:clamp(13px,1.8vw,15px);
+  font-weight:800;
+  letter-spacing:.5px;
+  cursor:pointer;
+  transition:all .25s;
+  margin-top:10px;
+  position:relative;
+  overflow:hidden;
+}
+.post-btn::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.25),transparent);
+  opacity:0;
+  transition:opacity .25s;
+}
+.post-btn:hover::before{opacity:1;}
+.post-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,255,135,.35);}
+.post-btn:disabled{
+  background:var(--surface2);
+  color:var(--muted);
+  cursor:not-allowed;transform:none;box-shadow:none;
+}
+.post-btn:disabled::before{display:none;}
+
+/* SECTION HEADING */
+.feed-heading{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(13px,2vw,15px);
+  font-weight:800;
+  color:var(--muted);
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.feed-heading::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* TRADE CARD */
+.trade-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;
+  margin-bottom:12px;
+  overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.trade-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(0,0,0,.4);
+}
+.trade-card.win-card{border-color:rgba(0,255,135,.18);background:linear-gradient(135deg,rgba(0,255,135,.04),var(--surface));}
+.trade-card.loss-card{border-color:rgba(255,0,110,.15);background:linear-gradient(135deg,rgba(255,0,110,.04),var(--surface));}
+
+.card-top{
+  padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.card-date{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(11px,1.5vw,13px);
+  font-weight:800;
+  color:var(--muted);
+}
+.sys-tag{
+  background:linear-gradient(135deg,var(--neon),var(--blue));
+  color:#0a0a0f;
+  border-radius:6px;
+  padding:3px 10px;
+  font-size:clamp(9px,1.2vw,11px);
+  font-weight:800;
+  font-family:'Syne',sans-serif;
+  letter-spacing:.3px;
+}
+.del-btn{
+  background:none;border:none;
+  color:var(--muted);font-size:14px;
+  cursor:pointer;padding:2px 6px;
+  border-radius:6px;
+  transition:all .2s;
+}
+.del-btn:hover{color:var(--pink);background:rgba(255,0,110,.1);}
+
+.card-stats{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--border);
+}
+.cs-item{
+  padding:clamp(10px,2vw,14px) clamp(12px,2.5vw,18px);
+  border-right:1px solid var(--border);
+}
+.cs-item:last-child{border-right:none;}
+.cs-val{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(17px,3vw,22px);
+  font-weight:800;
+  line-height:1;
+  margin-bottom:4px;
+}
+.cs-val.profit{color:var(--neon);}
+.cs-val.loss{color:var(--pink);}
+.cs-lbl{font-size:clamp(9px,1.2vw,11px);color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+
+.card-notes{
+  padding:10px 14px;
+  font-size:clamp(11px,1.4vw,13px);
+  color:var(--muted);
+  line-height:1.6;
+}
+.card-notes b{color:var(--text);font-weight:600;}
+.note-tag{
+  display:inline-block;
+  background:rgba(77,159,255,.12);
+  color:var(--blue);
+  border-radius:5px;
+  padding:1px 7px;
+  font-size:clamp(9px,1.2vw,11px);
+  margin-right:4px;
+  font-weight:600;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:64px;
+  background:rgba(10,10,15,0.92);
+  backdrop-filter:blur(24px);
+  border-top:1px solid var(--border);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  z-index:100;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;
+  border:none;background:none;
+  color:var(--muted);
+  font-family:'Noto Sans Thai',sans-serif;
+  font-size:clamp(9px,1.5vw,11px);
+  cursor:pointer;
+  transition:color .2s;
+  position:relative;
+}
+.nav-item.active{color:var(--neon);}
+.nav-item.active::before{
+  content:'';
+  position:absolute;top:0;left:20%;right:20%;height:2px;
+  background:var(--neon);
+  border-radius:0 0 4px 4px;
+  box-shadow:0 0 10px var(--neon);
+}
+.nav-icon{font-size:clamp(18px,3vw,22px);line-height:1;}
+
+/* UTIL BUTTONS */
+.util-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 20px;}
+.util-btn{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--muted);
+  font-family:'Noto Sans Thai',sans-serif;
+  font-size:clamp(10px,1.4vw,12px);
+  padding:10px 8px;
+  cursor:pointer;
+  transition:all .2s;
+  font-weight:500;
+}
+.util-btn:hover{border-color:rgba(0,255,135,.3);color:var(--neon);}
+.util-btn.danger:hover{border-color:rgba(255,0,110,.3);color:var(--pink);}
+
+/* DIVIDER */
+.div-line{
+  height:1px;background:var(--border);
+  margin:18px 0;
+}
+
+/* MODAL */
+.modal-content{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  color:var(--text);
+}
+.modal-header{border-bottom:1px solid var(--border);padding:18px 20px;}
+.modal-title{
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(15px,2.5vw,18px);
+  background:linear-gradient(90deg,var(--neon),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.btn-close{filter:invert(1);}
+.modal-body{padding:18px 20px;}
+
+.report-block{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:10px;
+  border-left:3px solid var(--neon);
+}
+.report-block.highlight{border-left-color:var(--pink);}
+.report-val{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(22px,4vw,28px);
+  font-weight:800;
+}
+.report-val.profit{color:var(--neon);}
+.report-val.loss{color:var(--pink);}
+.report-lbl{font-size:clamp(10px,1.4vw,12px);color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+
+/* EMPTY STATE */
+.empty-state{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--muted);
+}
+.empty-state .emoji{font-size:clamp(36px,6vw,48px);margin-bottom:12px;opacity:.4;}
+.empty-state p{font-size:clamp(12px,1.6vw,14px);}
+
+/* RESPONSIVE TWEAKS */
+@media(max-width:400px){
+  .field-group.trio{grid-template-columns:1fr 1fr;}
+  .field-group.trio .full-col{grid-column:1/-1;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="brand">
+    <span class="brand-cup">☕</span> BARISTA TRADER
+  </div>
+  <div class="live-dot"></div>
+</header>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-card">
+    <div id="totalProfit" class="stat-val">0</div>
+    <div class="stat-lbl">Profit ฿</div>
+  </div>
+  <div class="stat-card">
+    <div id="winRate" class="stat-val" style="color:var(--blue);">0%</div>
+    <div class="stat-lbl">Win Rate</div>
+  </div>
+  <div class="stat-card">
+    <div id="totalTrades" class="stat-val" style="color:var(--pink);">0</div>
+    <div class="stat-lbl">Trades</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- INPUT FORM -->
+  <div class="form-card">
+    <div class="form-section-label">✦ บันทึกการเทรด</div>
+
+    <div class="field-group">
+      <input type="date" id="date" class="g-input">
+      <input type="text" id="system" placeholder="ท่าที่ใช้ (Breakout…)" class="g-input" oninput="validateForm()">
+    </div>
+
+    <div class="field-group">
+      <input type="number" id="startBal" placeholder="ทุนเริ่ม ฿" class="g-input">
+      <input type="number" id="endBal" placeholder="ทุนจบ ฿" class="g-input">
+    </div>
+
+    <div class="field-group">
+      <input type="number" id="win" placeholder="✅ ชนะ" class="g-input" oninput="validateForm()">
+      <input type="number" id="loss" placeholder="❌ แพ้" class="g-input" oninput="validateForm()">
+    </div>
+
+    <div class="field-group full">
+      <textarea id="note" placeholder="📝 อารมณ์ / ข้อสังเกต..." class="g-input" rows="2"></textarea>
+    </div>
+
+    <div class="field-group full">
+      <input type="text" id="fix" placeholder="🔧 แผนปรับปรุงพรุ่งนี้" class="g-input">
+    </div>
+
+    <button id="saveBtn" onclick="saveTrade()" class="post-btn" disabled>
+      POST TRADE JOURNAL ✦
+    </button>
+  </div>
+
+  <!-- FEED -->
+  <div class="feed-heading">Feed</div>
+  <div id="tradeTimeline"></div>
+
+  <div class="div-line"></div>
+
+  <div class="util-row">
+    <button onclick="generateMockData()" class="util-btn">🛠 Mock Data 30 วัน</button>
+    <button onclick="clearAllData()" class="util-btn danger">🗑 ล้างข้อมูลทั้งหมด</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <span class="nav-icon">🏠</span>Home
+  </button>
+  <button class="nav-item" onclick="analyze('day');setActive(this)">
+    <span class="nav-icon">📊</span>วันนี้
+  </button>
+  <button class="nav-item" onclick="analyze('week');setActive(this)">
+    <span class="nav-icon">📅</span>สัปดาห์
+  </button>
+  <button class="nav-item" onclick="analyze('month');setActive(this)">
+    <span class="nav-icon">📈</span>เดือน
+  </button>
+</nav>
+
+<!-- MODAL -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="reportTitle">สรุปผลการเทรด</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="reportContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let trades = JSON.parse(localStorage.getItem('barista_trades')) || [];
+
+function setActive(btn){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function validateForm(){
+  const w=document.getElementById('win').value;
+  const l=document.getElementById('loss').value;
+  const s=document.getElementById('system').value;
+  document.getElementById('saveBtn').disabled=(w===''||l===''||s==='');
+}
+
+function saveTrade(){
+  const trade={
+    id:Date.now(),
+    date:document.getElementById('date').value,
+    start:parseFloat(document.getElementById('startBal').value)||0,
+    end:parseFloat(document.getElementById('endBal').value)||0,
+    win:parseInt(document.getElementById('win').value)||0,
+    loss:parseInt(document.getElementById('loss').value)||0,
+    system:document.getElementById('system').value.toUpperCase(),
+    note:document.getElementById('note').value,
+    fix:document.getElementById('fix').value
+  };
+  trades.unshift(trade);
+  updateData();
+  resetForm();
+
+  // micro-feedback
+  const btn=document.getElementById('saveBtn');
+  btn.textContent='✓ Posted!';
+  setTimeout(()=>{btn.textContent='POST TRADE JOURNAL ✦';},1800);
+}
+
+function updateData(){
+  localStorage.setItem('barista_trades',JSON.stringify(trades));
+  renderList();
+  animateStats();
+}
+
+function animateStats(){
+  let totalP=0,totalW=0,totalL=0;
+  trades.forEach(t=>{totalP+=(t.end-t.start);totalW+=t.win;totalL+=t.loss;});
+  const wr=(totalW+totalL)>0?((totalW/(totalW+totalL))*100).toFixed(0):0;
+
+  // Animate number count-up
+  countUp('totalProfit',totalP,v=>{
+    const el=document.getElementById('totalProfit');
+    el.className='stat-val '+(totalP>=0?'profit':'loss');
+    return (totalP>=0?'+':'')+Math.round(v).toLocaleString();
+  });
+  countUp('totalTrades',totalW+totalL,v=>Math.round(v));
+  countUp('winRate',parseInt(wr),v=>Math.round(v)+'%');
+}
+
+function countUp(id,target,fmt){
+  const el=document.getElementById(id);
+  const start=0,dur=600,step=16;
+  let current=start,t=0;
+  const interval=setInterval(()=>{
+    t+=step;
+    current=target*(t/dur);
+    if(t>=dur){current=target;clearInterval(interval);}
+    el.textContent=fmt(current);
+  },step);
+}
+
+function renderList(){
+  const list=document.getElementById('tradeTimeline');
+  if(!trades.length){
+    list.innerHTML=`<div class="empty-state"><div class="emoji">📭</div><p>ยังไม่มีการเทรด<br>กรอกข้อมูลด้านบนเลย!</p></div>`;
+    return;
+  }
+  list.innerHTML=trades.map(t=>{
+    const p=t.end-t.start;
+    const isWin=p>=0;
+    const wr=t.win+t.loss>0?((t.win/(t.win+t.loss))*100).toFixed(0)+'%':'—';
+    return `
+    <div class="trade-card ${isWin?'win-card':'loss-card'}">
+      <div class="card-top">
+        <span class="card-date">${formatDate(t.date)}</span>
+        <span class="sys-tag">${t.system}</span>
+        <button class="del-btn" onclick="deleteItem(${t.id})" title="ลบ">✕</button>
+      </div>
+      <div class="card-stats">
+        <div class="cs-item">
+          <div class="cs-val ${isWin?'profit':'loss'}">${isWin?'+':''}${p.toLocaleString()}</div>
+          <div class="cs-lbl">Profit ฿</div>
+        </div>
+        <div class="cs-item">
+          <div class="cs-val" style="color:var(--blue);">${t.win}<span style="color:var(--muted);font-size:.6em;"> / </span>${t.loss}</div>
+          <div class="cs-lbl">✅ ชนะ / ❌ แพ้</div>
+        </div>
+      </div>
+      ${(t.note||t.fix)?`
+      <div class="card-notes">
+        ${t.note?`<span class="note-tag">📝 Note</span>${t.note}<br>`:''}
+        ${t.fix?`<span class="note-tag">🔧 Plan</span><span style="color:var(--text);">${t.fix}</span>`:''}
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function formatDate(d){
+  if(!d) return '—';
+  const dt=new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+}
+
+function analyze(period){
+  const today=new Date();
+  let filtered=[],title='';
+  if(period==='day'){
+    const ts=new Date().toISOString().split('T')[0];
+    filtered=trades.filter(t=>t.date===ts);
+    title='📊 สรุปผลวันนี้';
+  } else if(period==='week'){
+    const lw=new Date();lw.setDate(lw.getDate()-7);
+    filtered=trades.filter(t=>new Date(t.date)>=lw);
+    title='📅 สรุปผล 7 วันล่าสุด';
+  } else if(period==='month'){
+    const lm=new Date();lm.setMonth(lm.getMonth()-1);
+    filtered=trades.filter(t=>new Date(t.date)>=lm);
+    title='📈 สรุปผล 30 วันล่าสุด';
+  }
+
+  if(!filtered.length){alert('ยังไม่มีข้อมูลในช่วงนี้');return;}
+
+  let tp=0,tw=0,tl=0,sysMap={};
+  filtered.forEach(t=>{
+    const p=t.end-t.start;
+    tp+=p;tw+=t.win;tl+=t.loss;
+    sysMap[t.system]=(sysMap[t.system]||0)+p;
+  });
+
+  const bestSys=Object.entries(sysMap).reduce((a,b)=>a[1]>b[1]?a:b);
+  const wr=((tw/(tw+tl))*100).toFixed(0);
+
+  document.getElementById('reportTitle').textContent=title;
+  document.getElementById('reportContent').innerHTML=`
+    <div class="report-block">
+      <div class="report-lbl">กำไรสุทธิ</div>
+      <div class="report-val ${tp>=0?'profit':'loss'}">${tp>=0?'+':''}${tp.toLocaleString()} ฿</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div class="report-block">
+        <div class="report-lbl">Win Rate</div>
+        <div class="report-val" style="color:var(--blue);">${wr}%</div>
+      </div>
+      <div class="report-block">
+        <div class="report-lbl">รวม Trades</div>
+        <div class="report-val" style="color:var(--pink);">${tw+tl}</div>
+      </div>
+    </div>
+    <div class="report-block highlight">
+      <div class="report-lbl">🏆 ท่าไม้ตาย</div>
+      <div style="font-family:'Syne',sans-serif;font-size:clamp(16px,3vw,20px);font-weight:800;color:var(--neon);">${bestSys[0]}</div>
+      <div style="font-size:clamp(11px,1.5vw,13px);color:var(--muted);margin-top:4px;">สร้างกำไร ${bestSys[1].toLocaleString()} ฿</div>
+    </div>`;
+  new bootstrap.Modal('#reportModal').show();
+}
+
+function generateMockData(){
+  const systems=["EMA CROSS","BREAKOUT","PRICE ACTION","SCALPING"];
+  let mock=[],bal=100000;
+  for(let i=0;i<30;i++){
+    let d=new Date();d.setDate(d.getDate()-i);
+    let w=Math.floor(Math.random()*5),l=Math.floor(Math.random()*3);
+    let profit=(w*1000)-(l*800);
+    let s=bal,e=bal+profit;bal=e;
+    mock.push({id:Date.now()+i,date:d.toISOString().split('T')[0],start:s,end:e,win:w,loss:l,
+      system:systems[Math.floor(Math.random()*systems.length)],note:'เทรดตามแผน ใจนิ่ง',fix:'รักษาวินัยต่อไป'});
+  }
+  trades=mock;updateData();
+  alert('โหลด Mock Data 30 วัน ✓');
+}
+
+function deleteItem(id){
+  if(confirm('ลบบันทึกนี้?')){
+    trades=trades.filter(t=>t.id!==id);updateData();
+  }
+}
+
+function clearAllData(){
+  if(confirm('ลบข้อมูลทั้งหมดถาวร?')){
+    localStorage.removeItem('barista_trades');location.reload();
+  }
+}
+
+function resetForm(){
+  document.getElementById('startBal').value=document.getElementById('endBal').value;
+  ['win','loss','system','note','fix'].forEach(id=>document.getElementById(id).value='');
+  validateForm();
+}
+
+document.getElementById('date').valueAsDate=new Date();
+window.onload=()=>{renderList();animateStats();};
+</script>
+</body>
+</html>
