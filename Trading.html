@@ -3,84 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Barista Trader | InstaJournal</title>
+    <title>Barista Trader | InstaJournal V2</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Prompt', sans-serif; background-color: #fafafa; color: #262626; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Prompt', sans-serif; background-color: #fafafa; color: #262626; padding-bottom: 80px; }
+        .insta-header { background: #fff; border-bottom: 1px solid #dbdbdb; padding: 10px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; height: 50px; }
+        .insta-header h1 { font-size: 1.2rem; margin: 0; font-weight: 600; color: #6f4e37; }
         
-        /* Insta-Style Header */
-        .insta-header { background-color: #fff; border-bottom: 1px solid #dbdbdb; padding: 10px; position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; height: 50px; }
-        .insta-header h1 { font-size: 1.2rem; margin: 0; font-weight: 600; color: #262626; }
-        
-        /* Stats Dashboard - Top */
-        .stats-dashboard { background-color: #fff; border-bottom: 1px solid #dbdbdb; padding: 15px; margin-top: 50px; display: flex; justify-content: space-around; }
+        .stats-dashboard { background: #fff; border-bottom: 1px solid #dbdbdb; padding: 15px; margin-top: 50px; display: flex; justify-content: space-around; }
         .stat-item { text-align: center; }
-        .stat-value { font-size: 1.5rem; font-weight: 600; }
-        .stat-label { font-size: 0.8rem; color: #8e8e8e; text-transform: uppercase; }
+        .stat-value { font-size: 1.4rem; font-weight: 600; }
+        .stat-label { font-size: 0.7rem; color: #8e8e8e; text-transform: uppercase; }
         .profit { color: #2ecc71; }
         .loss { color: #e74c3c; }
 
-        /* Content Area */
-        .container { margin-top: 20px; margin-bottom: 70px; padding-left: 10px; padding-right: 10px; }
+        .container { margin-top: 15px; max-width: 500px; }
+        .input-card { background: #fff; border: 1px solid #dbdbdb; border-radius: 8px; margin-bottom: 15px; padding: 12px; }
+        .insta-input { border: 1px solid #efefef; border-radius: 5px; padding: 8px; font-size: 0.9rem; width: 100%; margin-bottom: 8px; background: #fafafa; }
         
-        /* Insta-Style Input Card */
-        .input-card { background-color: #fff; border: 1px solid #dbdbdb; border-radius: 3px; margin-bottom: 20px; }
-        .input-card-header { padding: 10px; border-bottom: 1px solid #efefef; font-weight: 500; font-size: 0.9rem; color: #8e8e8e; }
-        .input-card-body { padding: 10px; }
-        .insta-input { border: 1px solid #dbdbdb; border-radius: 3px; padding: 8px; font-size: 0.9rem; width: 100%; }
-        .insta-input:focus { outline: 2px solid #6f4e37; }
-        .form-row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .form-row-full { margin-bottom: 8px; }
+        .btn-insta { background: #6f4e37; color: #fff; border: none; width: 100%; padding: 10px; border-radius: 5px; font-weight: 600; }
+        .btn-insta:disabled { background: #ccc; }
+
+        .log-post { background: #fff; border: 1px solid #dbdbdb; border-radius: 8px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .post-header { padding: 10px; border-bottom: 1px solid #f1f1f1; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .post-date { font-size: 0.85rem; font-weight: 600; }
+        .post-system { background: #6f4e37; color: white; border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; }
         
-        /* Buttons */
-        .btn-insta-post { background-color: #6f4e37; color: white; border: none; font-weight: 600; border-radius: 4px; padding: 8px 15px; font-size: 0.9rem; width: 100%; }
-        .btn-insta-post:hover { background-color: #5a3d2b; color: white; }
-        .btn-insta-post:disabled { background-color: #d8d8d8; cursor: not-allowed; }
-        
-        /* Insta-Style Log Post (Trade Entry) */
-        .log-post { background-color: #fff; border: 1px solid #dbdbdb; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
-        .post-header { padding: 10px; border-bottom: 1px solid #efefef; display: flex; justify-content: space-between; align-items: center; }
-        .post-date { font-size: 0.8rem; font-weight: 600; }
-        .post-system { background-color: #f1f1f1; border-radius: 20px; padding: 2px 10px; font-size: 0.7rem; font-weight: 500; }
-        
-        .post-stats { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #efefef; padding: 10px; }
-        .pstat-item { text-align: center; border-right: 1px solid #efefef; }
+        .post-stats { display: flex; border-bottom: 1px solid #f1f1f1; }
+        .pstat-item { flex: 1; text-align: center; padding: 10px; border-right: 1px solid #f1f1f1; }
         .pstat-item:last-child { border-right: none; }
-        .pstat-value { font-size: 1.1rem; font-weight: 500; }
-        .pstat-label { font-size: 0.7rem; color: #8e8e8e; }
-        
-        .post-body { padding: 10px; font-size: 0.85rem; }
-        .post-caption { margin-bottom: 8px; }
-        .post-fix { border-top: 1px solid #efefef; padding-top: 8px; color: #6f4e37; font-weight: 500; }
-        .delete-btn { font-size: 0.8rem; color: #e74c3c; cursor: pointer; border: none; background: none; padding: 0; margin-left: auto;}
 
-        /* Bottom Nav - for Reports */
-        .bottom-nav { background-color: #fff; border-top: 1px solid #dbdbdb; position: fixed; bottom: 0; width: 100%; z-index: 1000; height: 50px; display: flex; justify-content: space-around; align-items: center; }
-        .nav-item { font-size: 1.2rem; color: #8e8e8e; cursor: pointer; text-align: center; }
-        .nav-item.active { color: #6f4e37; }
-        .nav-label { font-size: 0.6rem; text-transform: uppercase; font-weight: 500; }
+        .bottom-nav { background: #fff; border-top: 1px solid #dbdbdb; position: fixed; bottom: 0; width: 100%; height: 60px; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-btn { background: none; border: none; color: #8e8e8e; font-size: 0.65rem; text-align: center; flex: 1; }
+        .nav-btn.active { color: #6f4e37; font-weight: 600; }
+        .nav-icon { font-size: 1.4rem; display: block; }
 
-        /* Report Modal */
-        .modal-body { max-height: 400px; overflow-y: auto; font-size: 0.9rem; }
-        .report-block { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .top-system { color: #2ecc71; font-weight: bold; }
-
+        .report-card { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px; border-left: 5px solid #6f4e37; }
     </style>
 </head>
 <body>
 
 <div class="insta-header">
-    <h1>Barista Trader Journal</h1>
+    <h1>☕ BARISTA TRADER</h1>
 </div>
 
 <div class="stats-dashboard">
     <div class="stat-item">
-        <div id="totalProfit" class="stat-value profit">0</div>
-        <div class="stat-label">Total Profit</div>
+        <div id="totalProfit" class="stat-value">0</div>
+        <div class="stat-label">Profit (฿)</div>
     </div>
     <div class="stat-item">
-        <div id="winRate" class="stat-value loss">0%</div>
+        <div id="winRate" class="stat-value">0%</div>
         <div class="stat-label">Win Rate</div>
     </div>
     <div class="stat-item">
@@ -89,278 +63,234 @@
     </div>
 </div>
 
-<div class="container mt-2">
+<div class="container">
     <div class="input-card">
-        <div class="input-card-header">บันทึกการเทรดใหม่</div>
-        <div class="input-card-body">
-            <div class="form-row">
-                <input type="date" id="date" class="insta-input">
-                <input type="number" id="startBal" placeholder="ทุนเริ่ม" class="insta-input">
-            </div>
-            <div class="form-row">
-                <input type="number" id="endBal" placeholder="ทุนจบ" class="insta-input">
-                <input type="number" id="win" placeholder="ชนะ" class="insta-input" oninput="checkFormValid()">
-                <input type="number" id="loss" placeholder="แพ้" class="insta-input" oninput="checkFormValid()">
-            </div>
-            <div class="form-row-full">
-                <input type="text" id="system" placeholder="ท่าที่ใช้ (เช่น EMA)" class="insta-input">
-            </div>
-            <div class="form-row-full">
-                <textarea id="note" placeholder="อารมณ์/ข้อสังเกต..." class="insta-input" rows="1"></textarea>
-            </div>
-            <div class="form-row-full">
-                <input type="text" id="fix" placeholder="สิ่งที่ต้องปรับปรุง..." class="insta-input">
-            </div>
-            <button id="saveBtn" onclick="saveTrade()" class="btn-insta-post" disabled>บันทึกข้อมูล</button>
+        <div class="row g-2">
+            <div class="col-6"><input type="date" id="date" class="insta-input"></div>
+            <div class="col-6"><input type="number" id="startBal" placeholder="ทุนเริ่ม" class="insta-input"></div>
+            <div class="col-6"><input type="number" id="endBal" placeholder="ทุนจบ" class="insta-input"></div>
+            <div class="col-3"><input type="number" id="win" placeholder="ชนะ" class="insta-input" oninput="validateForm()"></div>
+            <div class="col-3"><input type="number" id="loss" placeholder="แพ้" class="insta-input" oninput="validateForm()"></div>
+            <div class="col-12"><input type="text" id="system" placeholder="ท่าที่ใช้ (เช่น Breakout, EMA)" class="insta-input" oninput="validateForm()"></div>
+            <div class="col-12"><textarea id="note" placeholder="บันทึกอารมณ์ / ข้อสังเกต" class="insta-input" rows="1"></textarea></div>
+            <div class="col-12"><input type="text" id="fix" placeholder="แผนปรับปรุงพรุ่งนี้" class="insta-input"></div>
+            <button id="saveBtn" onclick="saveTrade()" class="btn-insta" disabled>POST TRADE JOURNAL</button>
         </div>
     </div>
 
-    <div id="tradeLogs">
-        </div>
+    <div id="tradeTimeline"></div>
 
+    <hr>
+    <button onclick="generateMockData()" class="btn btn-outline-secondary btn-sm w-100 mb-3">🛠 โหลดข้อมูลจำลอง 30 วัน (Mock Data)</button>
+    <button onclick="clearAllData()" class="btn btn-link text-danger btn-sm w-100 mb-5">ล้างข้อมูลทั้งหมด</button>
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="location.reload()">
-        🏠
-        <div class="nav-label">Home</div>
-    </div>
-    <div class="nav-item" onclick="showReport('day')">
-        📅
-        <div class="nav-label">วันนี้</div>
-    </div>
-    <div class="nav-item" onclick="showReport('week')">
-        📅
-        <div class="nav-label">สัปดาห์</div>
-    </div>
-    <div class="nav-item" onclick="showReport('month')">
-        📅
-        <div class="nav-label">เดือน</div>
-    </div>
+    <button class="nav-btn active" onclick="window.scrollTo(0,0)">
+        <span class="nav-icon">🏠</span>Home
+    </button>
+    <button class="nav-btn" onclick="analyze('day')">
+        <span class="nav-icon">📊</span>วันนี้
+    </button>
+    <button class="nav-btn" onclick="analyze('week')">
+        <span class="nav-icon">📅</span>สัปดาห์
+    </button>
+    <button class="nav-btn" onclick="analyze('month')">
+        <span class="nav-icon">📈</span>เดือน
+    </button>
 </div>
 
-<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="reportModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reportTitle">สรุปรายงาน</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="reportTitle">สรุปผลการเทรด</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="reportContent">
-                </div>
+            <div class="modal-body" id="reportContent"></div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let trades = JSON.parse(localStorage.getItem('forex_trades')) || [];
+    let trades = JSON.parse(localStorage.getItem('barista_trades')) || [];
 
-    // Helper: Check if form is valid to enable save button
-    function checkFormValid() {
-        const winValue = document.getElementById('win').value;
-        const lossValue = document.getElementById('loss').value;
-        const saveBtn = document.getElementById('saveBtn');
-
-        // Force user to put data in Win/Loss fields
-        if(winValue !== '' && lossValue !== '' && !isNaN(winValue) && !isNaN(lossValue)) {
-            saveBtn.disabled = false;
-        } else {
-            saveBtn.disabled = true;
-        }
+    function validateForm() {
+        const win = document.getElementById('win').value;
+        const loss = document.getElementById('loss').value;
+        const sys = document.getElementById('system').value;
+        document.getElementById('saveBtn').disabled = (win === '' || loss === '' || sys === '');
     }
 
-    // Save Trade to LocalStorage
     function saveTrade() {
         const trade = {
             id: Date.now(),
             date: document.getElementById('date').value,
-            startBal: parseFloat(document.getElementById('startBal').value) || 0,
-            endBal: parseFloat(document.getElementById('endBal').value) || 0,
-            win: parseInt(document.getElementById('win').value),
-            loss: parseInt(document.getElementById('loss').value),
-            system: (document.getElementById('system').value || 'Unspecified').toUpperCase(),
-            note: document.getElementById('note').value || '',
-            fix: document.getElementById('fix').value || ''
+            start: parseFloat(document.getElementById('startBal').value) || 0,
+            end: parseFloat(document.getElementById('endBal').value) || 0,
+            win: parseInt(document.getElementById('win').value) || 0,
+            loss: parseInt(document.getElementById('loss').value) || 0,
+            system: document.getElementById('system').value.toUpperCase(),
+            note: document.getElementById('note').value,
+            fix: document.getElementById('fix').value
         };
-
-        if(!trade.date) return alert("กรุณาเลือกวันที่");
-
         trades.unshift(trade);
-        localStorage.setItem('forex_trades', JSON.stringify(trades));
-        renderTrades();
+        updateData();
         resetForm();
     }
 
-    // Reset form after save
-    function resetForm() {
-        document.getElementById('startBal').value = document.getElementById('endBal').value;
-        document.getElementById('win').value = '';
-        document.getElementById('loss').value = '';
-        document.getElementById('note').value = '';
-        document.getElementById('system').value = '';
-        document.getElementById('fix').value = '';
-        document.getElementById('saveBtn').disabled = true; // Disable until new input
+    function updateData() {
+        localStorage.setItem('barista_trades', JSON.stringify(trades));
+        renderList();
+        calculateMainStats();
     }
 
-    // Main render function for Insta-style cards
-    function renderTrades() {
-        const logContainer = document.getElementById('tradeLogs');
-        logContainer.innerHTML = '';
+    function calculateMainStats() {
         let totalP = 0, totalW = 0, totalL = 0;
-
-        // Reset NaN bugs: Ensure numbers are not NaN before summing
-        const safeSum = (currentSum, newVal) => isNaN(newVal) ? currentSum : currentSum + newVal;
-
         trades.forEach(t => {
-            const profit = t.endBal - t.startBal;
-            totalP = safeSum(totalP, profit);
-            totalW = safeSum(totalW, t.win);
-            totalL = safeSum(totalL, t.loss);
+            totalP += (t.end - t.start);
+            totalW += t.win;
+            totalL += t.loss;
+        });
+        document.getElementById('totalProfit').innerText = totalP.toLocaleString();
+        document.getElementById('totalProfit').className = totalP >= 0 ? 'stat-value profit' : 'stat-value loss';
+        document.getElementById('totalTrades').innerText = (totalW + totalL);
+        const wr = (totalW + totalL) > 0 ? ((totalW / (totalW + totalL)) * 100).toFixed(0) : 0;
+        document.getElementById('winRate').innerText = wr + '%';
+    }
 
-            // Create Insta-style Card HTML
-            logContainer.innerHTML += `
+    function renderList() {
+        const list = document.getElementById('tradeTimeline');
+        list.innerHTML = '';
+        trades.forEach(t => {
+            const p = t.end - t.start;
+            list.innerHTML += `
                 <div class="log-post">
                     <div class="post-header">
-                        <span class="post-date">${formatDateForPost(t.date)}</span>
+                        <span class="post-date">${t.date}</span>
                         <span class="post-system">${t.system}</span>
-                        <button onclick="deleteTrade(${t.id})" class="delete-btn">X</button>
+                        <span class="text-danger small" onclick="deleteItem(${t.id})" style="cursor:pointer">ลบ</span>
                     </div>
                     <div class="post-stats">
                         <div class="pstat-item">
-                            <div class="pstat-value ${profit >= 0 ? 'profit' : 'loss'}">${profit.toLocaleString()}</div>
-                            <div class="pstat-label">Profit/Loss</div>
+                            <div class="pstat-value ${p >= 0 ? 'profit' : 'loss'}">${p.toLocaleString()}</div>
+                            <div class="pstat-label">Profit (฿)</div>
                         </div>
                         <div class="pstat-item">
                             <div class="pstat-value">${t.win}/${t.loss}</div>
-                            <div class="pstat-label">Win/Loss</div>
+                            <div class="pstat-label">Win/Loss (ไม้)</div>
                         </div>
                     </div>
-                    <div class="post-body">
-                        <div class="post-caption"><b>BaristaTrader:</b> ${t.note}</div>
-                        ${t.fix ? `<div class="post-fix"><b>ปรับปรุง:</b> ${t.fix}</div>` : ''}
+                    <div class="p-2 small">
+                        <b>Note:</b> ${t.note || '-'} <br>
+                        <span class="text-secondary"><b>Adjust:</b> ${t.fix || '-'}</span>
                     </div>
                 </div>
             `;
         });
-
-        // Update Dashboard Stats with safe numbers
-        document.getElementById('totalProfit').innerHTML = totalP.toLocaleString();
-        document.getElementById('totalProfit').className = totalP >= 0 ? 'stat-value profit' : 'stat-value loss';
-        
-        const totalTradesCount = totalW + totalL;
-        document.getElementById('totalTrades').innerHTML = totalTradesCount;
-        
-        // Final fix for WinRate NaN
-        const wr = totalTradesCount > 0 ? ((totalW / totalTradesCount) * 100).toFixed(0) : 0;
-        document.getElementById('winRate').innerHTML = wr + '%';
-        document.getElementById('winRate').className = wr >= 50 ? 'stat-value profit' : 'stat-value loss';
     }
 
-    // Helper: format YYYY-MM-DD to DD/MM/YYYY
-    function formatDateForPost(dateStr) {
-        if(!dateStr) return '';
-        const parts = dateStr.split('-');
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
-    // Delete trade
-    function deleteTrade(id) {
-        if(confirm("ยืนยันการลบโพสต์การเทรดนี้?")) {
-            trades = trades.filter(t => t.id !== id);
-            localStorage.setItem('forex_trades', JSON.stringify(trades));
-            renderTrades();
-        }
-    }
-
-    // --- Reporting & Analysis ---
-
-    const reportModal = new Bootstrap.Modal(document.getElementById('reportModal'));
-
-    function showReport(type) {
-        const titleElement = document.getElementById('reportTitle');
-        const contentElement = document.getElementById('reportContent');
-        
-        let filteredTrades = [];
-        let title = '';
+    function analyze(period) {
         const today = new Date();
+        let filtered = [];
+        let title = "";
 
-        // 1. Filter Trades by Timeframe
-        if(type === 'day') {
-            title = 'สรุปรายงาน วันนี้';
+        if(period === 'day') {
             const todayStr = today.toISOString().split('T')[0];
-            filteredTrades = trades.filter(t => t.date === todayStr);
-        } else if (type === 'week') {
-            title = 'สรุปรายงาน สัปดาห์นี้';
-            const startOfWeek = new Date(today);
-            startOfWeek.setDate(today.getDate() - today.getDay()); // Sunday as start
-            filteredTrades = trades.filter(t => new Date(t.date) >= startOfWeek);
-        } else if (type === 'month') {
-            title = 'สรุปรายงาน เดือนนี้';
-            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            filteredTrades = trades.filter(t => new Date(t.date) >= startOfMonth);
+            filtered = trades.filter(t => t.date === todayStr);
+            title = "สรุปผลวันนี้";
+        } else if(period === 'week') {
+            const lastWeek = new Date(today.setDate(today.getDate() - 7));
+            filtered = trades.filter(t => new Date(t.date) >= lastWeek);
+            title = "สรุปผล 7 วันล่าสุด";
+        } else if(period === 'month') {
+            const lastMonth = new Date(today.setMonth(today.getMonth() - 1));
+            filtered = trades.filter(t => new Date(t.date) >= lastMonth);
+            title = "สรุปผล 30 วันล่าสุด";
         }
 
-        // 2. Generate Content
-        if(filteredTrades.length === 0) {
-            contentElement.innerHTML = `<p class="text-center text-muted mt-3">ยังไม่มีข้อมูลสำหรับช่วงเวลานี้</p>`;
-        } else {
-            // Generate basic stats
-            let rTotalP = 0, rTotalW = 0, rTotalL = 0;
-            const safeSum = (currentSum, newVal) => isNaN(newVal) ? currentSum : currentSum + newVal;
-            
-            // Build system profit mapping for analysis
-            const systemProfits = {};
+        if(filtered.length === 0) return alert("ยังไม่มีข้อมูลในช่วงนี้");
 
-            filteredTrades.forEach(t => {
-                const profit = t.endBal - t.startBal;
-                rTotalP = safeSum(rTotalP, profit);
-                rTotalW = safeSum(rTotalW, t.win);
-                rTotalL = safeSum(rTotalL, t.loss);
+        // Analyze logic
+        let tp = 0, tw = 0, tl = 0;
+        let sysMap = {};
+        filtered.forEach(t => {
+            const p = t.end - t.start;
+            tp += p; tw += t.win; tl += t.loss;
+            sysMap[t.system] = (sysMap[t.system] || 0) + p;
+        });
 
-                // Analyze best system
-                if(!systemProfits[t.system]) systemProfits[t.system] = 0;
-                systemProfits[t.system] += profit;
-            });
+        const bestSys = Object.entries(sysMap).reduce((a, b) => a[1] > b[1] ? a : b);
 
-            // Find best system
-            let bestSystem = { name: 'None', profit: -999999999 };
-            for(let name in systemProfits) {
-                if(systemProfits[name] > bestSystem.profit) {
-                    bestSystem = { name: name, profit: systemProfits[name] };
-                }
-            }
-
-            // Populate Modal Content
-            contentElement.innerHTML = `
-                <div class="report-block">
-                    <b>💵 กำไร/ขาดทุนรวม:</b> <span class="${rTotalP >= 0 ? 'profit' : 'loss'}">${rTotalP.toLocaleString()} บาท</span><br>
-                    <b>📈 อัตราชนะ (Win Rate):</b> ${((rTotalW / (rTotalW+rTotalL)) * 100).toFixed(0)}% (${rTotalW}/${rTotalL})<br>
-                    <b>🔢 จำนวนการเทรดรวม:</b> ${rTotalW + rTotalL} ไม้
-                </div>
-                <div class="report-block">
-                    <b>🏆 ท่าเทรด (ระบบ) ที่ดีที่สุด:</b><br>
-                    ระบบ: <span class="top-system">${bestSystem.name}</span><br>
-                    กำไรที่ทำได้: <span class="profit">${bestSystem.profit.toLocaleString()} บาท</span>
-                </div>
-                <div class="report-block">
-                    <b>💡 การวิเคราะห์รายวัน:</b><br>
-                    <ul>
-                        ${filteredTrades.map(t => `<li>${formatDateForPost(t.date)}: Profit ${t.endBal-t.startBal >= 0 ? t.endBal-t.startBal : `<span class="loss">${t.endBal-t.startBal}</span>` } via ${t.system}</li>`).join('')}
-                    </ul>
-                </div>
-            `;
-        }
-
-        titleElement.innerHTML = title;
-        reportModal.show();
+        document.getElementById('reportTitle').innerText = title;
+        document.getElementById('reportContent').innerHTML = `
+            <div class="report-card">
+                <p class="mb-1">💰 กำไรสุทธิ: <b class="${tp>=0?'profit':'loss'}">${tp.toLocaleString()} บาท</b></p>
+                <p class="mb-1">📊 Win Rate: <b>${((tw/(tw+tl))*100).toFixed(0)}%</b></p>
+                <p class="mb-0">🔄 เทรดรวม: <b>${tw+tl} ไม้</b></p>
+            </div>
+            <div class="report-card" style="border-left-color: #2ecc71;">
+                <p class="mb-0 text-success">🏆 <b>ท่าไม้ตาย (ทำเงินสูงสุด):</b></p>
+                <h4 class="mb-0">${bestSys[0]}</h4>
+                <small>สร้างกำไรไปแล้ว ${bestSys[1].toLocaleString()} บาท</small>
+            </div>
+        `;
+        new bootstrap.Modal('#reportModal').show();
     }
 
-    // Set today's date automatically
-    document.getElementById('date').valueAsDate = new Date();
+    function generateMockData() {
+        const mockSystems = ["EMA CROSS", "BREAKOUT", "PRICE ACTION", "SCALPING"];
+        let mock = [];
+        let currentBal = 100000;
+        for(let i=0; i<30; i++) {
+            let d = new Date();
+            d.setDate(d.getDate() - i);
+            let win = Math.floor(Math.random() * 5);
+            let loss = Math.floor(Math.random() * 3);
+            let profit = (win * 1000) - (loss * 800);
+            let start = currentBal;
+            let end = currentBal + profit;
+            currentBal = end;
+            mock.push({
+                id: Date.now() + i,
+                date: d.toISOString().split('T')[0],
+                start: start, end: end, win: win, loss: loss,
+                system: mockSystems[Math.floor(Math.random()*mockSystems.length)],
+                note: "เทรดตามแผน ใจนิ่ง", fix: "รักษาวินัยต่อไป"
+            });
+        }
+        trades = mock;
+        updateData();
+        alert("โหลดข้อมูลจำลอง 30 วันเรียบร้อย!");
+    }
 
-    // Inital Render
-    window.onload = renderTrades;
+    function deleteItem(id) {
+        if(confirm("ลบบันทึกนี้?")) {
+            trades = trades.filter(t => t.id !== id);
+            updateData();
+        }
+    }
+
+    function clearAllData() {
+        if(confirm("ลบข้อมูลทั้งหมดถาวร?")) {
+            localStorage.removeItem('barista_trades');
+            location.reload();
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('startBal').value = document.getElementById('endBal').value;
+        document.getElementById('win').value = '';
+        document.getElementById('loss').value = '';
+        document.getElementById('system').value = '';
+        document.getElementById('note').value = '';
+        document.getElementById('fix').value = '';
+        validateForm();
+    }
+
+    document.getElementById('date').valueAsDate = new Date();
+    window.onload = () => { renderList(); calculateMainStats(); };
 </script>
 </body>
 </html>
