@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIBOT - Expert Advisor MT4/MT5</title>
+<style>
+/* ======= 🛡️ PROTECTION LAYER ======= */
+*,*::before,*::after{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;}
+img,a,p,h1,h2,h3,h4,h5,h6,span,div,li,ul{-webkit-user-drag:none!important;-khtml-user-drag:none!important;user-drag:none!important;}
+::selection{background:rgba(6,182,212,.18)!important;color:transparent!important;}
+::-moz-selection{background:rgba(6,182,212,.18)!important;color:transparent!important;}
+body::after{content:'HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •';position:fixed;top:0;left:0;right:0;bottom:0;z-index:9990;pointer-events:none;font-size:14px;font-weight:700;color:rgba(6,182,212,.05);letter-spacing:2px;word-spacing:10px;line-height:3.6;padding:40px;transform:rotate(-28deg) scale(1.5);transform-origin:center center;white-space:pre-wrap;overflow:hidden;font-family:monospace;}
+#__dt_warn{display:none;position:fixed;inset:0;background:rgba(15,23,42,.97);z-index:99999;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px;backdrop-filter:blur(24px);}
+#__dt_warn.show{display:flex;}
+#__dt_warn .dw-icon{font-size:80px;margin-bottom:20px;animation:dw-pulse 1.4s infinite;}
+@keyframes dw-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+#__dt_warn h2{font-size:clamp(22px,4vw,34px);font-weight:900;color:#ef4444;margin-bottom:14px;font-family:monospace;}
+#__dt_warn p{color:#94a3b8;font-size:clamp(13px,1.8vw,16px);line-height:1.9;max-width:480px;}
+#__dt_warn button{margin-top:30px;padding:13px 36px;background:linear-gradient(135deg,#ef4444,#f59e0b);color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(239,68,68,.45);transition:transform .2s;}
+#__dt_warn button:hover{transform:translateY(-2px);}
+@media print{body{display:none!important;visibility:hidden!important;}}
+/* ======= END PROTECTION CSS ======= */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --pg:linear-gradient(135deg,#06b6d4 0%,#10b981 100%);
+  --sg:linear-gradient(135deg,#3b82f6 0%,#06b6d4 100%);
+  --ag:linear-gradient(135deg,#10b981 0%,#84cc16 100%);
+  --bg:#f0fdfa;--card:rgba(255,255,255,0.88);
+  --t1:#0f172a;--t2:#475569;
+  --gc:rgba(6,182,212,0.38);--gg:rgba(16,185,129,0.38);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;overflow-x:hidden;}
+.abg{position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,#ecfeff 0%,#f0fdf4 50%,#f0fdfa 100%);}
+.abg::before{content:'';position:absolute;width:600px;height:600px;background:var(--gc);border-radius:50%;filter:blur(180px);animation:flt 20s infinite ease-in-out;top:-200px;left:-200px;}
+.abg::after{content:'';position:absolute;width:500px;height:500px;background:var(--gg);border-radius:50%;filter:blur(180px);animation:flt 15s infinite ease-in-out reverse;bottom:-200px;right:-200px;}
+@keyframes flt{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(100px,-100px) scale(1.1);}66%{transform:translate(-100px,100px) scale(.9);}}
+.header{position:fixed;top:0;width:100%;padding:16px 0;background:rgba(255,255,255,.72);backdrop-filter:blur(20px);border-bottom:1px solid rgba(6,182,212,.2);z-index:1000;transition:all .3s;}
+.header.scrolled{padding:12px 0;background:rgba(255,255,255,.94);box-shadow:0 10px 40px rgba(6,182,212,.15);}
+.container{max-width:1400px;margin:0 auto;padding:0 40px;}
+.nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.logo{display:flex;align-items:center;gap:16px;}
+.logo-img{width:72px;height:72px;border-radius:18px;box-shadow:0 0 28px var(--gc);transition:all .3s;}
+.logo-img:hover{transform:scale(1.06) rotate(5deg);box-shadow:0 0 48px var(--gc);}
+.logo-text{font-size:26px;font-weight:800;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo p{font-size:12px;color:var(--t2);margin:4px 0;}
+.nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.nav-tab-btn{background:none;border:1px solid rgba(6,182,212,.3);color:var(--t2);padding:9px 20px;border-radius:50px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s;}
+.nav-tab-btn:hover,.nav-tab-btn.active-nav{background:var(--pg);color:#fff;border-color:transparent;box-shadow:0 5px 18px var(--gc);}
+.cart-btn{background:var(--pg);color:#fff;padding:12px 32px;border:none;border-radius:50px;cursor:pointer;font-weight:700;font-size:16px;transition:all .3s;box-shadow:0 8px 26px var(--gc);overflow:hidden;position:relative;}
+.cart-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,.3);transform:translate(-50%,-50%);transition:width .6s,height .6s;}
+.cart-btn:hover::before{width:260px;height:260px;}
+.cart-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px var(--gc);}
+.page-section{display:none;}.page-section.active{display:block;}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;padding:160px 20px 100px;overflow:hidden;}
+.hero h1{font-size:clamp(38px,8vw,110px);font-weight:900;margin-bottom:28px;background:linear-gradient(135deg,#0891b2 0%,#06b6d4 30%,#10b981 70%,#84cc16 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gsh 5s ease infinite;background-size:200% 200%;line-height:1.1;letter-spacing:-2px;}
+@keyframes gsh{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+.hero p{font-size:clamp(15px,2.5vw,22px);color:var(--t2);max-width:750px;margin:0 auto 18px;opacity:0;animation:fiu 1s ease forwards .3s;}
+@keyframes fiu{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.fe{position:absolute;width:90px;height:90px;border-radius:30% 70% 70% 30%/30% 30% 70% 70%;background:var(--pg);opacity:.13;animation:flng 15s infinite ease-in-out;}
+.fe:nth-child(1){top:10%;left:10%;}.fe:nth-child(2){top:70%;right:10%;animation-delay:2s;background:var(--sg);}.fe:nth-child(3){bottom:20%;left:50%;animation-delay:4s;background:var(--ag);}
+@keyframes flng{0%,100%{transform:translate(0,0) rotate(0);}33%{transform:translate(28px,-28px) rotate(120deg);}66%{transform:translate(-18px,18px) rotate(240deg);}}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin:70px 0;padding:0 16px;}
+.feature-card{background:var(--card);backdrop-filter:blur(20px);border:1px solid rgba(6,182,212,.2);border-radius:28px;padding:36px;text-align:center;transition:all .4s cubic-bezier(.175,.885,.32,1.275);position:relative;overflow:hidden;}
+.feature-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(transparent,rgba(6,182,212,.28),transparent 30%);animation:rot 4s linear infinite;opacity:0;transition:opacity .3s;}
+.feature-card:hover::before{opacity:1;}
+@keyframes rot{100%{transform:rotate(1turn);}}
+.feature-card:hover{transform:translateY(-14px) scale(1.02);box-shadow:0 28px 56px var(--gc);border-color:rgba(6,182,212,.5);}
+.fi{font-size:52px;margin-bottom:22px;display:inline-block;animation:bnc 2s infinite;}
+@keyframes bnc{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+.feature-card h3{font-size:20px;margin-bottom:12px;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.feature-card p{color:var(--t2);line-height:1.7;}
+.about-section,.how-it-works,.products,.trial-section{padding:110px 20px;}
+.sec-title{font-size:clamp(32px,5.5vw,68px);text-align:center;margin-bottom:36px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.about-desc{text-align:center;font-size:clamp(15px,2.2vw,19px);max-width:960px;margin:0 auto 36px;color:var(--t2);line-height:1.9;opacity:0;transform:translateY(28px);transition:all .8s;}
+.about-desc.visible{opacity:1;transform:translateY(0);}
+.steps-container{display:flex;justify-content:space-around;flex-wrap:wrap;gap:44px;max-width:1100px;margin:72px auto 0;}
+.step{text-align:center;max-width:230px;opacity:0;transform:translateY(46px);transition:all .8s;}
+.step.visible{opacity:1;transform:translateY(0);}
+.step-number{width:90px;height:90px;background:var(--pg);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;margin:0 auto 22px;box-shadow:0 14px 36px var(--gc);position:relative;}
+.step-number::before{content:'';position:absolute;inset:-5px;border-radius:50%;background:var(--pg);opacity:.28;animation:pr 2s infinite;}
+@keyframes pr{0%,100%{transform:scale(1);opacity:.28;}50%{transform:scale(1.1);opacity:0;}}
+.step h3{font-size:20px;margin-bottom:10px;}.step p{color:var(--t2);line-height:1.7;}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:30px;margin-top:54px;}
+.product-card{background:var(--card);backdrop-filter:blur(20px);border:1px solid rgba(6,182,212,.2);border-radius:28px;padding:40px;position:relative;overflow:hidden;transition:all .4s;}
+.product-card::after{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--pg);transform:scaleX(0);transition:transform .3s;}
+.product-card:hover::after{transform:scaleX(1);}
+.product-card:hover{transform:translateY(-13px);box-shadow:0 28px 56px var(--gc);border-color:rgba(6,182,212,.5);}
+.product-card.popular{outline:2px solid #06b6d4;box-shadow:0 18px 46px var(--gc);}
+.pop-badge{position:absolute;top:22px;right:22px;background:var(--ag);color:#fff;padding:7px 18px;border-radius:50px;font-size:12px;font-weight:700;box-shadow:0 4px 18px var(--gg);}
+.product-card h3{font-size:26px;margin-bottom:18px;}
+.product-card .price{font-size:52px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:22px 0;}
+.product-card ul{list-style:none;margin:30px 0;}
+.product-card li{padding:13px 0;border-bottom:1px solid rgba(6,182,212,.1);color:var(--t2);display:flex;align-items:center;gap:10px;}
+.product-card li:last-child{border-bottom:none;}
+.product-card li::before{content:"✓";display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--pg);border-radius:50%;font-weight:bold;font-size:13px;flex-shrink:0;color:#fff;}
+.add-to-cart-btn{width:100%;padding:16px;background:var(--pg);color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 8px 26px var(--gc);position:relative;overflow:hidden;}
+.add-to-cart-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transition:left .5s;}
+.add-to-cart-btn:hover::before{left:100%;}
+.add-to-cart-btn:hover{transform:translateY(-2px);box-shadow:0 13px 36px var(--gc);}
+.trial-section{background:linear-gradient(135deg,rgba(6,182,212,.05) 0%,rgba(16,185,129,.05) 100%);text-align:center;}
+.qr-container{background:var(--card);backdrop-filter:blur(20px);border:1px solid rgba(6,182,212,.2);border-radius:28px;padding:36px;max-width:380px;margin:46px auto 0;transition:all .3s;}
+.qr-container:hover{transform:translateY(-9px);box-shadow:0 18px 46px var(--gc);}
+.qr-code{background:#fff;padding:18px;border-radius:18px;display:inline-block;margin:18px 0;box-shadow:0 8px 26px rgba(6,182,212,.14);}
+.qr-code img{width:210px;height:210px;display:block;}
+.docs-page{padding:140px 40px 80px;max-width:1100px;margin:0 auto;}
+.docs-page h1{font-size:clamp(28px,4.5vw,54px);font-weight:900;margin-bottom:12px;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.docs-sub{color:var(--t2);font-size:17px;margin-bottom:44px;}
+.cat-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.cat-tab{background:none;border:1.5px solid rgba(6,182,212,.28);color:var(--t2);padding:10px 26px;border-radius:50px;cursor:pointer;font-size:14px;font-weight:700;transition:all .28s;}
+.cat-tab:hover{border-color:#06b6d4;color:#06b6d4;}
+.cat-tab.active{background:var(--pg);color:#fff;border-color:transparent;box-shadow:0 5px 18px var(--gc);}
+.doc-search-wrap{position:relative;margin-bottom:28px;}
+.doc-search{width:100%;padding:14px 18px 14px 48px;border-radius:14px;border:1.5px solid rgba(6,182,212,.28);background:rgba(255,255,255,.9);font-size:15px;color:var(--t1);outline:none;transition:all .28s;}
+.doc-search:focus{border-color:#06b6d4;box-shadow:0 0 0 4px rgba(6,182,212,.11);}
+.doc-search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;}
+.doc-list{display:flex;flex-direction:column;gap:12px;}
+.doc-item{background:var(--card);backdrop-filter:blur(20px);border:1px solid rgba(6,182,212,.16);border-radius:16px;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;transition:all .28s;text-decoration:none;}
+.doc-item:hover{transform:translateX(5px);border-color:rgba(6,182,212,.48);box-shadow:0 6px 26px rgba(6,182,212,.13);}
+.doc-item-left{display:flex;align-items:center;gap:14px;}
+.doc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:rgba(6,182,212,.1);}
+.doc-name{font-size:15px;font-weight:700;color:var(--t1);margin-bottom:3px;}
+.doc-meta{font-size:12px;color:var(--t2);}
+.doc-dl-btn{flex-shrink:0;background:var(--pg);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all .28s;box-shadow:0 4px 14px rgba(6,182,212,.32);text-decoration:none;display:inline-flex;align-items:center;gap:5px;}
+.doc-dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(6,182,212,.46);}
+.no-docs{background:rgba(6,182,212,.04);border:1.5px dashed rgba(6,182,212,.3);border-radius:18px;padding:40px;text-align:center;color:var(--t2);font-size:15px;line-height:1.9;}
+.admin-page{padding:140px 40px 80px;max-width:1200px;margin:0 auto;}
+.admin-page h1{font-size:clamp(26px,4vw,48px);font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,#f59e0b 0%,#ef4444 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.admin-sub{color:var(--t2);font-size:16px;margin-bottom:36px;}
+#admin-login{max-width:420px;margin:0 auto;background:var(--card);backdrop-filter:blur(20px);border:1px solid rgba(245,158,11,.25);border-radius:28px;padding:48px 40px;text-align:center;}
+#admin-login h2{font-size:26px;font-weight:800;margin-bottom:6px;}
+#admin-login p{color:var(--t2);font-size:14px;margin-bottom:30px;}
+.admin-input{width:100%;padding:14px 18px;border-radius:12px;border:1.5px solid rgba(245,158,11,.3);background:rgba(255,255,255,.9);font-size:15px;color:var(--t1);outline:none;margin-bottom:14px;transition:all .28s;}
+.admin-input:focus{border-color:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.1);}
+.admin-btn{width:100%;padding:15px;background:linear-gradient(135deg,#f59e0b 0%,#ef4444 100%);color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 8px 26px rgba(245,158,11,.4);}
+.admin-btn:hover{transform:translateY(-2px);}
+.login-err{color:#ef4444;font-size:13px;margin-top:10px;display:none;}
+#admin-panel{display:none;}
+.admin-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px;}
+.admin-toolbar h2{font-size:22px;font-weight:800;}
+.btn-add{background:var(--pg);color:#fff;border:none;border-radius:50px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer;transition:all .28s;box-shadow:0 6px 20px var(--gc);}
+.btn-add:hover{transform:translateY(-2px);}
+.btn-sm{padding:9px 18px;font-size:12px;}
+.btn-logout{background:none;border:1.5px solid rgba(239,68,68,.4);color:#ef4444;border-radius:50px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;transition:all .28s;}
+.btn-logout:hover{background:#ef4444;color:#fff;}
+.admin-main-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;border-bottom:2px solid rgba(6,182,212,.12);padding-bottom:16px;}
+.admin-main-tab{background:none;border:1.5px solid rgba(6,182,212,.25);color:var(--t2);padding:10px 24px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;transition:all .25s;}
+.admin-main-tab:hover{border-color:#06b6d4;color:#06b6d4;}
+.admin-main-tab.active{background:var(--pg);color:#fff;border-color:transparent;box-shadow:0 4px 14px var(--gc);}
+.admin-page-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.admin-page-tab{background:none;border:1.5px solid rgba(6,182,212,.25);color:var(--t2);padding:9px 22px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;transition:all .25s;}
+.admin-page-tab:hover{border-color:#06b6d4;color:#06b6d4;}
+.admin-page-tab.active{background:var(--pg);color:#fff;border-color:transparent;box-shadow:0 4px 14px var(--gc);}
+.admin-sub-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;background:rgba(6,182,212,.05);padding:14px 18px;border-radius:14px;border:1px solid rgba(6,182,212,.15);}
+.admin-cat-tabs{display:flex;gap:8px;flex-wrap:wrap;}
+.admin-cat-tab{background:none;border:1.5px solid rgba(6,182,212,.22);color:var(--t2);padding:7px 18px;border-radius:50px;cursor:pointer;font-size:12px;font-weight:700;transition:all .22s;}
+.admin-cat-tab:hover{border-color:#06b6d4;color:#06b6d4;}
+.admin-cat-tab.active{background:var(--pg);color:#fff;border-color:transparent;}
+.admin-doc-row{background:var(--card);border:1px solid rgba(6,182,212,.15);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:10px;transition:all .25s;}
+.admin-doc-row:hover{border-color:rgba(6,182,212,.38);box-shadow:0 4px 18px rgba(6,182,212,.1);}
+.adr-icon{font-size:26px;flex-shrink:0;}
+.adr-info{flex:1;min-width:0;}
+.adr-name{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:3px;}
+.adr-meta{font-size:12px;color:var(--t2);}
+.adr-url{font-size:11px;color:#06b6d4;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px;}
+.adr-actions{display:flex;gap:8px;flex-shrink:0;}
+.btn-edit,.btn-del{border:none;border-radius:50px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:all .22s;}
+.btn-edit{background:rgba(6,182,212,.12);color:#06b6d4;}.btn-edit:hover{background:#06b6d4;color:#fff;}
+.btn-del{background:rgba(239,68,68,.1);color:#ef4444;}.btn-del:hover{background:#ef4444;color:#fff;}
+.empty-admin{color:var(--t2);font-size:14px;padding:28px;text-align:center;background:rgba(6,182,212,.04);border:1.5px dashed rgba(6,182,212,.22);border-radius:14px;}
+.pkg-admin-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:20px;}
+.pkg-admin-header h2{font-size:20px;font-weight:800;}
+.pkg-cards-admin{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.pkg-admin-card{background:var(--card);border:1.5px solid rgba(6,182,212,.18);border-radius:20px;padding:24px;position:relative;transition:all .3s;}
+.pkg-admin-card:hover{box-shadow:0 8px 32px rgba(6,182,212,.15);border-color:rgba(6,182,212,.38);}
+.pkg-admin-card.disabled-card{opacity:.55;border-color:rgba(0,0,0,.1);}
+.pkg-admin-card .pkg-name{font-size:18px;font-weight:800;margin-bottom:6px;color:var(--t1);}
+.pkg-admin-card .pkg-price-badge{display:inline-block;background:var(--pg);color:#fff;border-radius:50px;padding:4px 16px;font-size:15px;font-weight:800;margin-bottom:10px;}
+.pkg-admin-card .pkg-features-preview{font-size:12px;color:var(--t2);line-height:1.8;margin-bottom:14px;}
+.pkg-admin-card .pkg-card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.pkg-toggle-btn{border:none;border-radius:50px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:all .22s;}
+.pkg-toggle-btn.enabled{background:rgba(16,185,129,.12);color:#10b981;}.pkg-toggle-btn.enabled:hover{background:#10b981;color:#fff;}
+.pkg-toggle-btn.disabled{background:rgba(239,68,68,.1);color:#ef4444;}.pkg-toggle-btn.disabled:hover{background:#ef4444;color:#fff;}
+.popular-badge-admin{display:inline-block;background:var(--ag);color:#fff;border-radius:50px;padding:3px 12px;font-size:11px;font-weight:700;margin-left:8px;}
+.pkg-status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;}
+.pkg-status-dot.on{background:#10b981;}.pkg-status-dot.off{background:#94a3b8;}
+.features-list-admin{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.feature-item-admin{display:flex;gap:8px;align-items:center;}
+.feature-item-admin input{flex:1;padding:9px 13px;border-radius:9px;border:1.5px solid rgba(6,182,212,.22);background:rgba(255,255,255,.9);font-size:13px;color:var(--t1);outline:none;transition:all .22s;}
+.feature-item-admin input:focus{border-color:#06b6d4;box-shadow:0 0 0 3px rgba(6,182,212,.08);}
+.btn-rm-feature{background:rgba(239,68,68,.1);color:#ef4444;border:none;border-radius:50%;width:28px;height:28px;font-size:16px;cursor:pointer;flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.btn-rm-feature:hover{background:#ef4444;color:#fff;}
+.btn-add-feature{background:rgba(6,182,212,.1);color:#06b6d4;border:none;border-radius:50px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;transition:all .22s;}
+.btn-add-feature:hover{background:#06b6d4;color:#fff;}
+.toggle-switch{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.toggle-switch input{display:none;}
+.toggle-track{width:46px;height:26px;background:#cbd5e1;border-radius:13px;position:relative;transition:background .25s;}
+.toggle-switch input:checked+.toggle-track{background:#10b981;}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle-switch input:checked+.toggle-track .toggle-thumb{left:23px;}
+.toggle-label{font-size:14px;font-weight:700;color:var(--t1);}
+.admin-section-panel{display:none;}.admin-section-panel.active{display:block;}
+.modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);overflow-y:auto;}
+.modal-content{background:#fff;border:1px solid rgba(6,182,212,.2);margin:72px auto;padding:46px;border-radius:28px;width:90%;max-width:640px;box-shadow:0 28px 72px rgba(6,182,212,.28);animation:msi .38s ease;}
+@keyframes msi{from{opacity:0;transform:translateY(-46px);}to{opacity:1;transform:translateY(0);}}
+.modal-content h2{font-size:22px;font-weight:800;margin-bottom:24px;color:var(--t1);}
+.mclose{color:var(--t2);float:right;font-size:36px;font-weight:300;cursor:pointer;transition:all .28s;line-height:1;}
+.mclose:hover{color:#10b981;transform:rotate(90deg);}
+.form-group{margin-bottom:18px;}
+.form-group label{display:block;font-size:13px;font-weight:700;color:var(--t2);margin-bottom:7px;}
+.form-input,.form-select{width:100%;padding:13px 16px;border-radius:11px;border:1.5px solid rgba(6,182,212,.28);background:rgba(255,255,255,.9);font-size:14px;color:var(--t1);outline:none;transition:all .28s;}
+.form-input:focus,.form-select:focus{border-color:#06b6d4;box-shadow:0 0 0 4px rgba(6,182,212,.1);}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;}
+.btn-save{background:var(--pg);color:#fff;border:none;border-radius:50px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;transition:all .28s;box-shadow:0 6px 18px var(--gc);}
+.btn-save:hover{transform:translateY(-2px);}
+.btn-cancel{background:none;border:1.5px solid rgba(6,182,212,.3);color:var(--t2);border-radius:50px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;transition:all .28s;}
+.cart-item{background:rgba(6,182,212,.05);border:1px solid rgba(6,182,212,.2);padding:22px;margin:18px 0;border-radius:18px;display:flex;justify-content:space-between;align-items:center;transition:all .28s;}
+.cart-item:hover{transform:translateX(4px);background:rgba(6,182,212,.1);}
+.loading-spinner{display:none;margin:18px auto;border:5px solid rgba(6,182,212,.2);border-top:5px solid #06b6d4;border-radius:50%;width:46px;height:46px;animation:spin 1s linear infinite;}
+@keyframes spin{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+.reveal{opacity:0;transform:translateY(46px);transition:all .8s;}.reveal.active{opacity:1;transform:translateY(0);}
+footer{background:rgba(255,255,255,.9);backdrop-filter:blur(20px);color:var(--t2);padding:52px 20px;text-align:center;border-top:1px solid rgba(6,182,212,.2);}
+.admin-entry-btn{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:13px 28px;background:linear-gradient(135deg,#f59e0b 0%,#ef4444 100%);color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 6px 24px rgba(245,158,11,.45);transition:all .3s;position:relative;overflow:hidden;letter-spacing:.3px;}
+.admin-entry-btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,.25);transform:translate(-50%,-50%);transition:width .55s,height .55s;}
+.admin-entry-btn:hover::before{width:280px;height:280px;}
+.admin-entry-btn:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(245,158,11,.6);}
+.admin-entry-btn .gear-icon{font-size:20px;animation:gearspin 4s linear infinite;display:inline-block;}
+@keyframes gearspin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+.about-section h3{font-size:clamp(18px,2.5vw,32px);}
+/* ── Save Indicator ── */
+#save-indicator{position:fixed;bottom:24px;right:24px;z-index:9800;padding:10px 22px;border-radius:50px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.22);transition:opacity .4s;opacity:0;pointer-events:none;}
+#save-indicator.saving{opacity:1;background:linear-gradient(135deg,#f59e0b,#06b6d4);}
+#save-indicator.saved{opacity:1;background:linear-gradient(135deg,#10b981,#06b6d4);}
+#save-indicator.error{opacity:1;background:linear-gradient(135deg,#ef4444,#f59e0b);}
+
+html{font-size:clamp(14px,1.1vw + 10px,18px);}
+body{font-size:1rem;}
+.logo-text{font-size:clamp(16px,2.2vw,26px);}
+.logo p{font-size:clamp(10px,1.1vw,13px);}
+.logo-img{width:clamp(44px,6vw,72px);height:clamp(44px,6vw,72px);}
+.nav-tab-btn{font-size:clamp(11px,1.1vw,14px);padding:clamp(6px,0.8vw,9px) clamp(12px,1.6vw,20px);}
+.cart-btn{font-size:clamp(12px,1.2vw,16px);padding:clamp(9px,1vw,12px) clamp(16px,2.2vw,32px);}
+.hero h1{font-size:clamp(32px,7vw,110px);}
+.hero p{font-size:clamp(13px,2vw,22px);}
+.sec-title{font-size:clamp(24px,4.5vw,68px);}
+.about-desc{font-size:clamp(13px,1.6vw,19px);}
+.fi{font-size:clamp(36px,5vw,52px);}
+.feature-card h3{font-size:clamp(15px,1.6vw,20px);}
+.feature-card p{font-size:clamp(12px,1.2vw,15px);}
+.step-number{width:clamp(60px,8vw,90px);height:clamp(60px,8vw,90px);font-size:clamp(24px,4vw,38px);}
+.step h3{font-size:clamp(15px,1.6vw,20px);}
+.step p{font-size:clamp(12px,1.2vw,15px);}
+.product-card h3{font-size:clamp(18px,2vw,26px);}
+.product-card .price{font-size:clamp(32px,4.5vw,52px);}
+.product-card li{font-size:clamp(12px,1.2vw,15px);}
+.add-to-cart-btn{font-size:clamp(13px,1.3vw,16px);}
+.pop-badge{font-size:clamp(10px,1vw,12px);}
+.qr-code img{width:clamp(140px,18vw,210px);height:clamp(140px,18vw,210px);}
+.docs-page h1{font-size:clamp(22px,3.5vw,54px);}
+.docs-sub{font-size:clamp(13px,1.4vw,17px);}
+.cat-tab{font-size:clamp(11px,1.1vw,14px);padding:clamp(7px,0.8vw,10px) clamp(14px,1.8vw,26px);}
+.doc-search{font-size:clamp(13px,1.2vw,15px);}
+.doc-name{font-size:clamp(13px,1.3vw,15px);}
+.doc-meta{font-size:clamp(10px,1vw,12px);}
+.doc-dl-btn{font-size:clamp(11px,1.1vw,13px);padding:clamp(7px,0.8vw,9px) clamp(14px,1.6vw,20px);}
+.admin-page h1{font-size:clamp(22px,3.2vw,48px);}
+.admin-sub{font-size:clamp(13px,1.3vw,16px);}
+.admin-toolbar h2{font-size:clamp(16px,1.8vw,22px);}
+.adr-name{font-size:clamp(12px,1.2vw,14px);}
+.adr-meta,.adr-url{font-size:clamp(10px,1vw,12px);}
+.admin-entry-btn{font-size:clamp(13px,1.3vw,15px);padding:clamp(10px,1vw,13px) clamp(18px,2vw,28px);}
+.gear-icon{font-size:clamp(16px,1.6vw,20px);}
+#cartTotal{font-size:clamp(18px,2.5vw,28px);}
+#paymentAmount{font-size:clamp(20px,3vw,28px);}
+.modal-content h2{font-size:clamp(16px,1.8vw,22px);}
+.form-group label{font-size:clamp(11px,1.1vw,13px);}
+.form-input,.form-select{font-size:clamp(12px,1.2vw,14px);}
+footer{font-size:clamp(11px,1.1vw,14px);}
+.about-section,.how-it-works,.products,.trial-section{padding:clamp(60px,9vw,110px) clamp(16px,4vw,40px);}
+.docs-page,.admin-page{padding:clamp(100px,10vw,140px) clamp(16px,4vw,40px) clamp(40px,5vw,80px);}
+.container{padding:0 clamp(16px,4vw,40px);}
+@media(max-width:900px){
+  .features-grid{grid-template-columns:repeat(2,1fr);}
+  .product-grid{grid-template-columns:repeat(2,1fr);}
+  .steps-container{gap:28px;}
+  .nav{gap:8px;}
+  .pkg-cards-admin{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .features-grid,.product-grid{grid-template-columns:1fr;}
+  .steps-container{flex-direction:column;align-items:center;}
+  .nav-links{gap:4px;}
+  .admin-doc-row{flex-wrap:wrap;}
+  .adr-url{max-width:180px;}
+  .adr-actions{width:100%;justify-content:flex-end;}
+  .modal-content{padding:28px 20px;margin:40px auto;}
+  .cat-tabs,.admin-cat-tabs,.admin-page-tabs{gap:6px;}
+  .hero{padding:120px 16px 60px;}
+  .product-card{padding:28px 20px;}
+  .feature-card{padding:26px 20px;}
+}
+</style>
+</head>
+<body>
+<div id="__dt_warn">
+  <div class="dw-icon">🚨</div>
+  <h2>⛔ หยุด! Stop!</h2>
+  <p>ตรวจพบการเปิด Developer Tools<br>เนื้อหาทั้งหมดบนเว็บนี้เป็น<strong style="color:#06b6d4;">ทรัพย์สินของ HIBOT</strong><br>ห้ามคัดลอก ดัดแปลง หรือนำไปใช้โดยไม่ได้รับอนุญาต<br><br><span style="color:#f59e0b;font-size:13px;">⚠️ อาจผิด พ.ร.บ.คอมพิวเตอร์ พ.ศ.2560</span></p>
+  <button onclick="document.getElementById('__dt_warn').classList.remove('show')">รับทราบ / OK</button>
+</div>
+<div class="abg"></div>
+<!-- ✅ Save Indicator -->
+<div id="save-indicator">💾 กำลังบันทึก...</div>
+
+<header class="header" id="header">
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">
+        <img src="https://hibot.in.th/Doc/HBLOGO2.png" alt="Logo" class="logo-img">
+        <div>
+          <span class="logo-text">HIBOT Expert Advisor</span>
+          <p>เทรดอัตโนมัติ 24 ชั่วโมง</p>
+          <p>ระบบเก็บกำไรอัจฉริยะ</p>
+        </div>
+      </div>
+      <div class="nav-links">
+        <button class="nav-tab-btn active-nav" onclick="showPage('home',this)">🏠 หน้าแรก</button>
+        <button class="nav-tab-btn" onclick="showPage('manual',this)">📖 คู่มือ</button>
+        <button class="nav-tab-btn" onclick="showPage('knowledge',this)">🎓 ความรู้</button>
+        <button class="cart-btn" onclick="openCart()">🛒 ตะกร้า (<span id="cartCount">0</span>)</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- HOME -->
+<div id="page-home" class="page-section active">
+  <section class="hero">
+    <div class="fe"></div><div class="fe"></div><div class="fe"></div>
+    <div class="container">
+      <h1>HIBOT Expert Advisor</h1>
+      <p>เครื่องมือที่ช่วยเทรดอัตโนมัติทำคำสั่งซื้อขายให้คุณแบบอัตโนมัติ</p>
+      <p>ตามกลยุทธ์ที่ตั้งไว้ ใช้งานง่าย เหมาะทั้งมือใหม่และผู้มีประสบการณ์</p>
+      <p>เริ่มต้นให้การเทรดเป็นระบบมากขึ้นวันนี้</p>
+    </div>
+  </section>
+  <section class="about-section">
+    <div class="container">
+      <h2 class="sec-title reveal">เกี่ยวกับเรา</h2>
+      <p class="about-desc reveal">"HIBOT" คือ Expert Advisor (EA) เป็นโปรแกรมที่เขียนขึ้นเพื่อเป็นระบบช่วยเทรดอัตโนมัติที่ออกแบบมาเพื่อทำงานตามกลยุทธ์อย่างมีวินัย ช่วยออกคำสั่งซื้อขายตามเงื่อนไขที่ตั้งค่าไว้ ลดการตัดสินใจจากอารมณ์ ทำงานต่อเนื่อง 24 ชั่วโมง</p>
+      <p class="about-desc reveal">⚠️ การเทรดมีความเสี่ยง ผู้ใช้งานควรศึกษาข้อมูลก่อนตัดสินใจ ระบบเป็นเพียงเครื่องมือช่วยจัดการการเทรด ไม่สามารถรับประกันผลกำไรได้</p>
+      <h3 class="reveal" style="text-align:center;margin:54px 0 34px;">Expert Advisor (EA) นี้เหมาะกับใคร</h3>
+      <div class="features-grid">
+        <div class="feature-card reveal"><div class="fi">⏰</div><h3>ผู้ที่ไม่มีเวลา</h3><p>ไม่สามารถเฝ้ากราฟได้ตลอดเวลา</p></div>
+        <div class="feature-card reveal"><div class="fi">🎯</div><h3>เพิ่มประสิทธิภาพกำไร</h3><p>มีท่าเทรดที่ทำซ้ำๆ แล้วทำกำไรได้ตามระบบ</p></div>
+        <div class="feature-card reveal"><div class="fi">🧘</div><h3>การจัดการอารมณ์</h3><p>ผู้ที่ไม่สามารถจัดการอารมณ์ระหว่างเทรดได้</p></div>
+        <div class="feature-card reveal"><div class="fi">💰</div><h3>Passive Income</h3><p>ผู้ที่ต้องการสร้างรายได้แบบ Passive ที่มีผลตอบแทนอย่างสม่ำเสมอ</p></div>
+        <div class="feature-card reveal"><div class="fi">🤖</div><h3>เทรดอัตโนมัติ</h3><p>ระบบเทรดอัตโนมัติที่ทำงานแทนคุณตลอด 24 ชั่วโมง</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="how-it-works">
+    <div class="container">
+      <h2 class="sec-title reveal">การทำงานของ HIBOT</h2>
+      <div class="steps-container">
+        <div class="step reveal"><div class="step-number">1</div><h3>วิเคราะห์ตลาด</h3><p>วิเคราะห์แนวโน้มตลาดตามกลยุทธ์ที่ใช้ ประกอบกับ Timeframe ที่เทรด แบบ Real-time</p></div>
+        <div class="step reveal"><div class="step-number">2</div><h3>ตัดสินใจเทรด</h3><p>อัลกอริทึมตัดสินใจซื้อขายตามกลยุทธ์</p></div>
+        <div class="step reveal"><div class="step-number">3</div><h3>ดำเนินการ</h3><p>ทำคำสั่งซื้อขายอัตโนมัติ</p></div>
+        <div class="step reveal"><div class="step-number">4</div><h3>เก็บกำไร</h3><p>ตั้ง Stop Loss และ Take Profit อัตโนมัติ</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="products">
+    <div class="container">
+      <h2 class="sec-title reveal">แพ็คเกจของเรา</h2>
+      <div class="product-grid" id="product-grid-home"></div>
+    </div>
+  </section>
+  <section class="trial-section">
+    <div class="container">
+      <h2 class="sec-title reveal">🎁 ทดลองใช้ EA ฟรี!</h2>
+      <p class="reveal">สแกน QR Code เพื่อติดต่อทดลองใช้งาน EA ฟรี</p>
+      <div class="qr-container reveal">
+        <div class="qr-code"><img src="https://hibot.in.th/QR/QRLine.jpg" alt="LINE QR"></div>
+        <p style="color:#06b6d4;font-weight:600;">📱 สแกน QR Code เพื่อเพิ่มเพื่อนใน LINE<br>และรับ EA ทดลองใช้ฟรี!</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- MANUAL -->
+<div id="page-manual" class="page-section">
+  <div class="docs-page">
+    <h1>📖 คู่มือการใช้งาน</h1>
+    <p class="docs-sub">เอกสารและไฟล์สำหรับการติดตั้งและตั้งค่า HIBOT EA</p>
+    <div class="cat-tabs" id="manual-cat-tabs"></div>
+    <div class="doc-search-wrap">
+      <span class="doc-search-icon">🔍</span>
+      <input class="doc-search" type="text" placeholder="ค้นหาไฟล์คู่มือ..." oninput="filterDocPage('manual',this.value)">
+    </div>
+    <div id="manual-list" class="doc-list"></div>
+  </div>
+</div>
+
+<!-- KNOWLEDGE -->
+<div id="page-knowledge" class="page-section">
+  <div class="docs-page">
+    <h1>🎓 ความรู้การเทรด</h1>
+    <p class="docs-sub">บทความ วิดีโอ และสื่อการเรียนรู้สำหรับนักเทรด</p>
+    <div class="cat-tabs" id="knowledge-cat-tabs"></div>
+    <div class="doc-search-wrap">
+      <span class="doc-search-icon">🔍</span>
+      <input class="doc-search" type="text" placeholder="ค้นหาบทความ..." oninput="filterDocPage('knowledge',this.value)">
+    </div>
+    <div id="knowledge-list" class="doc-list"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="page-admin" class="page-section">
+  <div class="admin-page">
+    <h1>🔐 Admin Panel</h1>
+    <p class="admin-sub">จัดการเนื้อหา แพ็คเกจ คู่มือ และความรู้</p>
+    <div id="admin-login">
+      <h2>🔑 เข้าสู่ระบบ Admin</h2>
+      <p>กรุณากรอกรหัสผ่านเพื่อเข้าใช้งาน</p>
+      <input class="admin-input" type="password" id="adminPass" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="admin-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+      <div class="login-err" id="loginErr">❌ รหัสผ่านไม่ถูกต้อง</div>
+    </div>
+    <div id="admin-panel">
+      <div class="admin-toolbar">
+        <h2>⚙️ จัดการระบบ</h2>
+        <button class="btn-logout" onclick="doLogout()">ออกจากระบบ</button>
+      </div>
+      <div class="admin-main-tabs">
+        <button class="admin-main-tab active" onclick="switchAdminMain('packages',this)">📦 แพ็คเกจ</button>
+        <button class="admin-main-tab" onclick="switchAdminMain('docs',this)">📂 เอกสาร</button>
+      </div>
+      <div id="admin-section-packages" class="admin-section-panel active">
+        <div class="pkg-admin-header">
+          <h2>📦 จัดการแพ็คเกจ</h2>
+          <button class="btn-add" onclick="openAddPkgModal()">＋ เพิ่มแพ็คเกจใหม่</button>
+        </div>
+        <div class="pkg-cards-admin" id="pkg-cards-admin"></div>
+      </div>
+      <div id="admin-section-docs" class="admin-section-panel">
+        <div class="admin-toolbar" style="margin-bottom:16px;">
+          <h2>📂 จัดการเอกสาร</h2>
+          <button class="btn-add" onclick="openAddModal()">＋ เพิ่มไฟล์ใหม่</button>
+        </div>
+        <div class="admin-page-tabs">
+          <button class="admin-page-tab active" id="aptab-manual" onclick="switchAdminPage('manual',this)">📖 คู่มือ</button>
+          <button class="admin-page-tab" id="aptab-knowledge" onclick="switchAdminPage('knowledge',this)">🎓 ความรู้</button>
+        </div>
+        <div class="admin-sub-row">
+          <span style="font-size:12px;font-weight:700;color:var(--t2);white-space:nowrap;">หมวดหมู่:</span>
+          <div class="admin-cat-tabs" id="admin-cat-tabs-row"></div>
+          <button class="btn-add btn-sm" onclick="openAddCatModal()">＋ หมวดหมู่</button>
+          <button class="btn-del btn-sm" id="delCatBtn" onclick="deleteCurrentCat()" style="display:none;">🗑 ลบหมวดหมู่นี้</button>
+        </div>
+        <div id="admin-doc-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div id="cartModal" class="modal">
+  <div class="modal-content">
+    <span class="mclose" onclick="closeCart()">&times;</span>
+    <div id="cartView">
+      <h2>🛒 ตะกร้าสินค้า</h2>
+      <div id="cartItems"></div>
+      <div id="cartTotal" style="text-align:right;margin:24px 0;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></div>
+      <button id="checkoutBtn" class="add-to-cart-btn" onclick="showPayment()">ชำระเงิน</button>
+    </div>
+    <div id="paymentSection" style="display:none;text-align:center;">
+      <h3 style="margin-bottom:24px;">สแกน QR Code เพื่อชำระเงิน</h3>
+      <div class="qr-code"><img src="https://hibot.in.th/QR/QRPAYMENT.jpg" alt="QR"></div>
+      <p style="margin:18px 0;">ยอดชำระ: <strong id="paymentAmount" style="color:#06b6d4;font-weight:900;"></strong></p>
+      <div style="background:rgba(6,182,212,.05);padding:26px;border-radius:18px;margin-top:24px;border:1px solid rgba(6,182,212,.2);">
+        <div style="margin-bottom:16px;"><label style="display:block;margin-bottom:8px;color:var(--t2);font-size:13px;">อีเมลสำหรับรับลิงก์ไฟล์ *</label><input type="email" id="payEmail" placeholder="example@email.com" style="width:100%;padding:13px;border-radius:10px;border:1px solid rgba(6,182,212,.3);font-size:15px;outline:none;color:var(--t1);"></div>
+        <div><label style="display:block;margin-bottom:8px;color:var(--t2);font-size:13px;">แนบสลิปการโอน (Slip) *</label><input type="file" id="slipFile" accept="image/*" style="width:100%;padding:13px;border-radius:10px;border:1px solid rgba(6,182,212,.3);"></div>
+      </div>
+      <div id="loader" class="loading-spinner"></div>
+      <button id="confirmBtn" class="add-to-cart-btn" style="margin-top:24px;" onclick="confirmPayment()">✓ ยืนยันและส่งสลิป</button>
+    </div>
+    <div id="downloadSection" style="display:none;text-align:center;">
+      <div style="font-size:72px;margin-bottom:24px;">🎉</div>
+      <h2 style="color:#06b6d4;margin-bottom:16px;">ส่งหลักฐานเรียบร้อย!</h2>
+      <p style="margin:24px 0;color:var(--t2);line-height:1.8;">แอดมินได้รับข้อมูลแล้ว กำลังตรวจสอบสลิป<br>ลิงก์ไฟล์จะส่งไปที่อีเมล:<br><strong id="targetEmail" style="color:var(--t1);"></strong></p>
+      <div style="background:rgba(16,185,129,.1);padding:18px;border-radius:14px;color:#10b981;margin:24px 0;border:1px solid rgba(16,185,129,.3);">💡 Admin จะตรวจสอบภายใน 15-30 นาที (เวลาทำการ)</div>
+      <button class="add-to-cart-btn" onclick="closeCart()">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+<!-- DOC MODAL -->
+<div id="docModal" class="modal">
+  <div class="modal-content">
+    <span class="mclose" onclick="closeDocModal()">&times;</span>
+    <h2 id="docModalTitle">เพิ่มไฟล์ใหม่</h2>
+    <input type="hidden" id="editDocId">
+    <div class="form-group"><label>หน้า *</label>
+      <select class="form-select" id="docPage" onchange="onDocPageChange()">
+        <option value="manual">📖 คู่มือ</option>
+        <option value="knowledge">🎓 ความรู้</option>
+      </select>
+    </div>
+    <div class="form-group"><label>หมวดหมู่ *</label><select class="form-select" id="docCat"></select></div>
+    <div class="form-group"><label>ชื่อไฟล์ / เอกสาร *</label><input class="form-input" type="text" id="docName" placeholder="เช่น คู่มือติดตั้ง HIBOT EA"></div>
+    <div class="form-group"><label>รายละเอียด</label><input class="form-input" type="text" id="docMeta" placeholder="เช่น PDF · คู่มือฉบับสมบูรณ์"></div>
+    <div class="form-group"><label>ไอคอน</label>
+      <select class="form-select" id="docIcon">
+        <option value="📄">📄 PDF / เอกสาร</option>
+        <option value="🗜">🗜 ZIP / ไฟล์โปรแกรม</option>
+        <option value="🎬">🎬 วิดีโอ</option>
+        <option value="🖼">🖼 รูปภาพ</option>
+        <option value="📊">📊 Spreadsheet</option>
+        <option value="🔗">🔗 ลิงก์</option>
+        <option value="📦">📦 แพ็คเกจ</option>
+      </select>
+    </div>
+    <div class="form-group"><label>ลิงก์ดาวน์โหลด *</label><input class="form-input" type="url" id="docUrl" placeholder="https://drive.google.com/..."></div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeDocModal()">ยกเลิก</button>
+      <button class="btn-save" onclick="saveDoc()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAT MODAL -->
+<div id="catModal" class="modal">
+  <div class="modal-content" style="max-width:440px;">
+    <span class="mclose" onclick="closeCatModal()">&times;</span>
+    <h2>＋ เพิ่มหมวดหมู่ใหม่</h2>
+    <div class="form-group"><label>หน้า *</label>
+      <select class="form-select" id="catPage">
+        <option value="manual">📖 คู่มือ</option>
+        <option value="knowledge">🎓 ความรู้</option>
+      </select>
+    </div>
+    <div class="form-group"><label>ชื่อหมวดหมู่ *</label><input class="form-input" type="text" id="catName" placeholder="เช่น การติดตั้ง MT4" onkeydown="if(event.key==='Enter')saveCat()"></div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeCatModal()">ยกเลิก</button>
+      <button class="btn-save" onclick="saveCat()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- PACKAGE MODAL -->
+<div id="pkgModal" class="modal">
+  <div class="modal-content" style="max-width:660px;">
+    <span class="mclose" onclick="closePkgModal()">&times;</span>
+    <h2 id="pkgModalTitle">＋ เพิ่มแพ็คเกจใหม่</h2>
+    <input type="hidden" id="editPkgId">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="form-group" style="margin-bottom:0;"><label>ชื่อแพ็คเกจ *</label><input class="form-input" type="text" id="pkgName" placeholder="เช่น EURUSD Basic Package"></div>
+      <div class="form-group" style="margin-bottom:0;"><label>ราคา (บาท) *</label><input class="form-input" type="number" id="pkgPrice" placeholder="999" min="0"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>สถานะการแสดงผล</label>
+        <label class="toggle-switch" style="margin-top:10px;">
+          <input type="checkbox" id="pkgEnabled" checked>
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-label" id="pkgEnabledLabel">แสดงบนเว็บ</span>
+        </label>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>แสดง Badge "ยอดนิยม"</label>
+        <label class="toggle-switch" style="margin-top:10px;">
+          <input type="checkbox" id="pkgPopular">
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-label">⭐ ยอดนิยม</span>
+        </label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:18px;">
+      <label>รายการคุณสมบัติ (Features) *</label>
+      <div class="features-list-admin" id="features-list-admin"></div>
+      <button class="btn-add-feature" onclick="addFeatureInput()">＋ เพิ่มรายการ</button>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closePkgModal()">ยกเลิก</button>
+      <button class="btn-save" onclick="savePkg()">💾 บันทึกแพ็คเกจ</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>© 2024 HIBOT Expert Advisor. All rights reserved. Trading involves risk.</div>
+  <div><button class="admin-entry-btn" onclick="goAdmin()"><span class="gear-icon">⚙️</span> Admin Panel</button></div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════
+const GAS_URL    = "https://script.google.com/macros/s/AKfycbz-kbp_CB2aggRPem78qcQdNqOAdSfmxPZ-iDodZJha83rFFJSQXKVapL3PEXXRL07Z9A/exec";
+const ADMIN_PASS = "hibot2024";
+
+// ═══════════════════════════════════════════════════════
+//  ✅ DATA LAYER — ใช้ GAS แทน localStorage
+// ═══════════════════════════════════════════════════════
+let DB         = null;   // in-memory cache
+let _saveTimer = null;   // debounce
+
+// โหลดข้อมูลจาก GAS (?action=getData)
+async function loadData() {
+  if (DB) return DB;
+  try {
+    const res  = await fetch(GAS_URL + '?action=getData&t=' + Date.now(), { cache: 'no-store' });
+    const json = await res.json();
+    if (json.status === 'success' && json.data) { DB = json.data; return DB; }
+  } catch (e) { console.warn('loadData:', e.message); }
+  DB = getDefaultData();
+  return DB;
+}
+
+// บันทึกข้อมูลไป GAS (debounce 400ms)
+function saveData(d) {
+  DB = d;
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => _doSave(d), 400);
+}
+
+async function _doSave(d) {
+  showInd('saving');
+  try {
+    const res  = await fetch(GAS_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ action: 'saveData', data: d })
+    });
+    const json = await res.json();
+    showInd(json.status === 'success' ? 'saved' : 'error');
+  } catch (e) { showInd('error'); console.error('saveData:', e.message); }
+}
+
+// Save indicator มุมขวาล่าง
+let _indTimer = null;
+function showInd(state) {
+  const el = document.getElementById('save-indicator');
+  el.className = ''; clearTimeout(_indTimer);
+  if (state === 'saving') { el.textContent = '💾 กำลังบันทึก...'; el.classList.add('saving'); }
+  else if (state === 'saved') {
+    el.textContent = '✅ บันทึกแล้ว'; el.classList.add('saved');
+    _indTimer = setTimeout(() => { el.className = ''; }, 2500);
+  } else {
+    el.textContent = '❌ บันทึกไม่สำเร็จ'; el.classList.add('error');
+    _indTimer = setTimeout(() => { el.className = ''; }, 4000);
+  }
+}
+
+function nextId(arr) { return arr.length ? Math.max(...arr.map(d => d.id)) + 1 : 1; }
+
+// Default data (fallback เมื่อ GAS ไม่ตอบ)
+function getDefaultData() {
+  return {
+    packages:[
+      {id:1,name:'EURUSD Basic Package',price:999,enabled:true,popular:false,features:['EA สำหรับ MT4','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','แอดไลน์เพื่อขอดูผล Backtest!']},
+      {id:2,name:'EURUSD Pro Package',price:1499,enabled:true,popular:true,features:['EA สำหรับ MT4','Source code','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','แอดไลน์เพื่อขอดูผล Backtest!']},
+      {id:3,name:'EURUSD VIP Package',price:1899,enabled:true,popular:false,features:['EA สำหรับ MT4 & MT5','Source code','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','แอดไลน์เพื่อขอดูผล Backtest!']}
+    ],
+    cats:{
+      manual:['การติดตั้ง','การตั้งค่า','ไฟล์โปรแกรม'],
+      knowledge:['ความรู้พื้นฐาน','กลยุทธ์','การจัดการความเสี่ยง']
+    },
+    docs:[
+      {id:1,page:'manual',cat:'การติดตั้ง',name:'คู่มือติดตั้ง HIBOT EA (MT4 & MT5)',meta:'PDF · คู่มือฉบับสมบูรณ์',icon:'📄',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:2,page:'manual',cat:'การติดตั้ง',name:'ภาพประกอบขั้นตอนการติดตั้ง',meta:'ภาพ · คู่มือภาพทีละขั้น',icon:'🖼',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:3,page:'manual',cat:'ไฟล์โปรแกรม',name:'ไฟล์ HIBOT EA (.ex4 & .ex5)',meta:'ZIP · ไฟล์โปรแกรม MT4/MT5',icon:'🗜',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:4,page:'manual',cat:'การตั้งค่า',name:'คู่มือตั้งค่าพารามิเตอร์ EA',meta:'PDF · Lot Size, SL, TP',icon:'📄',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:5,page:'manual',cat:'การตั้งค่า',name:'ไฟล์ SET ค่าสำเร็จรูป (Preset)',meta:'SET File · ค่าแนะนำ',icon:'🗜',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:6,page:'knowledge',cat:'ความรู้พื้นฐาน',name:'Forex คืออะไร? เริ่มต้นอย่างไร',meta:'PDF · สำหรับมือใหม่',icon:'📄',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:7,page:'knowledge',cat:'ความรู้พื้นฐาน',name:'การอ่านกราฟแท่งเทียน (Candlestick)',meta:'PDF · เทคนิคการวิเคราะห์',icon:'📄',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:8,page:'knowledge',cat:'ความรู้พื้นฐาน',name:'วิดีโอ: รู้จัก Pip, Lot, Leverage',meta:'วิดีโอ · ความรู้พื้นฐาน',icon:'🎬',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:9,page:'knowledge',cat:'กลยุทธ์',name:'กลยุทธ์ Trend Following',meta:'PDF · กลยุทธ์ตามเทรนด์',icon:'📄',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:10,page:'knowledge',cat:'กลยุทธ์',name:'วิดีโอ: Backtest กลยุทธ์บน MT4',meta:'วิดีโอ · Strategy Tester',icon:'🎬',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:11,page:'knowledge',cat:'การจัดการความเสี่ยง',name:'หลักการ Money Management',meta:'PDF · Risk Management',icon:'📄',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'},
+      {id:12,page:'knowledge',cat:'การจัดการความเสี่ยง',name:'การตั้ง Stop Loss ที่เหมาะสม',meta:'PDF · ป้องกันทุน',icon:'📄',url:'https://drive.google.com/drive/folders/1x_dD20-QHLxBw4bha4LrOhazRf-6AwJp?usp=drive_link'}
+    ]
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+const docState = { manual:{cat:null}, knowledge:{cat:null} };
+let adminDocPage = 'manual', adminDocCat = null, adminMainSection = 'packages';
+
+// ═══════════════════════════════════════════════════════
+//  RENDER HOME PACKAGES
+// ═══════════════════════════════════════════════════════
+async function renderHomePackages() {
+  await loadData();
+  const grid = document.getElementById('product-grid-home');
+  const active = DB.packages.filter(p => p.enabled);
+  if (!active.length) { grid.innerHTML='<p style="text-align:center;color:var(--t2);grid-column:1/-1;">ยังไม่มีแพ็คเกจ</p>'; return; }
+  grid.innerHTML = active.map(p=>`
+    <div class="product-card reveal${p.popular?' popular':''}">
+      ${p.popular?'<span class="pop-badge">⭐ ยอดนิยม</span>':''}
+      <h3>${p.name}</h3>
+      <div class="price">฿${p.price.toLocaleString()}</div>
+      <ul>${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+      <button class="add-to-cart-btn" onclick="addToCart('${p.name.replace(/'/g,"\\'")}',${p.price})">เพิ่มลงตะกร้า</button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAGE NAV
+// ═══════════════════════════════════════════════════════
+async function showPage(page, btn) {
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab-btn').forEach(b=>b.classList.remove('active-nav'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(btn) btn.classList.add('active-nav');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(page==='manual'||page==='knowledge'){ DB=null; await renderDocPage(page); }
+  if(page==='home'){ DB=null; await renderHomePackages(); }
+}
+function goAdmin(){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab-btn').forEach(b=>b.classList.remove('active-nav'));
+  document.getElementById('page-admin').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  PUBLIC DOC PAGES
+// ═══════════════════════════════════════════════════════
+async function renderDocPage(page) {
+  await loadData();
+  const cats = DB.cats[page]||[];
+  if(!docState[page].cat||!cats.includes(docState[page].cat)) docState[page].cat=cats[0]||null;
+  const tabsEl = document.getElementById(page+'-cat-tabs');
+  tabsEl.innerHTML = cats.length
+    ? cats.map(c=>`<button class="cat-tab${c===docState[page].cat?' active':''}" onclick="selectDocCat('${page}','${c.replace(/'/g,"\\'")}',this)">${c}</button>`).join('')
+    : '<span style="color:var(--t2);font-size:13px;">ยังไม่มีหมวดหมู่</span>';
+  renderDocList(page, docState[page].cat, '');
+}
+function selectDocCat(page,cat,btn){
+  docState[page].cat=cat;
+  document.querySelectorAll('#'+page+'-cat-tabs .cat-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderDocList(page,cat,'');
+  const si=document.querySelector('#page-'+page+' .doc-search'); if(si) si.value='';
+}
+function renderDocList(page,cat,filter){
+  const listEl=document.getElementById(page+'-list');
+  let docs=DB.docs.filter(d=>d.page===page);
+  if(cat)    docs=docs.filter(d=>d.cat===cat);
+  if(filter) docs=docs.filter(d=>d.name.toLowerCase().includes(filter)||d.meta.toLowerCase().includes(filter));
+  if(!docs.length){
+    listEl.innerHTML='<div class="no-docs">📭 ยังไม่มีไฟล์ในหมวดนี้<br><small style="font-size:12px;">Admin สามารถเพิ่มไฟล์ได้จาก Admin Panel</small></div>';
+    return;
+  }
+  listEl.innerHTML=docs.map(d=>`
+    <a class="doc-item" href="${d.url}" target="_blank" rel="noopener">
+      <div class="doc-item-left">
+        <div class="doc-icon">${d.icon}</div>
+        <div><div class="doc-name">${d.name}</div><div class="doc-meta">${d.meta}</div></div>
+      </div>
+      <span class="doc-dl-btn">⬇ ดาวน์โหลด</span>
+    </a>`).join('');
+}
+function filterDocPage(page,val){ renderDocList(page,docState[page].cat,val.toLowerCase()); }
+
+// ═══════════════════════════════════════════════════════
+//  ADMIN LOGIN
+// ═══════════════════════════════════════════════════════
+async function doLogin(){
+  if(document.getElementById('adminPass').value===ADMIN_PASS){
+    document.getElementById('admin-login').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+    DB=null; await loadData();
+    switchAdminMain('packages',document.querySelector('.admin-main-tab'));
+  } else { document.getElementById('loginErr').style.display='block'; }
+}
+function doLogout(){
+  document.getElementById('admin-login').style.display='block';
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('adminPass').value='';
+  document.getElementById('loginErr').style.display='none';
+}
+
+// ═══════════════════════════════════════════════════════
+//  ADMIN MAIN TABS
+// ═══════════════════════════════════════════════════════
+function switchAdminMain(section,btn){
+  adminMainSection=section;
+  document.querySelectorAll('.admin-main-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.admin-section-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('admin-section-'+section).classList.add('active');
+  if(section==='packages') renderPkgAdminCards();
+  if(section==='docs')     renderAdminPanel();
+}
+
+// ═══════════════════════════════════════════════════════
+//  PACKAGE ADMIN
+// ═══════════════════════════════════════════════════════
+function renderPkgAdminCards(){
+  const wrap=document.getElementById('pkg-cards-admin');
+  if(!DB||!DB.packages.length){ wrap.innerHTML='<div class="empty-admin">📭 ยังไม่มีแพ็คเกจ กด "+ เพิ่มแพ็คเกจใหม่" เพื่อเริ่มต้น</div>'; return; }
+  wrap.innerHTML=DB.packages.map(p=>`
+    <div class="pkg-admin-card${p.enabled?'':' disabled-card'}" id="pkg-card-${p.id}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+        <div>
+          <div class="pkg-name">${p.name}${p.popular?'<span class="popular-badge-admin">⭐ ยอดนิยม</span>':''}</div>
+          <span class="pkg-price-badge">฿${p.price.toLocaleString()}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:${p.enabled?'#10b981':'#94a3b8'};">
+          <span class="pkg-status-dot ${p.enabled?'on':'off'}"></span>${p.enabled?'แสดงอยู่':'ซ่อนอยู่'}
+        </div>
+      </div>
+      <div class="pkg-features-preview">${p.features.slice(0,4).map(f=>'• '+f).join('<br>')}${p.features.length>4?`<br><span style="color:#06b6d4;">+${p.features.length-4} รายการ</span>`:''}</div>
+      <div class="pkg-card-actions">
+        <button class="btn-edit" onclick="openEditPkgModal(${p.id})">✏️ แก้ไข</button>
+        <button class="pkg-toggle-btn ${p.enabled?'enabled':'disabled'}" onclick="togglePkg(${p.id})">${p.enabled?'🙈 ซ่อน':'👁 แสดง'}</button>
+        <button class="btn-del" onclick="deletePkg(${p.id})">🗑 ลบ</button>
+      </div>
+    </div>`).join('');
+}
+function togglePkg(id){
+  const pkg=DB.packages.find(p=>p.id===id); if(!pkg) return;
+  pkg.enabled=!pkg.enabled; saveData(DB); renderPkgAdminCards(); renderHomePackages();
+}
+function deletePkg(id){
+  if(!confirm('ยืนยันการลบแพ็คเกจนี้?')) return;
+  DB.packages=DB.packages.filter(p=>p.id!==id); saveData(DB); renderPkgAdminCards(); renderHomePackages();
+}
+
+// ═══════════════════════════════════════════════════════
+//  PACKAGE MODAL
+// ═══════════════════════════════════════════════════════
+function openAddPkgModal(){
+  document.getElementById('pkgModalTitle').textContent='＋ เพิ่มแพ็คเกจใหม่';
+  document.getElementById('editPkgId').value=''; document.getElementById('pkgName').value='';
+  document.getElementById('pkgPrice').value=''; document.getElementById('pkgEnabled').checked=true;
+  document.getElementById('pkgPopular').checked=false;
+  const fl=document.getElementById('features-list-admin'); fl.innerHTML='';
+  addFeatureInput('EA สำหรับ MT4'); addFeatureInput('Timeframe H1'); addFeatureInput('ทุน 200$');
+  document.getElementById('pkgModal').style.display='block';
+}
+function openEditPkgModal(id){
+  const pkg=DB.packages.find(p=>p.id===id); if(!pkg) return;
+  document.getElementById('pkgModalTitle').textContent='✏️ แก้ไขแพ็คเกจ';
+  document.getElementById('editPkgId').value=id; document.getElementById('pkgName').value=pkg.name;
+  document.getElementById('pkgPrice').value=pkg.price; document.getElementById('pkgEnabled').checked=pkg.enabled;
+  document.getElementById('pkgPopular').checked=pkg.popular;
+  const fl=document.getElementById('features-list-admin'); fl.innerHTML='';
+  pkg.features.forEach(f=>addFeatureInput(f));
+  document.getElementById('pkgModal').style.display='block';
+}
+function addFeatureInput(val=''){
+  const fl=document.getElementById('features-list-admin');
+  const div=document.createElement('div'); div.className='feature-item-admin';
+  div.innerHTML=`<input type="text" placeholder="คุณสมบัติ..." value="${val.replace(/"/g,'&quot;')}"><button class="btn-rm-feature" onclick="this.parentElement.remove()">×</button>`;
+  fl.appendChild(div); div.querySelector('input').focus();
+}
+function savePkg(){
+  const id=document.getElementById('editPkgId').value;
+  const name=document.getElementById('pkgName').value.trim();
+  const price=parseInt(document.getElementById('pkgPrice').value)||0;
+  const enabled=document.getElementById('pkgEnabled').checked;
+  const popular=document.getElementById('pkgPopular').checked;
+  const features=[...document.querySelectorAll('#features-list-admin .feature-item-admin input')].map(i=>i.value.trim()).filter(Boolean);
+  if(!name){alert('⚠️ กรุณากรอกชื่อแพ็คเกจ');return;}
+  if(!features.length){alert('⚠️ กรุณาเพิ่มคุณสมบัติอย่างน้อย 1 รายการ');return;}
+  if(id){ const idx=DB.packages.findIndex(p=>p.id==id); if(idx>-1) DB.packages[idx]={id:parseInt(id),name,price,enabled,popular,features}; }
+  else { DB.packages.push({id:nextId(DB.packages),name,price,enabled,popular,features}); }
+  saveData(DB); closePkgModal(); renderPkgAdminCards(); renderHomePackages();
+}
+function closePkgModal(){document.getElementById('pkgModal').style.display='none';}
+
+// ═══════════════════════════════════════════════════════
+//  DOCS ADMIN
+// ═══════════════════════════════════════════════════════
+function switchAdminPage(page,btn){
+  adminDocPage=page; adminDocCat=null;
+  document.querySelectorAll('.admin-page-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active'); renderAdminPanel();
+}
+function renderAdminPanel(){
+  if(!DB) return;
+  const cats=DB.cats[adminDocPage]||[];
+  if(!adminDocCat||!cats.includes(adminDocCat)) adminDocCat=cats[0]||null;
+  const row=document.getElementById('admin-cat-tabs-row');
+  row.innerHTML=cats.map(c=>`<button class="admin-cat-tab${c===adminDocCat?' active':''}" onclick="selectAdminCat('${c.replace(/'/g,"\\'")}',this)">${c}</button>`).join('');
+  document.getElementById('delCatBtn').style.display=adminDocCat?'':'none';
+  renderAdminDocList();
+}
+function selectAdminCat(cat,btn){
+  adminDocCat=cat;
+  document.querySelectorAll('#admin-cat-tabs-row .admin-cat-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('delCatBtn').style.display=cat?'':'none'; renderAdminDocList();
+}
+function renderAdminDocList(){
+  const el=document.getElementById('admin-doc-list');
+  let docs=DB.docs.filter(d=>d.page===adminDocPage);
+  if(adminDocCat) docs=docs.filter(d=>d.cat===adminDocCat);
+  if(!docs.length){el.innerHTML='<div class="empty-admin">📭 ยังไม่มีไฟล์ในหมวดนี้</div>';return;}
+  el.innerHTML=docs.map(d=>`
+    <div class="admin-doc-row">
+      <div class="adr-icon">${d.icon}</div>
+      <div class="adr-info">
+        <div class="adr-name">${d.name}</div>
+        <div class="adr-meta">${d.cat} · ${d.meta}</div>
+        <div class="adr-url">${d.url}</div>
+      </div>
+      <div class="adr-actions">
+        <button class="btn-edit" onclick="openEditModal(${d.id})">✏️ แก้ไข</button>
+        <button class="btn-del"  onclick="deleteDoc(${d.id})">🗑 ลบ</button>
+      </div>
+    </div>`).join('');
+}
+// CRUD DOCS
+function openAddModal(){
+  document.getElementById('docModalTitle').textContent='＋ เพิ่มไฟล์ใหม่';
+  ['editDocId','docName','docMeta','docUrl'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('docIcon').value='📄'; document.getElementById('docPage').value=adminDocPage;
+  populateCatSelect(adminDocPage,adminDocCat); document.getElementById('docModal').style.display='block';
+}
+function openEditModal(id){
+  const d=DB.docs.find(x=>x.id===id); if(!d) return;
+  document.getElementById('docModalTitle').textContent='✏️ แก้ไขไฟล์';
+  document.getElementById('editDocId').value=id; document.getElementById('docName').value=d.name;
+  document.getElementById('docMeta').value=d.meta; document.getElementById('docUrl').value=d.url;
+  document.getElementById('docIcon').value=d.icon; document.getElementById('docPage').value=d.page;
+  populateCatSelect(d.page,d.cat); document.getElementById('docModal').style.display='block';
+}
+function onDocPageChange(){populateCatSelect(document.getElementById('docPage').value,null);}
+function populateCatSelect(page,selected){
+  const sel=document.getElementById('docCat');
+  const cats=(DB&&DB.cats[page])?DB.cats[page]:[];
+  sel.innerHTML=cats.map(c=>`<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join('');
+}
+function saveDoc(){
+  const id=document.getElementById('editDocId').value;
+  const page=document.getElementById('docPage').value,cat=document.getElementById('docCat').value;
+  const name=document.getElementById('docName').value.trim(),meta=document.getElementById('docMeta').value.trim();
+  const icon=document.getElementById('docIcon').value,url=document.getElementById('docUrl').value.trim();
+  if(!name||!url||!cat){alert('⚠️ กรุณากรอกชื่อ, หมวดหมู่ และลิงก์');return;}
+  if(id){ const idx=DB.docs.findIndex(x=>x.id==id); if(idx>-1) DB.docs[idx]={id:parseInt(id),page,cat,name,meta,icon,url}; }
+  else { DB.docs.push({id:nextId(DB.docs),page,cat,name,meta,icon,url}); }
+  saveData(DB); closeDocModal(); renderAdminPanel();
+}
+function deleteDoc(id){
+  if(!confirm('ยืนยันการลบไฟล์นี้?')) return;
+  DB.docs=DB.docs.filter(d=>d.id!==id); saveData(DB); renderAdminPanel();
+}
+function closeDocModal(){document.getElementById('docModal').style.display='none';}
+// CRUD CATS
+function openAddCatModal(){
+  document.getElementById('catPage').value=adminDocPage; document.getElementById('catName').value='';
+  document.getElementById('catModal').style.display='block';
+  setTimeout(()=>document.getElementById('catName').focus(),100);
+}
+function saveCat(){
+  const page=document.getElementById('catPage').value,name=document.getElementById('catName').value.trim();
+  if(!name){alert('⚠️ กรุณากรอกชื่อหมวดหมู่');return;}
+  if(!DB.cats[page]) DB.cats[page]=[];
+  if(DB.cats[page].includes(name)){alert('⚠️ หมวดหมู่นี้มีอยู่แล้ว');return;}
+  DB.cats[page].push(name); saveData(DB); closeCatModal();
+  adminDocPage=page; adminDocCat=name; renderAdminPanel();
+}
+function deleteCurrentCat(){
+  if(!adminDocCat) return;
+  const count=DB.docs.filter(d=>d.page===adminDocPage&&d.cat===adminDocCat).length;
+  if(!confirm(`ลบหมวดหมู่ "${adminDocCat}"? (มี ${count} ไฟล์ในหมวดนี้ ไฟล์จะถูกลบด้วย)`)) return;
+  DB.cats[adminDocPage]=DB.cats[adminDocPage].filter(c=>c!==adminDocCat);
+  DB.docs=DB.docs.filter(d=>!(d.page===adminDocPage&&d.cat===adminDocCat));
+  adminDocCat=null; saveData(DB); renderAdminPanel();
+}
+function closeCatModal(){document.getElementById('catModal').style.display='none';}
+
+// Toggle label
+document.getElementById('pkgEnabled').addEventListener('change',function(){
+  document.getElementById('pkgEnabledLabel').textContent=this.checked?'แสดงบนเว็บ':'ซ่อนจากเว็บ';
+});
+
+// ═══════════════════════════════════════════════════════
+//  CART
+// ═══════════════════════════════════════════════════════
+let cart=[];
+function addToCart(name,price){
+  cart.push({name,price}); document.getElementById('cartCount').textContent=cart.length;
+  const btn=document.querySelector('.cart-btn'); btn.style.transform='scale(1.1)';
+  setTimeout(()=>btn.style.transform='scale(1)',200);
+  alert('✓ เพิ่ม '+name+' ลงตะกร้าแล้ว!');
+}
+function openCart(){
+  const itemsDiv=document.getElementById('cartItems'),totalDiv=document.getElementById('cartTotal'),chkBtn=document.getElementById('checkoutBtn');
+  if(!cart.length){
+    itemsDiv.innerHTML='<div style="text-align:center;padding:44px;color:var(--t2);">ไม่มีสินค้าในตะกร้า</div>';
+    totalDiv.innerHTML=''; chkBtn.style.display='none';
+  } else {
+    itemsDiv.innerHTML=cart.map((item,i)=>`<div class="cart-item"><span>${item.name}</span><span style="display:flex;align-items:center;gap:13px;"><strong style="color:#06b6d4;">฿${item.price.toLocaleString()}</strong><span style="color:#ef4444;cursor:pointer;" onclick="removeItem(${i})">✖</span></span></div>`).join('');
+    totalDiv.innerHTML='ยอดรวม: ฿'+cart.reduce((s,i)=>s+i.price,0).toLocaleString();
+    chkBtn.style.display='block';
+  }
+  document.getElementById('cartView').style.display='block';
+  document.getElementById('paymentSection').style.display='none';
+  document.getElementById('downloadSection').style.display='none';
+  document.getElementById('cartModal').style.display='block';
+}
+function removeItem(i){cart.splice(i,1);document.getElementById('cartCount').textContent=cart.length;openCart();}
+function showPayment(){
+  document.getElementById('paymentAmount').textContent='฿'+cart.reduce((s,i)=>s+i.price,0).toLocaleString();
+  document.getElementById('cartView').style.display='none';
+  document.getElementById('paymentSection').style.display='block';
+}
+async function confirmPayment(){
+  const email=document.getElementById('payEmail').value,file=document.getElementById('slipFile').files[0];
+  const btn=document.getElementById('confirmBtn'),loader=document.getElementById('loader');
+  if(!email.includes('@')||!file){alert('⚠️ กรุณากรอกอีเมลและแนบรูปสลิปด้วยครับ');return;}
+  btn.disabled=true; loader.style.display='block';
+  const reader=new FileReader(); reader.readAsDataURL(file);
+  reader.onload=async()=>{
+    const total=cart.reduce((s,i)=>s+i.price,0);
+    try{
+      const res=await(await fetch(GAS_URL,{method:"POST",body:JSON.stringify({email,amount:total,items:cart.map(i=>i.name).join(', '),fileName:file.name,mimeType:file.type,slipBase64:reader.result})})).json();
+      if(res.status==="success"){
+        document.getElementById('targetEmail').textContent=email;
+        document.getElementById('paymentSection').style.display='none';
+        document.getElementById('downloadSection').style.display='block';
+        cart=[]; document.getElementById('cartCount').textContent='0';
+      } else { alert('⚠️ เกิดข้อผิดพลาด: '+res.error); }
+    }catch(e){alert('⚠️ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้: '+e.message);}
+    finally{btn.disabled=false; loader.style.display='none';}
+  };
+}
+function closeCart(){document.getElementById('cartModal').style.display='none';}
+
+window.onclick=e=>{
+  ['cartModal','docModal','catModal','pkgModal'].forEach(id=>{
+    if(e.target===document.getElementById(id)) document.getElementById(id).style.display='none';
+  });
+};
+
+// ═══════════════════════════════════════════════════════
+//  SCROLL / REVEAL
+// ═══════════════════════════════════════════════════════
+function reveal(){document.querySelectorAll('.reveal').forEach(el=>{if(el.getBoundingClientRect().top<window.innerHeight-140) el.classList.add('active');});}
+window.addEventListener('scroll',()=>{
+  reveal();
+  document.getElementById('header').classList.toggle('scrolled',window.scrollY>50);
+  const h=document.querySelector('.hero');
+  if(h&&document.getElementById('page-home').classList.contains('active')) h.style.transform='translateY('+window.pageYOffset*.46+'px)';
+});
+reveal();
+
+// ═══════════════════════════════════════════════════════
+//  ✅ INIT — โหลดจาก GAS แทน localStorage
+// ═══════════════════════════════════════════════════════
+(async()=>{
+  await loadData();
+  renderHomePackages();
+  renderDocPage('manual');
+  renderDocPage('knowledge');
+})();
+</script>
+
+<!-- ======= 🛡️ PROTECTION JAVASCRIPT ======= -->
+<script>
+(function(){
+  'use strict';
+  if(window.self!==window.top){
+    try{window.top.location=window.self.location;}catch(e){}
+    document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:monospace;font-size:18px;color:#ef4444;background:#0f172a;text-align:center;padding:40px;">⛔ ไม่อนุญาตให้ฝังเว็บนี้ใน iframe<br><small style="font-size:13px;color:#64748b;margin-top:8px;display:block;">hibot.in.th</small></div>';
+    return;
+  }
+  document.addEventListener('contextmenu',function(e){e.preventDefault();e.stopPropagation();showToast('🚫 ไม่อนุญาตคลิกขวาบนเว็บนี้');return false;},true);
+  document.addEventListener('keydown',function(e){
+    var k=(e.key||'').toLowerCase();var ctrl=e.ctrlKey||e.metaKey;
+    if(e.keyCode===123){e.preventDefault();e.stopPropagation();showDTWarn();return false;}
+    if(ctrl&&k==='u'){e.preventDefault();e.stopPropagation();showToast('🚫 ไม่อนุญาตดู Source Code');return false;}
+    if(ctrl&&k==='s'){e.preventDefault();e.stopPropagation();showToast('🚫 ไม่อนุญาตบันทึกหน้าเว็บ');return false;}
+    if(ctrl&&k==='a'){e.preventDefault();e.stopPropagation();showToast('🚫 ไม่อนุญาตเลือกข้อความทั้งหมด');return false;}
+    if(ctrl&&k==='c'){e.preventDefault();e.stopPropagation();showToast('🚫 เนื้อหาถูกป้องกัน — ไม่อนุญาตคัดลอก');return false;}
+    if(ctrl&&k==='x'){e.preventDefault();e.stopPropagation();return false;}
+    if(ctrl&&k==='p'){e.preventDefault();e.stopPropagation();showToast('🚫 ไม่อนุญาตพิมพ์หน้าเว็บ');return false;}
+    if(ctrl&&e.shiftKey&&(k==='i'||k==='j'||k==='c')){e.preventDefault();e.stopPropagation();showDTWarn();return false;}
+    if(ctrl&&e.shiftKey&&k==='k'){e.preventDefault();e.stopPropagation();showDTWarn();return false;}
+  },true);
+  document.addEventListener('selectstart',function(e){e.preventDefault();return false;},true);
+  ['copy','cut'].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();showToast('🚫 เนื้อหาถูกป้องกัน — ไม่อนุญาตคัดลอก');return false;},true);});
+  document.addEventListener('dragstart',function(e){if(e.target&&(e.target.tagName==='IMG'||e.target.tagName==='A')){e.preventDefault();return false;}},true);
+  var _dtOpen=false,_dtThresh=160;
+  function _checkDT(){var wd=window.outerWidth-window.innerWidth,hd=window.outerHeight-window.innerHeight;if(wd>_dtThresh||hd>_dtThresh){if(!_dtOpen){_dtOpen=true;showDTWarn();}}else{_dtOpen=false;}}
+  setInterval(_checkDT,1200);
+  var _dtTrap={toString:function(){showDTWarn();return '';}};
+  setInterval(function(){console.log('%c',_dtTrap);},3500);
+  var _cWarn='color:#ef4444;font-size:22px;font-weight:900;font-family:monospace;';
+  var _cBody='color:#0f172a;font-size:14px;line-height:1.8;';
+  console.log('%c⛔ STOP!',_cWarn);
+  console.log('%cเว็บนี้เป็นทรัพย์สินของ HIBOT Expert Advisor\nhibot.in.th — สงวนลิขสิทธิ์ทุกประการ\nห้ามคัดลอกโค้ดหรือเนื้อหาโดยไม่ได้รับอนุญาต',_cBody);
+  setInterval(function(){console.clear();console.log('%c🛡️ HIBOT — Protected',_cWarn);},4500);
+  window.addEventListener('beforeprint',function(e){e.preventDefault();showToast('🚫 ไม่อนุญาตพิมพ์หน้าเว็บ');var s=document.createElement('style');s.id='__print_kill';s.media='print';s.innerHTML='body{display:none!important;visibility:hidden!important;}';document.head.appendChild(s);});
+  window.addEventListener('afterprint',function(){var s=document.getElementById('__print_kill');if(s)s.remove();});
+  var _realTitle=document.title;
+  document.addEventListener('visibilitychange',function(){document.title=document.hidden?'🔒 Protected':''+_realTitle;});
+  try{Object.freeze(Object.prototype);}catch(e){}
+  var _toastTimer=null;
+  function showToast(msg){
+    var ex=document.getElementById('__hb_toast');if(ex)ex.remove();
+    var t=document.createElement('div');t.id='__hb_toast';
+    t.setAttribute('style',['position:fixed','bottom:32px','left:50%','transform:translateX(-50%)','background:linear-gradient(135deg,#0f172a,#1e293b)','color:#f1f5f9','padding:13px 28px','border-radius:50px','font-size:14px','font-weight:700','letter-spacing:.3px','box-shadow:0 12px 40px rgba(0,0,0,.55)','z-index:999999','border:1px solid rgba(239,68,68,.38)','pointer-events:none','white-space:nowrap','transition:opacity .35s ease'].join(';'));
+    t.textContent=msg;document.body.appendChild(t);
+    clearTimeout(_toastTimer);_toastTimer=setTimeout(function(){t.style.opacity='0';setTimeout(function(){if(t.parentNode)t.remove();},380);},2600);
+  }
+  function showDTWarn(){var el=document.getElementById('__dt_warn');if(el)el.classList.add('show');}
+})();
+</script>
+<!-- ======= END PROTECTION JS ======= -->
+</body>
+</html>
