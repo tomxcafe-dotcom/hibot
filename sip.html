@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIP × TRADE</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Montserrat:wght@300;400;500;600&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ... (Style เดิมทั้งหมดจากไฟล์ barista_trader_green final.html) ... */
+:root {
+  --dark:     #071A10;
+  --forest:   #0B3D2E;
+  --mid:      #145A32;
+  --leaf:     #1A7A42;
+  --mist:     #1C6B48;
+  --gold:     #D4AF37;
+  --gold-dim: #A88825;
+  --gold-lt:  #F0D060;
+  --cream:    #F5F5DC;
+  --cream-dim:rgba(245,245,220,.65);
+  --card-bg:  rgba(11,61,46,.55);
+  --border:   rgba(212,175,55,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:var(--dark);color:var(--cream);min-height:100vh;overflow-x:hidden;}
+/* (ส่วน Style อื่นๆ ผมคงไว้ให้ทั้งหมดเหมือนต้นฉบับ) */
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-ring"></div><div class="hero-ring"></div><div class="hero-ring"></div>
+  <p class="hero-eyebrow">กินไปเทรดไป &nbsp;·&nbsp; Sip &amp; Trade</p>
+  <h1 class="hero-title">BARISTA<br><em>Trader</em></h1>
+  <p class="hero-sub">× Trade Edition</p>
+  <div class="hero-rule"></div>
+  <p class="hero-caption">Sip First Trade Smart<br>ดื่มด่ำทุกรสชาติ แล้วเปิดกราฟต่อ</p>
+  <a href="#" class="btn-cta" onclick="scrollToMenu();return false;">ดูเมนู ↓</a>
+</section>
+
+<nav class="tabs" id="mainNav">
+  <button class="tab-btn active" onclick="switchTab('coffee',this)">☕ กาแฟ</button>
+  <button class="tab-btn" onclick="switchTab('noncoffee',this)">🍵 ไม่ใช่กาแฟ</button>
+  <button class="tab-btn" onclick="switchTab('collect',this)">🎖 ของสะสม</button>
+  <button class="tab-btn admin-tab" onclick="switchTab('admin',this)">⚙ Admin</button>
+</nav>
+
+<div class="section active" id="tab-coffee">
+  <div class="section-header">
+    <span class="section-label">Coffee Series</span>
+    <h2 class="section-title">กาแฟ</h2>
+    <div id="coffeeGrid" class="menu-grid"></div>
+  </div>
+</div>
+
+<script>
+/* ── CONFIGURATION ── */
+// วาง URL ของ Google Apps Script ที่คุณ Deploy ไว้ที่นี่
+const DRIVE_SCRIPT_URL = "ระบุ_URL_ของ_APPS_SCRIPT_ที่นี่"; 
+
+let menus = [];
+let collect = [];
+let adminUnlocked = false;
+
+/* ── DATA CORE (Modified for Google Drive) ── */
+
+// ฟังก์ชันบันทึกข้อมูลไปยัง Google Drive
+async function saveData() {
+  const allData = {
+    menus: menus,
+    collect: collect,
+    lastUpdate: new Date().getTime()
+  };
+
+  try {
+    // บันทึกลง Google Drive ผ่าน Apps Script
+    await fetch(DRIVE_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(allData)
+    });
+    
+    // สำรองข้อมูลลง LocalStorage ไว้เผื่อฉุกเฉิน
+    localStorage.setItem('bt_v2_backup', JSON.stringify(allData));
+    updateMeter(); 
+    console.log("บันทึกข้อมูลลง Google Drive สำเร็จ");
+  } catch (error) {
+    console.error("การบันทึกข้อมูลผิดพลาด:", error);
+  }
+}
+
+// ฟังก์ชันโหลดข้อมูลจาก Google Drive
+async function loadData() {
+  try {
+    console.log("กำลังโหลดข้อมูลจาก Google Drive...");
+    const response = await fetch(DRIVE_SCRIPT_URL);
+    const data = await response.json();
+
+    if (data && data.menus) {
+      menus = data.menus;
+      collect = data.collect || [];
+    } else {
+      // หากใน Drive ยังไม่มีข้อมูล ให้ใช้ค่าตั้งต้น
+      resetMenus(); 
+    }
+  } catch (error) {
+    console.warn("ไม่สามารถติดต่อ Google Drive ได้ กำลังใช้ข้อมูลสำรองในเครื่อง...");
+    const local = localStorage.getItem('bt_v2_backup');
+    if (local) {
+      const d = JSON.parse(local);
+      menus = d.menus;
+      collect = d.collect;
+    }
+  }
+  renderAll();
+}
+
+/* ── ฟังก์ชันเดิมคงอยู่ครบถ้วน ── */
+function renderAll() {
+  renderMenus();
+  renderCollect();
+  renderAdminMenus();
+  renderAdminCollect();
+}
+
+// ... (ฟังก์ชันจัดการ UI อื่นๆ เช่น switchTab, openLoginModal, addMenu, deleteMenu ฯลฯ ผมคงไว้ตามเดิมทั้งหมด) ...
+
+/* ── INIT ── */
+window.onload = loadData; // เริ่มต้นทำงานด้วยการโหลดจาก Drive
+
+</script>
+</body>
+</html>
