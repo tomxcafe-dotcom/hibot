@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIP × TRADE</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Montserrat:wght@300;400;500;600&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark:     #071A10;
+  --forest:   #0B3D2E;
+  --mid:      #145A32;
+  --leaf:     #1A7A42;
+  --mist:     #1C6B48;
+  --gold:     #D4AF37;
+  --gold-dim: #A88825;
+  --gold-lt:  #F0D060;
+  --cream:    #F5F5DC;
+  --cream-dim:rgba(245,245,220,.65);
+  --card-bg:  rgba(11,61,46,.55);
+  --border:   rgba(212,175,55,.18);
+  --save-ok:  #22c55e;
+  --save-err: #ef4444;
+  --save-ing: #f59e0b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:var(--dark);color:var(--cream);min-height:100vh;overflow-x:hidden;}
+
+/* ── SAVE STATUS ── */
+#saveStatusBar{position:fixed;top:0;left:0;right:0;z-index:9999;height:3px;background:transparent;transition:background .3s;pointer-events:none;}
+#saveStatusBar.saving{animation:barSweep 1.2s ease-in-out infinite;}
+#saveStatusBar.saved{background:linear-gradient(90deg,transparent,var(--save-ok),transparent);}
+#saveStatusBar.error{background:linear-gradient(90deg,transparent,var(--save-err),transparent);}
+@keyframes barSweep{0%{background:linear-gradient(90deg,transparent,transparent,var(--save-ing),transparent,transparent);}50%{background:linear-gradient(90deg,transparent,var(--save-ing),var(--save-ing),var(--save-ing),transparent);}100%{background:linear-gradient(90deg,transparent,transparent,var(--save-ing),transparent,transparent);}}
+#saveStatus{position:fixed;top:1rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:.45rem;
+  font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+  padding:.38rem .85rem;border-radius:1px;border:1px solid transparent;
+  backdrop-filter:blur(12px);transition:all .4s cubic-bezier(.22,.61,.36,1);
+  opacity:0;transform:translateY(-8px);pointer-events:none;}
+#saveStatus.visible{opacity:1;transform:translateY(0);}
+#saveStatus.saving{background:rgba(245,158,11,.13);border-color:rgba(245,158,11,.38);color:#f59e0b;}
+#saveStatus.saved{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.32);color:var(--save-ok);}
+#saveStatus.error{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.32);color:var(--save-err);}
+.save-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+#saveStatus.saving .save-dot{animation:dotPulse .7s ease infinite;}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+/* ── NOISE ── */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.35;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");}
+
+/* ── HERO ── */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;text-align:center;padding:3rem 2rem;
+  background:radial-gradient(ellipse 90% 70% at 50% 45%, var(--mid) 0%, var(--forest) 45%, var(--dark) 100%);}
+
+/* floating rings */
+.hero-ring{position:absolute;border-radius:50%;border:1px solid rgba(212,175,55,.12);animation:spin 40s linear infinite;}
+.hero-ring:nth-child(1){width:620px;height:620px;top:-160px;right:-180px;border-color:rgba(212,175,55,.07);}
+.hero-ring:nth-child(2){width:800px;height:800px;bottom:-260px;left:-220px;border-color:rgba(20,90,50,.25);animation-direction:reverse;animation-duration:55s;}
+.hero-ring:nth-child(3){width:360px;height:360px;top:50%;left:50%;transform:translate(-50%,-50%);border-color:rgba(212,175,55,.22);animation:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* gold rule */
+.hero-rule{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.6rem;opacity:0;animation:up .8s .3s forwards;}
+
+.hero-eyebrow{font-family:'Cinzel',serif;font-size:clamp(.65rem,1.8vw,.78rem);letter-spacing:.55em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.4rem;opacity:0;animation:up .8s .15s forwards;}
+.hero-title{font-family:'Cinzel',serif;font-size:clamp(2.8rem,11vw,8.5rem);font-weight:900;line-height:.92;letter-spacing:.04em;color:var(--cream);margin-bottom:.4rem;opacity:0;animation:up .9s .35s forwards;}
+.hero-title em{font-style:italic;color:var(--gold);font-family:'Playfair Display',serif;}
+.hero-sub{font-family:'Playfair Display',serif;font-size:clamp(1rem,3.5vw,1.8rem);font-style:italic;letter-spacing:.12em;color:rgba(212,175,55,.75);margin-bottom:1.6rem;opacity:0;animation:up .8s .55s forwards;}
+.hero-caption{font-family:'Montserrat',sans-serif;font-size:clamp(.82rem,2.2vw,.95rem);font-weight:300;color:var(--cream-dim);max-width:400px;line-height:1.8;margin-bottom:2.8rem;opacity:0;animation:up .8s .7s forwards;}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-cta{font-family:'Cinzel',serif;font-size:.82rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--dark);background:var(--gold);border:none;padding:.75rem 2.2rem;border-radius:1px;cursor:pointer;
+  text-decoration:none;display:inline-block;transition:background .22s,transform .15s;
+  box-shadow:0 4px 24px rgba(212,175,55,.28);}
+.btn-cta:hover{background:var(--gold-lt);transform:translateY(-2px);}
+
+/* ── NAV ── */
+nav.tabs{position:sticky;top:0;z-index:100;
+  background:rgba(7,26,16,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);display:flex;justify-content:center;overflow-x:auto;scrollbar-width:none;}
+nav.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{background:none;border:none;cursor:pointer;padding:1.05rem 1.5rem;
+  font-family:'Cinzel',serif;font-size:clamp(.7rem,2vw,.85rem);font-weight:600;letter-spacing:.18em;
+  color:rgba(245,245,220,.4);transition:color .28s;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-btn:hover{color:var(--cream);}
+.tab-btn.admin-tab{color:rgba(212,175,55,.35);}
+.tab-btn.admin-tab.active{color:var(--gold-lt);border-bottom-color:var(--gold-lt);}
+
+/* ── SECTIONS ── */
+.section{display:none;padding:3.5rem 1.5rem 6rem;max-width:1100px;margin:0 auto;}
+.section.active{display:block;animation:sectionIn .45s ease;}
+@keyframes sectionIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.section-header{text-align:center;margin-bottom:3.5rem;}
+.section-label{font-family:'Cinzel',serif;font-size:.7rem;font-weight:600;letter-spacing:.5em;color:var(--gold-dim);display:block;margin-bottom:.6rem;text-transform:uppercase;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5.5vw,3.2rem);font-weight:700;color:var(--cream);line-height:1.05;margin-bottom:.8rem;}
+.section-caption{font-size:.9rem;color:var(--cream-dim);font-style:italic;font-weight:300;max-width:480px;margin:0 auto;line-height:1.75;}
+
+/* ── MENU GRID ── */
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem;}
+
+.menu-card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:2px;overflow:hidden;
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+  position:relative;backdrop-filter:blur(6px);}
+.menu-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(212,175,55,.06) 0%,transparent 60%);
+  pointer-events:none;}
+.menu-card:hover{transform:translateY(-5px);
+  box-shadow:0 22px 44px rgba(0,0,0,.55),0 0 0 1px rgba(212,175,55,.35);
+  border-color:rgba(212,175,55,.35);}
+
+.menu-thumb{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+  font-size:4rem;background:linear-gradient(145deg,rgba(20,90,50,.6),rgba(11,61,46,.8));
+  overflow:hidden;position:relative;}
+.menu-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.menu-thumb .emoji{position:relative;z-index:1;}
+
+.menu-badge{position:absolute;top:10px;right:10px;
+  background:var(--gold);color:var(--dark);
+  font-family:'Cinzel',serif;font-size:.62rem;font-weight:700;letter-spacing:.15em;
+  padding:3px 9px;border-radius:1px;z-index:2;}
+
+.menu-body{padding:1.3rem 1.25rem;}
+.menu-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--cream);margin-bottom:.3rem;}
+.menu-quote{font-family:'Playfair Display',serif;font-size:.76rem;font-style:italic;color:var(--gold-dim);margin-bottom:.55rem;line-height:1.55;}
+.menu-desc{font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:300;color:var(--cream-dim);line-height:1.65;margin-bottom:1rem;}
+.menu-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+.menu-price{font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:var(--gold);letter-spacing:.04em;}
+.btn-order{background:var(--forest);color:var(--gold);border:1px solid rgba(212,175,55,.35);
+  padding:.45rem 1rem;font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;
+  border-radius:1px;cursor:pointer;text-decoration:none;display:inline-block;transition:all .22s;}
+.btn-order:hover{background:var(--gold);color:var(--dark);}
+
+/* ── COLLECT ── */
+.collect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;}
+.collect-card{background:var(--card-bg);border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.collect-card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(0,0,0,.5);}
+.col-thumb{width:100%;aspect-ratio:1;background:linear-gradient(145deg,rgba(20,90,50,.6),rgba(11,61,46,.8));
+  overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+.col-thumb img{width:100%;height:100%;object-fit:cover;}
+.col-body{padding:1rem 1.1rem;}
+.col-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--cream);margin-bottom:.25rem;}
+.col-quote{font-family:'Playfair Display',serif;font-size:.72rem;font-style:italic;color:var(--gold-dim);margin-bottom:.45rem;}
+.col-desc{font-size:.75rem;font-weight:300;color:var(--cream-dim);line-height:1.6;margin-bottom:.7rem;}
+.col-footer{display:flex;align-items:center;justify-content:space-between;padding-top:.7rem;border-top:1px solid var(--border);}
+.col-price{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;color:var(--gold);}
+.btn-buy{background:var(--forest);color:var(--gold);border:1px solid rgba(212,175,55,.3);
+  padding:.4rem .85rem;font-family:'Cinzel',serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;
+  border-radius:1px;cursor:pointer;transition:all .22s;}
+.btn-buy:hover{background:var(--gold);color:var(--dark);}
+
+/* ── ADMIN ── */
+.admin-tabs{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap;}
+.asub{background:rgba(11,61,46,.4);border:1px solid var(--border);color:var(--gold-dim);
+  padding:.5rem 1.2rem;font-family:'Cinzel',serif;font-size:.75rem;font-weight:600;letter-spacing:.15em;
+  border-radius:1px;cursor:pointer;transition:all .22s;}
+.asub.active,.asub:hover{background:rgba(212,175,55,.15);color:var(--gold);border-color:rgba(212,175,55,.4);}
+.apanel{display:none;}
+.apanel.active{display:block;}
+
+/* storage */
+.storage-box{background:var(--card-bg);border:1px solid var(--border);border-radius:2px;padding:1rem 1.25rem;margin-bottom:1.5rem;}
+.sb-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;}
+.sb-label{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.15em;color:rgba(245,245,220,.5);text-transform:uppercase;}
+.sb-val{font-family:'Cinzel',serif;font-size:.85rem;color:var(--cream);}
+.sb-bar-bg{background:rgba(255,255,255,.07);border-radius:1px;height:6px;overflow:hidden;}
+.sb-bar{height:100%;border-radius:1px;transition:width .5s,background .5s;}
+.sb-warn{font-size:.73rem;color:#E07030;margin-top:.5rem;display:none;}
+.sb-warn.show{display:block;}
+.sb-btns{margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;}
+.btn-sm{background:none;border:1px solid var(--border);color:var(--gold-dim);
+  padding:.3rem .8rem;font-family:'Cinzel',serif;font-size:.7rem;font-weight:600;letter-spacing:.12em;
+  border-radius:1px;cursor:pointer;transition:all .2s;}
+.btn-sm:hover{border-color:rgba(212,175,55,.5);color:var(--gold);}
+.btn-sm.danger{border-color:rgba(224,112,48,.4);color:rgba(224,112,48,.7);}
+.btn-sm.danger:hover{background:rgba(224,112,48,.1);color:#E07030;}
+
+/* admin cards */
+.acard{background:var(--card-bg);border:1px solid var(--border);border-radius:2px;padding:1.2rem;margin-bottom:.9rem;}
+.acard-top{display:grid;grid-template-columns:3rem 1fr auto;gap:1rem;align-items:center;}
+.aemoji{font-size:1.9rem;text-align:center;}
+.aname{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--cream);}
+.ameta{font-size:.74rem;color:rgba(245,245,220,.4);margin-top:.15rem;}
+.actrls{display:flex;gap:.5rem;align-items:center;flex-shrink:0;}
+.toggle-sw{position:relative;width:44px;height:24px;cursor:pointer;}
+.toggle-sw input{opacity:0;width:0;height:0;}
+.toggle-tr{position:absolute;inset:0;background:rgba(11,61,46,.8);border:1px solid var(--border);border-radius:12px;transition:.28s;}
+.toggle-tr::after{content:'';position:absolute;width:18px;height:18px;left:2px;top:2px;background:rgba(245,245,220,.45);border-radius:50%;transition:.28s;}
+.toggle-sw input:checked+.toggle-tr{background:var(--mid);border-color:var(--gold-dim);}
+.toggle-sw input:checked+.toggle-tr::after{transform:translateX(20px);background:var(--gold);}
+.btn-expand{background:none;border:1px solid var(--border);color:var(--gold-dim);
+  padding:.28rem .55rem;font-size:.72rem;border-radius:1px;cursor:pointer;transition:all .2s;}
+.btn-expand:hover{border-color:rgba(212,175,55,.4);color:var(--gold);}
+.btn-del{background:none;border:1px solid rgba(224,112,48,.35);color:rgba(224,112,48,.65);
+  padding:.28rem .6rem;font-size:.72rem;border-radius:1px;cursor:pointer;transition:all .2s;}
+.btn-del:hover{background:rgba(224,112,48,.1);color:#E07030;}
+.aedit{display:none;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);}
+.aedit.open{display:block;}
+.afields{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
+.fg{display:flex;flex-direction:column;gap:.3rem;}
+.fg label{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.12em;color:rgba(245,245,220,.35);text-transform:uppercase;}
+.fg.full{grid-column:1/-1;}
+.fi{background:rgba(7,26,16,.7);border:1px solid rgba(212,175,55,.18);color:var(--cream);
+  padding:.42rem .6rem;font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:300;
+  border-radius:1px;outline:none;width:100%;transition:border-color .2s;}
+.fi:focus{border-color:rgba(212,175,55,.5);}
+.btn-add{background:var(--gold);color:var(--dark);border:none;
+  padding:.65rem 1.5rem;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.18em;
+  border-radius:1px;cursor:pointer;margin-bottom:1.5rem;transition:background .2s,transform .15s;}
+.btn-add:hover{background:var(--gold-lt);transform:translateY(-1px);}
+.btn-icon{background:none;border:1px solid var(--border);color:var(--gold-dim);
+  padding:.28rem .6rem;font-size:.72rem;border-radius:1px;cursor:pointer;transition:all .2s;margin-right:.3rem;}
+.btn-icon:hover{border-color:rgba(212,175,55,.4);color:var(--gold);}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;
+  align-items:center;justify-content:center;padding:2rem;backdrop-filter:blur(8px);}
+.modal-bg.open{display:flex;}
+.modal-box{background:var(--forest);border:1px solid rgba(212,175,55,.3);border-radius:2px;
+  padding:2.5rem 2rem;max-width:380px;width:100%;text-align:center;
+  animation:mIn .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes mIn{from{opacity:0;transform:scale(.87) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--cream);margin-bottom:.3rem;}
+.modal-sub{font-family:'Playfair Display',serif;font-size:.8rem;font-style:italic;color:var(--gold-dim);margin-bottom:1.5rem;}
+.bc-wrap{background:#fff;padding:1.2rem;border-radius:2px;display:inline-block;margin-bottom:1.2rem;}
+.bc-num{font-family:'Cinzel',serif;font-size:.85rem;font-weight:600;letter-spacing:.2em;color:rgba(245,245,220,.5);margin-bottom:.5rem;}
+.modal-price{font-family:'Cinzel',serif;font-size:2rem;font-weight:700;color:var(--gold);margin-bottom:1.5rem;}
+.btn-close{background:transparent;border:1px solid rgba(212,175,55,.35);color:var(--cream);
+  padding:.55rem 1.8rem;font-family:'Cinzel',serif;font-size:.78rem;font-weight:600;letter-spacing:.18em;
+  border-radius:1px;cursor:pointer;transition:all .2s;}
+.btn-close:hover{background:rgba(212,175,55,.12);border-color:var(--gold);}
+
+/* ── MISC ── */
+.scroll-top{position:fixed;bottom:2rem;right:1.5rem;background:var(--forest);border:1px solid rgba(212,175,55,.3);
+  color:var(--gold);width:44px;height:44px;border-radius:50%;font-size:1.1rem;cursor:pointer;
+  opacity:0;pointer-events:none;transition:opacity .3s;z-index:200;display:flex;align-items:center;justify-content:center;}
+.scroll-top.visible{opacity:1;pointer-events:auto;}
+footer{text-align:center;padding:2.5rem 1rem;border-top:1px solid var(--border);
+  font-family:'Cinzel',serif;font-size:.68rem;font-weight:600;letter-spacing:.2em;
+  color:rgba(245,245,220,.28);text-transform:uppercase;}
+.empty-state{text-align:center;padding:4rem 2rem;color:rgba(245,245,220,.28);}
+.empty-state span{font-size:3rem;display:block;margin-bottom:1rem;}
+input[type=file]{display:none;}
+/* divider accent */
+.gold-rule{width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.8rem auto 0;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.shake{animation:shake .38s ease;}
+
+@media(max-width:480px){
+  .tab-btn{padding:.85rem .95rem;font-size:.68rem;}
+  .menu-grid,.collect-grid{grid-template-columns:1fr 1fr;gap:.9rem;}
+  .afields{grid-template-columns:1fr;}
+  .acard-top{grid-template-columns:2.5rem 1fr;}
+  .actrls{grid-column:1/-1;}
+}
+@media(max-width:360px){.menu-grid,.collect-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- SAVE STATUS -->
+<div id="saveStatusBar"></div>
+<div id="saveStatus"><span class="save-dot"></span><span id="saveStatusTxt">SAVING</span></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-ring"></div><div class="hero-ring"></div><div class="hero-ring"></div>
+  <p class="hero-eyebrow">กินไปเทรดไป &nbsp;·&nbsp; Sip &amp; Trade</p>
+  <h1 class="hero-title">BARISTA<br><em>Trader</em></h1>
+  <p class="hero-sub">× Trade Edition</p>
+  <div class="hero-rule"></div>
+  <p class="hero-caption">Sip First Trade Smart<br>ดื่มด่ำทุกรสชาติ แล้วเปิดกราฟต่อ</p>
+  <a href="#" class="btn-cta" onclick="scrollToMenu();return false;">ดูเมนู ↓</a>
+</section>
+
+<!-- NAV -->
+<nav class="tabs" id="mainNav">
+  <button class="tab-btn active" onclick="switchTab('coffee',this)">☕ กาแฟ</button>
+  <button class="tab-btn" onclick="switchTab('noncoffee',this)">🍵 ไม่ใช่กาแฟ</button>
+  <button class="tab-btn" onclick="switchTab('collect',this)">🎖 ของสะสม</button>
+  <button class="tab-btn admin-tab" onclick="switchTab('admin',this)">⚙ Admin</button>
+</nav>
+
+<!-- COFFEE -->
+<div class="section active" id="tab-coffee">
+  <div class="section-header">
+    <span class="section-label">Coffee Series</span>
+    <h2 class="section-title">กาแฟ</h2>
+    <p class="section-caption">กาแฟดีเริ่มที่เมล็ด กำไรดีเริ่มที่วินัย กาแฟหนึ่งแก้วกับการดูกราฟ</p>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="menu-grid" id="coffeeGrid"></div>
+</div>
+
+<!-- NON-COFFEE -->
+<div class="section" id="tab-noncoffee">
+  <div class="section-header">
+    <span class="section-label">Non-Coffee Series</span>
+    <h2 class="section-title">ไม่ใช่กาแฟ</h2>
+    <p class="section-caption">ไม่ดื่มกาแฟก็เทรดได้ ขอแค่มีกราฟในมือ</p>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="menu-grid" id="noncoffeeGrid"></div>
+</div>
+
+<!-- COLLECT -->
+<div class="section" id="tab-collect">
+  <div class="section-header">
+    <span class="section-label">Collectibles</span>
+    <h2 class="section-title">ของสะสม</h2>
+    <p class="section-caption">ลิมิเต็ด เหมือนหุ้น IPO ช้าหมดแน่นอน</p>
+    <div class="gold-rule"></div>
+  </div>
+  <div class="collect-grid" id="collectGrid"></div>
+  <div class="empty-state" id="collectEmpty"><span>📦</span><p>ยังไม่มีของสะสม เพิ่มได้ที่แทบ Admin</p></div>
+</div>
+
+<!-- ADMIN -->
+<div class="section" id="tab-admin" style="max-width:920px;">
+  <div class="section-header">
+    <span class="section-label">Administration</span>
+    <h2 class="section-title" style="font-size:2rem;">⚙ Admin Panel</h2>
+    <p class="section-caption">จัดการเมนู ของสะสม และตรวจสอบขนาดข้อมูลบน Drive</p>
+    <div class="gold-rule"></div>
+    <button onclick="lockAdmin()" style="margin-top:1.2rem;background:none;border:1px solid rgba(212,175,55,.25);
+      color:rgba(212,175,55,.5);padding:.38rem 1.1rem;font-family:'Cinzel',serif;font-size:.68rem;
+      font-weight:600;letter-spacing:.18em;border-radius:1px;cursor:pointer;transition:all .22s;"
+      onmouseover="this.style.borderColor='rgba(212,175,55,.5)';this.style.color='var(--gold-dim)'"
+      onmouseout="this.style.borderColor='rgba(212,175,55,.25)';this.style.color='rgba(212,175,55,.5)'">
+      🔒 ออกจากระบบ
+    </button>
+  </div>
+  <div class="storage-box">
+    <div class="sb-row">
+      <span class="sb-label">☁️ Google Drive — ขนาดไฟล์ข้อมูล</span>
+      <button class="btn-sm" onclick="checkDriveSize()" id="btnRefreshSize" style="padding:.2rem .7rem;font-size:.65rem;">↻ รีเฟรช</button>
+    </div>
+    <div class="sb-row" style="margin-bottom:.4rem;">
+      <span class="sb-val" id="sbVal">กำลังตรวจสอบ...</span>
+      <span id="sbPct" style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--gold-dim);"></span>
+    </div>
+    <div class="sb-bar-bg"><div class="sb-bar" id="sbBar" style="width:0;background:var(--gold);"></div></div>
+    <div style="display:flex;justify-content:space-between;margin-top:.35rem;">
+      <span style="font-family:'Cinzel',serif;font-size:.6rem;color:rgba(245,245,220,.22);letter-spacing:.08em;">0 KB</span>
+      <span style="font-family:'Cinzel',serif;font-size:.6rem;color:rgba(245,245,220,.22);letter-spacing:.08em;">เกณฑ์แจ้งเตือน: 3 MB</span>
+      <span style="font-family:'Cinzel',serif;font-size:.6rem;color:rgba(245,245,220,.22);letter-spacing:.08em;">5 MB</span>
+    </div>
+    <div class="sb-warn" id="sbWarn">⚠ ไฟล์ข้อมูลบน Drive เริ่มใหญ่! แนะนำให้ลบรูปภาพหรือรายการที่ไม่ใช้</div>
+    <div class="sb-btns">
+      <button class="btn-sm danger" onclick="cleanImages()">🗑 ลบรูปภาพทั้งหมด</button>
+      <button class="btn-sm" onclick="resetMenus()">↺ รีเซ็ตเมนูตั้งต้น</button>
+    </div>
+  </div>
+  <div class="admin-tabs">
+    <button class="asub active" onclick="switchAP('apc',this)">☕ กาแฟ</button>
+    <button class="asub" onclick="switchAP('apn',this)">🍵 ไม่ใช่กาแฟ</button>
+    <button class="asub" onclick="switchAP('apco',this)">🎖 ของสะสม</button>
+  </div>
+  <div class="apanel active" id="apc">
+    <button class="btn-add" onclick="addMenu('coffee')">+ เพิ่มเมนูกาแฟ</button>
+    <div id="aCoffee"></div>
+  </div>
+  <div class="apanel" id="apn">
+    <button class="btn-add" onclick="addMenu('noncoffee')">+ เพิ่มเมนูไม่ใช่กาแฟ</button>
+    <div id="aNonCoffee"></div>
+  </div>
+  <div class="apanel" id="apco">
+    <button class="btn-add" onclick="addCollect()">+ เพิ่มของสะสม</button>
+    <div id="aCollect"></div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-bg" id="loginModal">
+  <div class="modal-box" id="loginBox" style="max-width:340px;">
+    <div style="font-size:2.2rem;margin-bottom:1rem;">🔐</div>
+    <h3 class="modal-title" style="font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:.15em;margin-bottom:.4rem;">ADMIN ACCESS</h3>
+    <p class="modal-sub" style="margin-bottom:1.4rem;">กรอกรหัสผ่านเพื่อเข้าสู่ Admin Panel</p>
+    <input id="loginInput" type="password" placeholder="รหัสผ่าน"
+      style="width:100%;background:rgba(7,26,16,.7);border:1px solid rgba(212,175,55,.3);color:var(--cream);
+             padding:.6rem .9rem;font-family:'Montserrat',sans-serif;font-size:.9rem;font-weight:300;
+             border-radius:1px;outline:none;text-align:center;letter-spacing:.15em;margin-bottom:.6rem;
+             transition:border-color .2s;"
+      onfocus="this.style.borderColor='rgba(212,175,55,.6)'" onblur="this.style.borderColor='rgba(212,175,55,.3)'">
+    <p id="loginError" style="display:none;color:#E07030;font-size:.75rem;font-family:'Cinzel',serif;letter-spacing:.1em;margin-bottom:.8rem;"></p>
+    <div style="display:flex;gap:.7rem;justify-content:center;margin-top:.4rem;">
+      <button class="btn-close" onclick="closeLoginModal()" style="padding:.5rem 1.4rem;font-size:.72rem;">ยกเลิก</button>
+      <button onclick="submitLogin()"
+        style="background:var(--gold);color:var(--dark);border:none;padding:.5rem 1.6rem;
+               font-family:'Cinzel',serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;
+               border-radius:1px;cursor:pointer;transition:background .2s;"
+        onmouseover="this.style.background='var(--gold-lt)'" onmouseout="this.style.background='var(--gold)'">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- BARCODE MODAL -->
+<div class="modal-bg" id="bcModal">
+  <div class="modal-box">
+    <h3 class="modal-title" id="mName">–</h3>
+    <p class="modal-sub" id="mSub">–</p>
+    <div class="bc-wrap"><svg id="bcSvg" width="200" height="70" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <p class="bc-num" id="mCode">–</p>
+    <p class="modal-price" id="mPrice">–</p>
+    <button class="btn-close" onclick="closeModal()">ปิด</button>
+  </div>
+</div>
+
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<footer>Barista Trader &nbsp;×&nbsp; Trade Edition &nbsp;·&nbsp; กินไปเทรดไป &nbsp;·&nbsp; All Rights Reserved</footer>
+<input type="file" id="imgFile" accept="image/*">
+<input type="file" id="menuImgFile" accept="image/*">
+
+<script>
+const DC = [
+  { emoji:'☕', name:'Espresso Bullish', quote:'"ตลาดจะขึ้นหรือลง กาแฟต้องเข้มก่อน"', desc:'เอสเพรสโซดับเบิ้ล เข้มข้นจัดจ้าน ดื่มแล้ว Entry ได้เลย ไม่ต้องรอสัญญาณ', price:65, badge:'BEST BUY' },
+  { emoji:'🥛', name:'Latte Long Position', quote:'"ใจเย็น ถือยาว กำไรมาเอง"', desc:'ลาเต้ซิลกี้นมสด เนื้อครีมลื่นลิ้น เหมือนถือหุ้นดีไว้นาน ๆ ผลตอบแทนตามมาเอง', price:80, badge:'' },
+  { emoji:'🧊', name:'Cold Brew Resistance', quote:'"แนวรับแข็งแกร่ง เหมือนโคลด์บรูที่แช่ 18 ชั่วโมง"', desc:'โคลด์บรูชงนาน 18 ชั่วโมง รสสมูทลึก ดื่มแล้วจิตใจมั่นคง ไม่ตัดขาดทุนง่าย ๆ', price:90, badge:'LIMITED' },
+  { emoji:'🌿', name:'Matcha Hedge Fund', quote:'"กระจายความเสี่ยง ด้วยคลอโรฟิลล์"', desc:'มัทฉะญี่ปุ่นเกรดพิธี ผสมนมโอ๊ต เหมือน Hedge Fund ที่ดี สมดุลทุก Asset Class', price:95, badge:'' }
+];
+const DN = [
+  { emoji:'🍵', name:'Oolong Sideways', quote:'"ตลาด Sideways ก็ยังดื่มชาได้ สบายใจรอ Breakout"', desc:'อู่หลงไต้หวันชงร้อน รสดอกไม้กลมกล่อม สำหรับวันที่ตลาดนิ่ง ดื่มไปรอไป', price:75, badge:'' },
+  { emoji:'🍓', name:'Strawberry Circuit Breaker', quote:'"หยุดขาดทุน เริ่มหวานใหม่ เหมือน Circuit Breaker ปกป้องพอร์ต"', desc:'สตรอว์เบอรี่สด Blended เย็นฉ่ำ ดื่มแล้ว Reset จิตใจ พร้อม Entry รอบใหม่', price:85, badge:'POPULAR' },
+  { emoji:'🍋', name:'Lemon Leverage', quote:'"เปรี้ยวนิดหน่อย กำไรเป็นเท่า ใช้ Leverage อย่างมีวินัย"', desc:'เลมอนโซดาน้ำผึ้ง สดชื่นทั้งวัน เปรี้ยวอมหวาน เหมือน Leverage ที่ใช้ถูกวิธี', price:70, badge:'' },
+  { emoji:'🥭', name:'Mango Moon Flag', quote:'"ธงดาว สัญญาณซื้อ หวานเหมือนกำไรงวดแรก"', desc:'มะม่วงน้ำดอกไม้ปั่น ข้น หวาน สีทอง เหมือนแท่งเขียวที่ทุกคนรอ', price:80, badge:'' }
+];
+
+/* ── CONFIGURATION ── */
+const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8IdEJ8ePCv7xJrnQe78vk4rGh1IBl2auFqJZ4bWjQ9RBdFSey2tga2YEURyG-jtU/exec";
+
+let cs=[], ns=[], co=[];
+let uploadTarget = null;
+
+function mk(m,p,i){return{id:p+i,emoji:m.emoji,name:m.name,quote:m.quote||'',desc:m.desc,price:m.price,badge:m.badge||'',enabled:true,img:null};}
+function defaults(){cs=DC.map((m,i)=>mk(m,'c',i));ns=DN.map((m,i)=>mk(m,'n',i));}
+
+/* ── SAVE STATUS UI ── */
+let _hideTimer = null;
+let _saving = false;
+
+function setSaveStatus(state, msg) {
+  const badge = document.getElementById('saveStatus');
+  const bar   = document.getElementById('saveStatusBar');
+  const txt   = document.getElementById('saveStatusTxt');
+  badge.classList.remove('saving','saved','error','visible');
+  bar.classList.remove('saving','saved','error');
+  badge.classList.add(state,'visible');
+  bar.classList.add(state);
+  txt.textContent = msg;
+  clearTimeout(_hideTimer);
+  if (state !== 'saving') {
+    _hideTimer = setTimeout(()=>{
+      badge.classList.remove('visible');
+      setTimeout(()=>bar.classList.remove(state), 600);
+    }, state === 'saved' ? 2500 : 4500);
+  }
+}
+
+/* ── DATA — LOAD (Drive only) ── */
+async function load() {
+  setSaveStatus('saving','LOADING...');
+  try {
+    const res  = await fetch(DRIVE_SCRIPT_URL + '?t=' + Date.now());
+    const data = await res.json();
+    if (data && data.cs) {
+      cs = (data.cs||[]).map(x=>({...x, enabled: x.enabled !== false}));
+      ns = (data.ns||[]).map(x=>({...x, enabled: x.enabled !== false}));
+      co = (data.co||[]).map(x=>({...x, enabled: x.enabled !== false}));
+      if (!cs.length && !ns.length) defaults();
+      setSaveStatus('saved','LOADED ✓');
+    } else {
+      defaults();
+      setSaveStatus('error','NO DATA — DEFAULTS LOADED');
+    }
+  } catch(e) {
+    console.error('Drive load failed:', e);
+    defaults();
+    setSaveStatus('error','LOAD FAILED — CHECK CONNECTION');
+  }
+}
+
+/* ── DATA — SAVE (Drive only) ── */
+async function save() {
+  if (_saving) return;
+  _saving = true;
+  setSaveStatus('saving','SAVING...');
+  try {
+    const res  = await fetch(DRIVE_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ cs, ns, co, lastUpdate: Date.now() })
+    });
+    const json = await res.json();
+    if (json.status === 'success' || res.ok) {
+      setSaveStatus('saved','SAVED ✓');
+      // update drive size meter after save (use size from response if available)
+      if (json.sizeBytes !== undefined) updateMeterFromBytes(json.sizeBytes);
+      else checkDriveSize();
+    } else {
+      throw new Error('bad response');
+    }
+  } catch(e) {
+    console.error('Drive save failed:', e);
+    setSaveStatus('error','SAVE FAILED ✕');
+  } finally {
+    _saving = false;
+  }
+}
+
+/* ── DRIVE SIZE METER ── */
+// Approximate size from current data in memory (fast, no network call)
+function estimateSizeBytes() {
+  try { return new Blob([JSON.stringify({cs,ns,co})]).size; } catch(e) { return 0; }
+}
+
+function updateMeterFromBytes(bytes) {
+  const WARN_BYTES  = 3 * 1024 * 1024;  // 3 MB warning
+  const MAX_BYTES   = 5 * 1024 * 1024;  // 5 MB cap for gauge
+  const pct = Math.min(bytes / MAX_BYTES * 100, 100);
+  const disp = bytes > 1048576 ? (bytes/1024/1024).toFixed(2)+' MB'
+             : bytes > 1024    ? (bytes/1024).toFixed(1)+' KB'
+             : bytes + ' B';
+  document.getElementById('sbVal').textContent = disp;
+  document.getElementById('sbPct').textContent = pct.toFixed(1) + '%';
+  const bar = document.getElementById('sbBar');
+  bar.style.width = pct + '%';
+  bar.style.background = pct > 80 ? '#C04000' : pct > 60 ? '#D4691E' : 'var(--gold)';
+  document.getElementById('sbWarn').classList.toggle('show', bytes >= WARN_BYTES);
+}
+
+// Fetch actual file size from Drive via GAS
+async function checkDriveSize() {
+  const btn = document.getElementById('btnRefreshSize');
+  if(btn){ btn.textContent='...'; btn.disabled=true; }
+  document.getElementById('sbVal').textContent = 'กำลังตรวจสอบ...';
+  try {
+    const res  = await fetch(DRIVE_SCRIPT_URL + '?action=size&t=' + Date.now());
+    const json = await res.json();
+    if (json.sizeBytes !== undefined) {
+      updateMeterFromBytes(json.sizeBytes);
+    } else {
+      // fallback: estimate from memory
+      updateMeterFromBytes(estimateSizeBytes());
+    }
+  } catch(e) {
+    // fallback: estimate from memory
+    updateMeterFromBytes(estimateSizeBytes());
+    document.getElementById('sbVal').textContent += ' (ประมาณ)';
+  } finally {
+    if(btn){ btn.textContent='↻ รีเฟรช'; btn.disabled=false; }
+  }
+}
+
+function updateMeter() {
+  // Called when admin tab opens — use memory estimate for speed, then fetch real size
+  updateMeterFromBytes(estimateSizeBytes());
+  checkDriveSize();
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ── RENDER MENUS ── */
+function menuHtml(item){
+  const msg=encodeURIComponent('สวัสดีครับ/ค่ะ ขอสั่ง '+item.name+' ราคา '+item.price+' บาท 🙏');
+  const url='https://line.me/R/msg/text/?'+msg;
+  const imgPart=item.img?'<img src="'+item.img+'" alt="">':'';
+  const badge=item.badge?'<span class="menu-badge">'+esc(item.badge)+'</span>':'';
+  return '<div class="menu-card">'
+    +'<div class="menu-thumb">'+imgPart+'<span class="emoji">'+(item.emoji||'☕')+'</span></div>'
+    +badge
+    +'<div class="menu-body">'
+    +'<div class="menu-name">'+esc(item.name)+'</div>'
+    +'<div class="menu-quote">'+esc(item.quote)+'</div>'
+    +'<div class="menu-desc">'+esc(item.desc)+'</div>'
+    +'<div class="menu-footer"><span class="menu-price">฿'+item.price+'</span>'
+    +'<a class="btn-order" href="'+url+'" target="_blank" rel="noopener">สั่ง LINE MAN</a>'
+    +'</div></div></div>';
+}
+
+function renderMenus(){
+  document.getElementById('coffeeGrid').innerHTML=cs.filter(x=>x.enabled).map(menuHtml).join('');
+  document.getElementById('noncoffeeGrid').innerHTML=ns.filter(x=>x.enabled).map(menuHtml).join('');
+}
+
+/* ── COLLECT DISPLAY ── */
+function renderCollect(){
+  const vis=co.filter(x=>x.enabled);
+  document.getElementById('collectEmpty').style.display=vis.length?'none':'block';
+  document.getElementById('collectGrid').innerHTML=vis.map(item=>
+    '<div class="collect-card">'
+    +'<div class="col-thumb">'+(item.img?'<img src="'+item.img+'" alt="">':(item.emoji||'🎖'))+'</div>'
+    +'<div class="col-body">'
+    +'<div class="col-name">'+esc(item.name||'ของสะสม')+'</div>'
+    +'<div class="col-quote">'+esc(item.quote||'')+'</div>'
+    +'<div class="col-desc">'+esc(item.desc||'')+'</div>'
+    +'<div class="col-footer"><span class="col-price">'+(item.price?'฿'+item.price:'')+'</span>'
+    +'<button class="btn-buy" data-id="'+item.id+'">ซื้อเลย</button>'
+    +'</div></div></div>'
+  ).join('');
+  document.querySelectorAll('#collectGrid .btn-buy').forEach(btn=>{
+    btn.addEventListener('click',()=>openModal(btn.dataset.id));
+  });
+}
+
+/* ── ADMIN MENU ── */
+function adminMenuHtml(item,cat){
+  return '<div class="acard" id="ac-'+item.id+'">'
+    +'<div class="acard-top">'
+    +'<div class="aemoji">'+(item.emoji||'☕')+'</div>'
+    +'<div><div class="aname" id="an-'+item.id+'">'+esc(item.name)+'</div>'
+    +'<div class="ameta" id="am-'+item.id+'">'+esc(item.quote)+' · ฿'+item.price+'</div></div>'
+    +'<div class="actrls">'
+    +'<button class="btn-expand" data-id="'+item.id+'">✏</button>'
+    +'<label class="toggle-sw"><input type="checkbox" '+(item.enabled?'checked':'')+' data-id="'+item.id+'" data-cat="'+cat+'" class="menu-toggle"><span class="toggle-tr"></span></label>'
+    +'<button class="btn-del" data-id="'+item.id+'" data-cat="'+cat+'" class="menu-del">✕</button>'
+    +'</div></div>'
+    +'<div class="aedit" id="ae-'+item.id+'">'
+    +'<div class="afields">'
+    +'<div class="fg"><label>Emoji</label><input class="fi" type="text" value="'+esc(item.emoji)+'" data-id="'+item.id+'" data-cat="'+cat+'" data-f="emoji"></div>'
+    +'<div class="fg"><label>ราคา ฿</label><input class="fi" type="number" value="'+item.price+'" data-id="'+item.id+'" data-cat="'+cat+'" data-f="price"></div>'
+    +'<div class="fg full"><label>ชื่อเมนู</label><input class="fi" type="text" value="'+esc(item.name)+'" data-id="'+item.id+'" data-cat="'+cat+'" data-f="name"></div>'
+    +'<div class="fg full"><label>คำคม</label><input class="fi" type="text" value="'+esc(item.quote)+'" data-id="'+item.id+'" data-cat="'+cat+'" data-f="quote"></div>'
+    +'<div class="fg full"><label>รายละเอียด</label><input class="fi" type="text" value="'+esc(item.desc)+'" data-id="'+item.id+'" data-cat="'+cat+'" data-f="desc"></div>'
+    +'<div class="fg"><label>Badge</label><input class="fi" type="text" value="'+esc(item.badge||'')+'" data-id="'+item.id+'" data-cat="'+cat+'" data-f="badge"></div>'
+    +'<div class="fg"><label>รูปภาพ</label>'
+    +'<button class="btn-icon menu-img-btn" data-id="'+item.id+'" data-cat="'+cat+'">📷 '+(item.img?'เปลี่ยน':'เพิ่ม')+'</button>'
+    +(item.img?'<button class="btn-icon menu-img-rm" data-id="'+item.id+'" data-cat="'+cat+'">🗑</button>':'')
+    +'</div>'
+    +'</div></div></div>';
+}
+
+function renderAdminMenus(){
+  document.getElementById('aCoffee').innerHTML=cs.map(i=>adminMenuHtml(i,'coffee')).join('');
+  document.getElementById('aNonCoffee').innerHTML=ns.map(i=>adminMenuHtml(i,'noncoffee')).join('');
+  bindMenuAdminEvents();
+}
+
+function bindMenuAdminEvents(){
+  document.querySelectorAll('.btn-expand').forEach(btn=>{
+    btn.onclick=()=>document.getElementById('ae-'+btn.dataset.id).classList.toggle('open');
+  });
+  document.querySelectorAll('.menu-toggle').forEach(cb=>{
+    cb.onchange=function(){
+      const arr=this.dataset.cat==='coffee'?cs:ns;
+      const it=arr.find(x=>x.id===this.dataset.id);
+      if(it){it.enabled=this.checked;save();renderMenus();}
+    };
+  });
+  document.querySelectorAll('.menu-del').forEach(btn=>{
+    btn.onclick=function(){
+      if(!confirm('ลบเมนูนี้?'))return;
+      if(this.dataset.cat==='coffee')cs=cs.filter(x=>x.id!==this.dataset.id);
+      else ns=ns.filter(x=>x.id!==this.dataset.id);
+      save();renderMenus();renderAdminMenus();
+    };
+  });
+  document.querySelectorAll('.afields .fi').forEach(inp=>{
+    inp.oninput=function(){
+      const arr=this.dataset.cat==='coffee'?cs:ns;
+      const it=arr.find(x=>x.id===this.dataset.id);
+      if(!it)return;
+      it[this.dataset.f]=this.value;
+      const nm=document.getElementById('an-'+it.id);
+      const mm=document.getElementById('am-'+it.id);
+      const em=document.querySelector('#ac-'+it.id+' .aemoji');
+      if(nm)nm.textContent=it.name;
+      if(mm)mm.textContent=it.quote+' · ฿'+it.price;
+      if(em)em.textContent=it.emoji||'☕';
+      save();renderMenus();
+    };
+  });
+  document.querySelectorAll('.menu-img-btn').forEach(btn=>{
+    btn.onclick=function(){uploadTarget={type:'menu',id:this.dataset.id,cat:this.dataset.cat};document.getElementById('menuImgFile').click();};
+  });
+  document.querySelectorAll('.menu-img-rm').forEach(btn=>{
+    btn.onclick=function(){
+      const arr=this.dataset.cat==='coffee'?cs:ns;
+      const it=arr.find(x=>x.id===this.dataset.id);
+      if(it){it.img=null;save();renderMenus();renderAdminMenus();}
+    };
+  });
+}
+
+/* ── ADMIN COLLECT ── */
+function adminCollectHtml(item){
+  return '<div class="acard" id="ac-'+item.id+'">'
+    +'<div class="acard-top">'
+    +'<div class="aemoji">'+(item.emoji||'🎖')+'</div>'
+    +'<div><div class="aname">'+esc(item.name||'(ยังไม่ตั้งชื่อ)')+'</div>'
+    +'<div class="ameta">'+(item.price?'฿'+item.price:'ยังไม่กำหนดราคา')+'</div></div>'
+    +'<div class="actrls">'
+    +'<button class="btn-expand" data-id="'+item.id+'" data-t="co">✏</button>'
+    +'<label class="toggle-sw"><input type="checkbox" '+(item.enabled?'checked':'')+' data-id="'+item.id+'" class="co-toggle"><span class="toggle-tr"></span></label>'
+    +'<button class="btn-del" data-id="'+item.id+'" class="co-del">✕ ลบ</button>'
+    +'</div></div>'
+    +'<div class="aedit" id="ae-'+item.id+'">'
+    +'<div style="margin-bottom:.7rem;">'
+    +'<button class="btn-icon co-img-btn" data-id="'+item.id+'">📷 '+(item.img?'เปลี่ยน':'เพิ่ม')+'</button>'
+    +(item.img?'<button class="btn-icon co-img-rm" data-id="'+item.id+'">🗑</button>':'')
+    +'</div>'
+    +'<div class="afields">'
+    +'<div class="fg"><label>ชื่อสินค้า</label><input class="fi" type="text" value="'+esc(item.name)+'" data-id="'+item.id+'" data-f="name"></div>'
+    +'<div class="fg"><label>ราคา ฿</label><input class="fi" type="number" value="'+(item.price||'')+'" data-id="'+item.id+'" data-f="price"></div>'
+    +'<div class="fg full"><label>คำคม</label><input class="fi" type="text" value="'+esc(item.quote||'')+'" data-id="'+item.id+'" data-f="quote"></div>'
+    +'<div class="fg full"><label>รายละเอียด</label><input class="fi" type="text" value="'+esc(item.desc||'')+'" data-id="'+item.id+'" data-f="desc"></div>'
+    +'<div class="fg"><label>Badge</label><input class="fi" type="text" value="'+esc(item.badge||'')+'" data-id="'+item.id+'" data-f="badge"></div>'
+    +'</div></div></div>';
+}
+
+function renderAdminCollect(){
+  const el=document.getElementById('aCollect');
+  if(!co.length){el.innerHTML='<p style="color:rgba(245,245,220,.28);padding:1rem 0;font-size:.85rem;">ยังไม่มีของสะสม</p>';return;}
+  el.innerHTML=co.map(adminCollectHtml).join('');
+  bindCollectAdminEvents();
+}
+
+function bindCollectAdminEvents(){
+  document.querySelectorAll('[data-t="co"].btn-expand').forEach(btn=>{
+    btn.onclick=()=>document.getElementById('ae-'+btn.dataset.id).classList.toggle('open');
+  });
+  document.querySelectorAll('.co-toggle').forEach(cb=>{
+    cb.onchange=function(){const it=co.find(x=>x.id===this.dataset.id);if(it){it.enabled=this.checked;save();renderCollect();}};
+  });
+  document.querySelectorAll('.co-del').forEach(btn=>{
+    btn.onclick=function(){if(!confirm('ลบรายการนี้?'))return;co=co.filter(x=>x.id!==this.dataset.id);save();renderCollect();renderAdminCollect();};
+  });
+  document.querySelectorAll('#aCollect .afields .fi').forEach(inp=>{
+    inp.oninput=function(){const it=co.find(x=>x.id===this.dataset.id);if(it){it[this.dataset.f]=this.value;save();renderCollect();}};
+  });
+  document.querySelectorAll('.co-img-btn').forEach(btn=>{
+    btn.onclick=function(){uploadTarget={type:'collect',id:this.dataset.id};document.getElementById('imgFile').click();};
+  });
+  document.querySelectorAll('.co-img-rm').forEach(btn=>{
+    btn.onclick=function(){const it=co.find(x=>x.id===this.dataset.id);if(it){it.img=null;save();renderCollect();renderAdminCollect();}};
+  });
+}
+
+/* ── ADD ── */
+function addMenu(cat){
+  const id=cat[0]+Date.now();
+  const item={id,emoji:'☕',name:'เมนูใหม่',quote:'"คำคม..."',desc:'รายละเอียด...',price:0,badge:'',enabled:true,img:null};
+  if(cat==='coffee')cs.push(item);else ns.push(item);
+  save();renderMenus();renderAdminMenus();
+  setTimeout(()=>{const el=document.getElementById('ae-'+id);if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'nearest'});}},100);
+}
+
+function addCollect(){
+  const id='co'+Date.now();
+  co.push({id,emoji:'🎖',name:'',quote:'',desc:'',price:'',badge:'',enabled:true,img:null});
+  save();renderCollect();renderAdminCollect();
+  setTimeout(()=>{const el=document.getElementById('ae-'+id);if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'nearest'});}},100);
+}
+
+/* ── UPLOADS ── */
+document.getElementById('imgFile').addEventListener('change',function(){
+  if(!this.files[0]||!uploadTarget)return;
+  const r=new FileReader();
+  r.onload=e=>{const it=co.find(x=>x.id===uploadTarget.id);if(it){it.img=e.target.result;save();renderCollect();renderAdminCollect();}this.value='';};
+  r.readAsDataURL(this.files[0]);
+});
+document.getElementById('menuImgFile').addEventListener('change',function(){
+  if(!this.files[0]||!uploadTarget)return;
+  const r=new FileReader();
+  r.onload=e=>{const arr=uploadTarget.cat==='coffee'?cs:ns;const it=arr.find(x=>x.id===uploadTarget.id);if(it){it.img=e.target.result;save();renderMenus();renderAdminMenus();}this.value='';};
+  r.readAsDataURL(this.files[0]);
+});
+
+/* ── RESET / CLEAN ── */
+function cleanImages(){if(!confirm('ลบรูปภาพทั้งหมด?'))return;cs.forEach(i=>i.img=null);ns.forEach(i=>i.img=null);co.forEach(i=>i.img=null);save();renderAll();alert('ลบรูปภาพทั้งหมดแล้ว');}
+function resetMenus(){if(!confirm('รีเซ็ตเมนูเป็นค่าเริ่มต้น? ของสะสมยังอยู่'))return;defaults();save();renderAll();alert('รีเซ็ตเรียบร้อย');}
+
+/* ── BARCODE ── */
+function genBarcode(code){
+  const svg=document.getElementById('bcSvg');svg.innerHTML='';
+  let seed=0;for(const ch of code)seed=(seed*31+ch.charCodeAt(0))&0xffffffff;
+  let x=4;const bw=192/75;
+  for(let i=0;i<50;i++){
+    seed=(seed*1664525+1013904223)&0xffffffff;
+    const w=bw*(1+((seed>>>16)&1));
+    if((seed>>>24)%3!==0){const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',x);r.setAttribute('y',4);r.setAttribute('width',w);r.setAttribute('height',52);r.setAttribute('fill','#000');svg.appendChild(r);}
+    x+=w+bw*0.3;
+  }
+}
+
+function openModal(id){
+  const it=co.find(x=>x.id===id);if(!it)return;
+  document.getElementById('mName').textContent=it.name||'ของสะสม';
+  document.getElementById('mSub').textContent=it.quote||'— Limited Edition —';
+  document.getElementById('mPrice').textContent=it.price?'฿'+Number(it.price).toLocaleString():'ยังไม่กำหนดราคา';
+  const code='BT'+id.slice(-8);document.getElementById('mCode').textContent=code;
+  genBarcode(code);document.getElementById('bcModal').classList.add('open');
+}
+function closeModal(){document.getElementById('bcModal').classList.remove('open');}
+document.getElementById('bcModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+/* ── ADMIN AUTH ── */
+let adminUnlocked = false;
+
+function openLoginModal(btn) {
+  document.getElementById('loginModal').classList.add('open');
+  document.getElementById('loginInput').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginInput').focus();
+  document._pendingAdminBtn = btn;
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').classList.remove('open');
+  document._pendingAdminBtn = null;
+}
+
+function submitLogin() {
+  const val = document.getElementById('loginInput').value;
+  if (val === 'sip2024') {
+    adminUnlocked = true;
+    closeLoginModal();
+    const btn = document._pendingAdminBtn;
+    if (btn) _doSwitchTab('admin', btn);
+  } else {
+    const err = document.getElementById('loginError');
+    err.style.display = 'block';
+    err.textContent = '✕  รหัสผ่านไม่ถูกต้อง';
+    document.getElementById('loginInput').value = '';
+    document.getElementById('loginInput').focus();
+    // shake animation
+    const box = document.getElementById('loginBox');
+    box.classList.remove('shake');
+    void box.offsetWidth;
+    box.classList.add('shake');
+  }
+}
+
+function lockAdmin() {
+  adminUnlocked = false;
+  // navigate away from admin
+  const firstBtn = document.querySelector('.tab-btn:not(.admin-tab)');
+  if (firstBtn) _doSwitchTab('coffee', firstBtn);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLoginModal();
+  if (e.key === 'Enter' && document.getElementById('loginModal').classList.contains('open')) submitLogin();
+});
+
+/* ── TABS ── */
+function switchTab(id, btn) {
+  if (id === 'admin' && !adminUnlocked) {
+    openLoginModal(btn);
+    return;
+  }
+  _doSwitchTab(id, btn);
+}
+
+function _doSwitchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('mainNav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (id === 'admin') updateMeter();
+}
+function switchAP(id,btn){
+  document.querySelectorAll('.apanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.asub').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');btn.classList.add('active');
+}
+function scrollToMenu(){document.getElementById('mainNav').scrollIntoView({behavior:'smooth'});}
+window.addEventListener('scroll',()=>document.getElementById('scrollTop').classList.toggle('visible',scrollY>400));
+
+function renderAll(){renderMenus();renderCollect();renderAdminMenus();renderAdminCollect();}
+
+/* ── INIT ── */
+(async()=>{ await load(); renderAll(); })();
+</script>
+</body>
+</html>
