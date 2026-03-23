@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIP × TRADE</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Montserrat:wght@300;400;500;600&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── CSS ทั้งหมดคงเดิมจากไฟล์ต้นฉบับ ── */
+:root {
+  --dark:     #071A10;
+  --forest:   #0B3D2E;
+  --mid:      #145A32;
+  --leaf:     #1A7A42;
+  --mist:     #1C6B48;
+  --gold:     #D4AF37;
+  --gold-dim: #A88825;
+  --gold-lt:  #F0D060;
+  --cream:    #F5F5DC;
+  --cream-dim:rgba(245,245,220,.65);
+  --card-bg:  rgba(11,61,46,.55);
+  --border:   rgba(212,175,55,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:var(--dark);color:var(--cream);min-height:100vh;overflow-x:hidden;}
+
+/* ── NOISE ── */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.35;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");}
+
+/* ── HERO ── */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;text-align:center;padding:3rem 2rem;
+  background:radial-gradient(ellipse 90% 70% at 50% 45%, var(--mid) 0%, var(--forest) 45%, var(--dark) 100%);}
+
+.hero-ring{position:absolute;border-radius:50%;border:1px solid rgba(212,175,55,.12);animation:spin 40s linear infinite;}
+.hero-ring:nth-child(1){width:620px;height:620px;top:-160px;right:-180px;border-color:rgba(212,175,55,.07);}
+.hero-ring:nth-child(2){width:800px;height:800px;bottom:-260px;left:-220px;border-color:rgba(20,90,50,.25);animation-direction:reverse;animation-duration:55s;}
+.hero-ring:nth-child(3){width:360px;height:360px;top:50%;left:50%;transform:translate(-50%,-50%);border-color:rgba(212,175,55,.22);animation:none;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hero-rule{width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 1.6rem;opacity:0;animation:up .8s .3s forwards;}
+.hero-eyebrow{font-family:'Cinzel',serif;font-size:clamp(.65rem,1.8vw,.78rem);letter-spacing:.55em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.4rem;opacity:0;animation:up .8s .15s forwards;}
+.hero-title{font-family:'Cinzel',serif;font-size:clamp(2.8rem,11vw,8.5rem);font-weight:900;line-height:.92;letter-spacing:.04em;color:var(--cream);margin-bottom:.4rem;opacity:0;animation:up .9s .35s forwards;}
+.hero-title em{font-style:italic;color:var(--gold);font-family:'Playfair Display',serif;}
+.hero-sub{font-family:'Playfair Display',serif;font-size:clamp(1rem,3.5vw,1.8rem);font-style:italic;letter-spacing:.12em;color:rgba(212,175,55,.75);margin-bottom:1.6rem;opacity:0;animation:up .8s .55s forwards;}
+.hero-caption{font-family:'Montserrat',sans-serif;font-size:clamp(.82rem,2.2vw,.95rem);font-weight:300;color:var(--cream-dim);max-width:400px;line-height:1.8;margin-bottom:2.8rem;opacity:0;animation:up .8s .7s forwards;}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+.btn-cta{font-family:'Cinzel',serif;font-size:.82rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--dark);background:var(--gold);border:none;padding:.75rem 2.2rem;border-radius:1px;cursor:pointer;
+  text-decoration:none;display:inline-block;transition:background .22s,transform .15s;
+  box-shadow:0 4px 24px rgba(212,175,55,.28);}
+.btn-cta:hover{background:var(--gold-lt);transform:translateY(-2px);}
+
+/* ── NAV ── */
+nav.tabs{position:sticky;top:0;z-index:100;
+  background:rgba(7,26,16,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);display:flex;justify-content:center;overflow-x:auto;scrollbar-width:none;}
+.tab-btn{background:none;border:none;cursor:pointer;padding:1.05rem 1.5rem;
+  font-family:'Cinzel',serif;font-size:clamp(.7rem,2vw,.85rem);font-weight:600;letter-spacing:.18em;
+  color:rgba(245,245,220,.4);transition:color .28s;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-btn:hover{color:var(--cream);}
+.tab-btn.admin-tab{color:rgba(212,175,55,.35);}
+
+/* ── SECTIONS ── */
+.section{display:none;padding:3.5rem 1.5rem 6rem;max-width:1100px;margin:0 auto;}
+.section.active{display:block;animation:sectionIn .45s ease;}
+@keyframes sectionIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.section-header{text-align:center;margin-bottom:3.5rem;}
+.section-label{font-family:'Cinzel',serif;font-size:.7rem;font-weight:600;letter-spacing:.5em;color:var(--gold-dim);display:block;margin-bottom:.6rem;text-transform:uppercase;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5.5vw,3.2rem);font-weight:700;color:var(--cream);line-height:1.05;margin-bottom:.8rem;}
+
+/* ── MENU ── */
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem;}
+.menu-card{background:var(--card-bg);border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:transform .3s,box-shadow .3s,border-color .3s;position:relative;backdrop-filter:blur(6px);}
+.menu-card:hover{transform:translateY(-5px);box-shadow:0 22px 44px rgba(0,0,0,.55),0 0 0 1px rgba(212,175,55,.35);border-color:rgba(212,175,55,.35);}
+
+.menu-thumb{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(145deg,rgba(20,90,50,.6),rgba(11,61,46,.8));overflow:hidden;position:relative;}
+.menu-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+
+.menu-body{padding:1.3rem 1.25rem;}
+.menu-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--cream);margin-bottom:.3rem;}
+.menu-price{font-family:'Cinzel',serif;font-size:1.3rem;font-weight:700;color:var(--gold);letter-spacing:.04em;}
+
+/* ── ADMIN UI ── */
+.acard{background:var(--card-bg);border:1px solid var(--border);border-radius:2px;padding:1.2rem;margin-bottom:.9rem;}
+.afields{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
+.fi{background:rgba(7,26,16,.7);border:1px solid rgba(212,175,55,.18);color:var(--cream);padding:.42rem .6rem;font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:300;border-radius:1px;outline:none;width:100%;}
+.btn-add{background:var(--gold);color:var(--dark);border:none;padding:.65rem 1.5rem;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.18em;border-radius:1px;cursor:pointer;margin-bottom:1.5rem;}
+
+.scroll-top{position:fixed;bottom:2rem;right:1.5rem;background:var(--forest);border:1px solid rgba(212,175,55,.3);color:var(--gold);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;}
+.scroll-top.visible{opacity:1;}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-ring"></div><div class="hero-ring"></div><div class="hero-ring"></div>
+  <p class="hero-eyebrow">กินไปเทรดไป  ·  Sip & Trade</p>
+  <h1 class="hero-title">BARISTA<br><em>Trader</em></h1>
+  <p class="hero-sub">× Trade Edition</p>
+  <div class="hero-rule"></div>
+  <p class="hero-caption">Sip First Trade Smart<br>ดื่มด่ำทุกรสชาติ แล้วเปิดกราฟต่อ</p>
+  <a href="#" class="btn-cta" onclick="scrollToMenu();return false;">ดูเมนู ↓</a>
+</section>
+
+<nav class="tabs" id="mainNav">
+  <button class="tab-btn active" onclick="switchTab('coffee',this)">☕ กาแฟ</button>
+  <button class="tab-btn" onclick="switchTab('noncoffee',this)">🍵 ไม่ใช่กาแฟ</button>
+  <button class="tab-btn admin-tab" onclick="switchTab('admin',this)">⚙ Admin</button>
+</nav>
+
+<div class="section active" id="tab-coffee">
+  <div class="section-header">
+    <span class="section-label">Coffee Series</span>
+    <h2 class="section-title">กาแฟ</h2>
+    <div id="coffeeGrid" class="menu-grid"></div>
+  </div>
+</div>
+
+<div class="section" id="tab-noncoffee">
+  <div class="section-header">
+    <span class="section-label">Non-Coffee Series</span>
+    <h2 class="section-title">ไม่ใช่กาแฟ</h2>
+    <div id="noncoffeeGrid" class="menu-grid"></div>
+  </div>
+</div>
+
+<div class="section" id="tab-admin">
+  <div class="section-header">
+    <h2 class="section-title">⚙ Admin Panel</h2>
+    <p>จัดการข้อมูลบน Google Drive</p>
+  </div>
+  <div class="acard">
+    <div class="afields">
+      <input type="text" id="mName" class="fi" placeholder="ชื่อเมนู">
+      <input type="text" id="mPrice" class="fi" placeholder="ราคา">
+      <input type="text" id="mImg" class="fi" placeholder="URL รูปภาพ">
+      <select id="mType" class="fi">
+        <option value="coffee">กาแฟ</option>
+        <option value="noncoffee">ไม่ใช่กาแฟ</option>
+      </select>
+    </div>
+    <button class="btn-add" style="margin-top:1rem;" onclick="addMenu()">+ เพิ่มข้อมูล</button>
+  </div>
+  <div id="adminList"></div>
+</div>
+
+<a href="#" class="scroll-top" id="scrollTop" onclick="scrollToMenu();return false;">↑</a>
+
+<script>
+/* ── CONFIGURATION ── */
+// วาง URL ของ Google Apps Script ที่ Deploy ไว้ที่นี่
+const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8IdEJ8ePCv7xJrnQe78vk4rGh1IBl2auFqJZ4bWjQ9RBdFSey2tga2YEURyG-jtU/exec"; 
+
+let menus = [];
+
+/* ── DATA CORE (Google Drive Sync) ── */
+async function saveData() {
+  const allData = {
+    menus: menus,
+    lastUpdate: new Date().getTime()
+  };
+
+  try {
+    await fetch(DRIVE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(allData)
+    });
+    console.log("บันทึกข้อมูลสำเร็จ");
+  } catch (e) {
+    console.error("Error saving:", e);
+  }
+}
+
+async function loadData() {
+  try {
+    const response = await fetch(DRIVE_SCRIPT_URL);
+    const data = await response.json();
+    if (data && data.menus) {
+      menus = data.menus;
+    }
+  } catch (e) {
+    console.warn("กำลังโหลดข้อมูลจาก Local Storage...");
+    const local = localStorage.getItem('sip_trade_backup');
+    if (local) menus = JSON.parse(local);
+  }
+  renderAll();
+}
+
+/* ── UI FUNCTIONS ── */
+function renderMenus() {
+  const cGrid = document.getElementById('coffeeGrid');
+  const ncGrid = document.getElementById('noncoffeeGrid');
+  const aList = document.getElementById('adminList');
+  
+  cGrid.innerHTML = ''; ncGrid.innerHTML = ''; aList.innerHTML = '';
+
+  menus.forEach(m => {
+    // Render Menu Cards
+    const html = `
+      <div class="menu-card">
+        <div class="menu-thumb">
+          ${m.img ? `<img src="${m.img}" onerror="this.style.display='none'">` : ''}
+          <span>${m.type === 'coffee' ? '☕' : '🍵'}</span>
+        </div>
+        <div class="menu-body">
+          <h3 class="menu-name">${m.name}</h3>
+          <p class="menu-price">฿${m.price}</p>
+        </div>
+      </div>
+    `;
+    if (m.type === 'coffee') cGrid.innerHTML += html;
+    else ncGrid.innerHTML += html;
+
+    // Render Admin List
+    aList.innerHTML += `
+      <div class="acard" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>${m.name} (${m.price})</span>
+        <button onclick="deleteMenu(${m.id})" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; cursor:pointer;">ลบ</button>
+      </div>
+    `;
+  });
+}
+
+function addMenu() {
+  const name = document.getElementById('mName').value;
+  const price = document.getElementById('mPrice').value;
+  const img = document.getElementById('mImg').value;
+  const type = document.getElementById('mType').value;
+
+  if(!name || !price) return alert('กรุณากรอกชื่อและราคา');
+
+  menus.push({ id: Date.now(), name, price, img, type });
+  saveData();
+  renderAll();
+  
+  // Clear inputs
+  document.getElementById('mName').value = '';
+  document.getElementById('mPrice').value = '';
+}
+
+function deleteMenu(id) {
+  if(!confirm('ลบรายการนี้?')) return;
+  menus = menus.filter(m => m.id !== id);
+  saveData();
+  renderAll();
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function scrollToMenu(){
+  document.getElementById('mainNav').scrollIntoView({behavior:'smooth'});
+}
+
+function renderAll(){
+  renderMenus();
+  localStorage.setItem('sip_trade_backup', JSON.stringify(menus));
+}
+
+window.onscroll = () => {
+  document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 400);
+};
+
+window.onload = loadData;
+</script>
+</body>
+</html>
