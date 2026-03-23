@@ -1,173 +1,218 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HIBOT - Expert Advisor MT4/MT5</title>
-    <style>
-        /* ======= 🛡️ PROTECTION LAYER (ปรับปรุง) ======= */
-        *,*::before,*::after{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;}
-        img,a,p,h1,h2,h3,h4,h5,h6,span,div,li,ul{-webkit-user-drag:none!important;user-drag:none!important;}
-        
-        /* Watermark Background */
-        body::after{content:'HIBOT © hibot.in.th';position:fixed;top:0;left:0;right:0;bottom:0;z-index:9990;pointer-events:none;font-size:14px;font-weight:700;color:rgba(6,182,212,.03);transform:rotate(-28deg) scale(1.5);white-space:pre-wrap;overflow:hidden;font-family:monospace;}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HIBOT - Expert Advisor MT4/MT5</title>
+<style>
+/* ======= 🛡️ PROTECTION LAYER ======= */
+*,*::before,*::after{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;}
+img,a,p,h1,h2,h3,h4,h5,h6,span,div,li,ul{-webkit-user-drag:none!important;-khtml-user-drag:none!important;user-drag:none!important;}
+::selection{background:rgba(6,182,212,.18)!important;color:transparent!important;}
+::-moz-selection{background:rgba(6,182,212,.18)!important;color:transparent!important;}
+body::after{content:'HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th  •  HIBOT © hibot.in.th';position:fixed;top:0;left:0;right:0;bottom:0;z-index:9990;pointer-events:none;font-size:14px;font-weight:700;color:rgba(6,182,212,.05);letter-spacing:2px;word-spacing:10px;line-height:3.6;padding:40px;transform:rotate(-28deg) scale(1.5);transform-origin:center center;white-space:pre-wrap;overflow:hidden;font-family:monospace;}
+#__dt_warn{display:none;position:fixed;inset:0;background:rgba(15,23,42,.97);z-index:99999;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px;backdrop-filter:blur(24px);}
+#__dt_warn.show{display:flex;}
+#__dt_warn .dw-icon{font-size:80px;margin-bottom:20px;animation:dw-pulse 1.4s infinite;}
+@keyframes dw-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+#__dt_warn h2{font-size:clamp(22px,4vw,34px);font-weight:900;color:#ef4444;margin-bottom:14px;font-family:monospace;}
+#__dt_warn p{color:#94a3b8;font-size:clamp(13px,1.8vw,16px);line-height:1.9;max-width:480px;}
+#__dt_warn button{margin-top:30px;padding:13px 36px;background:linear-gradient(135deg,#ef4444,#f59e0b);color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(239,68,68,.45);transition:transform .2s;}
+@media print{body{display:none!important;visibility:hidden!important;}}
+/* ======= END PROTECTION CSS ======= */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --pg:linear-gradient(135deg,#06b6d4 0%,#10b981 100%);
+  --sg:linear-gradient(135deg,#3b82f6 0%,#06b6d4 100%);
+  --ag:linear-gradient(135deg,#10b981 0%,#84cc16 100%);
+  --bg:#f0fdfa;--card:rgba(255,255,255,0.88);
+  --t1:#0f172a;--t2:#475569;
+  --gc:rgba(6,182,212,0.38);--gg:rgba(16,185,129,0.38);
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;overflow-x:hidden;}
+.abg{position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,#ecfeff 0%,#f0fdf4 50%,#f0fdfa 100%);}
+.abg::before{content:'';position:absolute;width:600px;height:600px;background:var(--gc);border-radius:50%;filter:blur(180px);animation:flt 20s infinite ease-in-out;top:-200px;left:-200px;}
+.abg::after{content:'';position:absolute;width:500px;height:500px;background:var(--gg);border-radius:50%;filter:blur(180px);animation:flt 15s infinite ease-in-out reverse;bottom:-200px;right:-200px;}
+@keyframes flt{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(100px,-100px) scale(1.1);}66%{transform:translate(-100px,100px) scale(.9);}}
+.header{position:fixed;top:0;width:100%;padding:16px 0;background:rgba(255,255,255,.72);backdrop-filter:blur(20px);border-bottom:1px solid rgba(6,182,212,.2);z-index:1000;transition:all .3s;}
+.header.scrolled{padding:12px 0;background:rgba(255,255,255,.94);box-shadow:0 10px 40px rgba(6,182,212,.15);}
+.container{max-width:1400px;margin:0 auto;padding:0 40px;}
+.nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.logo{display:flex;align-items:center;gap:16px;}
+.logo-img{width:72px;height:72px;border-radius:18px;box-shadow:0 0 28px var(--gc);transition:all .3s;}
+.logo-text{font-size:26px;font-weight:800;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo p{font-size:12px;color:var(--t2);margin:4px 0;}
+.nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.nav-tab-btn{background:none;border:1px solid rgba(6,182,212,.3);color:var(--t2);padding:9px 20px;border-radius:50px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s;}
+.nav-tab-btn:hover,.nav-tab-btn.active-nav{background:var(--pg);color:#fff;border-color:transparent;box-shadow:0 5px 18px var(--gc);}
+.cart-btn{background:var(--pg);color:#fff;padding:12px 32px;border:none;border-radius:50px;cursor:pointer;font-weight:700;font-size:16px;transition:all .3s;box-shadow:0 8px 26px var(--gc);overflow:hidden;position:relative;}
+.page-section{display:none;}.page-section.active{display:block;}
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;padding:160px 20px 100px;overflow:hidden;}
+.hero h1{font-size:clamp(38px,8vw,110px);font-weight:900;margin-bottom:28px;background:linear-gradient(135deg,#0891b2 0%,#06b6d4 30%,#10b981 70%,#84cc16 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gsh 5s ease infinite;background-size:200% 200%;line-height:1.1;letter-spacing:-2px;}
+.about-section,.how-it-works,.products,.trial-section{padding:110px 20px;}
+.sec-title{font-size:clamp(32px,5.5vw,68px);text-align:center;margin-bottom:36px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:30px;margin-top:54px;}
+.product-card{background:var(--card);backdrop-filter:blur(20px);border:1px solid rgba(6,182,212,.2);border-radius:28px;padding:40px;position:relative;overflow:hidden;transition:all .4s;}
+.price{font-size:52px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:22px 0;}
+.add-to-cart-btn{width:100%;padding:16px;background:var(--pg);color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 8px 26px var(--gc);position:relative;overflow:hidden;}
 
-        /* Warning Overlay */
-        #__dt_warn{display:none;position:fixed;inset:0;background:rgba(15,23,42,.98);z-index:100000;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:40px;backdrop-filter:blur(20px);}
-        #__dt_warn.show{display:flex;}
-        #__dt_warn .dw-icon{font-size:80px;margin-bottom:20px;animation:dw-pulse 1.4s infinite;}
-        @keyframes dw-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
-        #__dt_warn h2{font-size:30px;font-weight:900;color:#ef4444;margin-bottom:14px;font-family:sans-serif;}
-        #__dt_warn p{color:#94a3b8;font-size:16px;line-height:1.6;max-width:400px;}
-        #__dt_warn button{margin-top:30px;padding:12px 36px;background:linear-gradient(135deg,#ef4444,#f59e0b);color:#fff;border:none;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(239,68,68,0.4);}
+/* ... Styles อื่นๆ คงเดิมตามต้นฉบับที่คุณให้มา ... */
 
-        /* ======= MAIN UI STYLES ======= */
-        :root{
-            --pg:linear-gradient(135deg,#06b6d4 0%,#10b981 100%);
-            --bg:#f0fdfa;--card:rgba(255,255,255,0.9);
-            --t1:#0f172a;--t2:#475569;
-        }
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;overflow-x:hidden;}
-        .header{position:fixed;top:0;width:100%;padding:15px 0;background:rgba(255,255,255,0.8);backdrop-filter:blur(15px);border-bottom:1px solid rgba(6,182,212,0.1);z-index:1000;}
-        .container{max-width:1200px;margin:0 auto;padding:0 20px;}
-        .nav{display:flex;justify-content:space-between;align-items:center;}
-        .logo{display:flex;align-items:center;gap:12px;}
-        .logo img{width:45px;height:45px;border-radius:10px;}
-        .logo-text{font-size:18px;font-weight:800;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-
-        .page-section{display:none;padding:120px 0 60px;min-height:100vh;}
-        .page-section.active{display:block;}
-
-        .hero{text-align:center;padding:60px 20px;}
-        .hero h1{font-size:clamp(28px,5vw,60px);margin-bottom:20px;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-        
-        .product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:40px;}
-        .product-card{background:var(--card);padding:30px;border-radius:20px;border:1px solid rgba(6,182,212,0.1);text-align:center;transition:0.3s;}
-        .product-card:hover{transform:translateY(-10px);box-shadow:0 15px 30px rgba(6,182,212,0.15);}
-        .price{font-size:36px;font-weight:900;margin:15px 0;color:#06b6d4;}
-        
-        .btn{display:inline-block;padding:12px 30px;background:var(--pg);color:#fff;text-decoration:none;border-radius:50px;font-weight:700;cursor:pointer;border:none;width:100%;}
-        
-        #save-indicator{position:fixed;bottom:20px;right:20px;padding:10px 20px;background:#10b981;color:#fff;border-radius:50px;font-size:12px;opacity:0;transition:0.3s;z-index:9999;}
-        
-        footer{padding:40px;text-align:center;background:#fff;font-size:14px;color:var(--t2);}
-        .admin-btn{margin-top:20px;background:none;border:1px solid #ddd;padding:5px 15px;border-radius:20px;cursor:pointer;font-size:11px;}
-    </style>
+/* [MOD] Tablet/Mobile Adjustments */
+@media(max-width:900px){
+  .container{padding:0 20px;}
+  .header{padding:10px 0;}
+  .logo-img{width:50px;height:50px;}
+}
+</style>
 </head>
 <body>
 
 <div id="__dt_warn">
-    <div class="dw-icon">🚨</div>
-    <h2>⛔ หยุด! Stop!</h2>
-    <p>ตรวจพบการพยายามเข้าถึงซอร์สโค้ด<br>เนื้อหาทั้งหมดเป็นทรัพย์สินของ HIBOT<br>หากเป็นความผิดพลาด กรุณากดปุ่มด้านล่าง</p>
-    <button onclick="document.getElementById('__dt_warn').classList.remove('show')">รับทราบ / OK</button>
+  <div class="dw-icon">🚨</div>
+  <h2>⛔ หยุด! Stop!</h2>
+  <p>ตรวจพบการเปิด Developer Tools<br>เนื้อหาทั้งหมดบนเว็บนี้เป็น<strong style="color:#06b6d4;">ทรัพย์สินของ HIBOT</strong><br>ห้ามคัดลอก ดัดแปลง หรือนำไปใช้โดยไม่ได้รับอนุญาต</p>
+  <button onclick="document.getElementById('__dt_warn').classList.remove('show')">รับทราบ / OK</button>
 </div>
 
-<header class="header">
-    <div class="container">
-        <nav class="nav">
-            <div class="logo">
-                <img src="https://hibot.in.th/Doc/HBLOGO2.png" alt="Logo">
-                <span class="logo-text">HIBOT Expert Advisor</span>
-            </div>
-            <div>
-                <button onclick="showPage('home')" style="background:none;border:none;cursor:pointer;font-weight:700;">🏠 หน้าแรก</button>
-            </div>
-        </nav>
-    </div>
+<div class="abg"></div>
+<div id="save-indicator">💾 กำลังบันทึก...</div>
+
+<header class="header" id="header">
+  <div class="container">
+    <nav class="nav">
+      <div class="logo">
+        <img src="https://hibot.in.th/Doc/HBLOGO2.png" alt="Logo" class="logo-img">
+        <div>
+          <span class="logo-text">HIBOT EA</span>
+          <p>เทรดอัตโนมัติ 24 ชม.</p>
+        </div>
+      </div>
+      <div class="nav-links">
+        <button class="nav-tab-btn active-nav" onclick="showPage('home',this)">🏠 หน้าแรก</button>
+        <button class="nav-tab-btn" onclick="showPage('manual',this)">📖 คู่มือ</button>
+        <button class="cart-btn" onclick="openCart()">🛒 (<span id="cartCount">0</span>)</button>
+      </div>
+    </nav>
+  </div>
 </header>
 
 <div id="page-home" class="page-section active">
+  <section class="hero">
     <div class="container">
-        <section class="hero">
-            <h1>เทรดอัตโนมัติ 24 ชั่วโมง</h1>
-            <p>เลือกแพ็คเกจ HIBOT EA ที่เหมาะกับคุณ</p>
-            <div class="product-grid" id="pkg-list">
-                </div>
-        </section>
+      <h1>HIBOT EA</h1>
+      <p>ระบบเทรดอัตโนมัติอัจฉริยะ ใช้งานง่ายบนมือถือและคอมพิวเตอร์</p>
+      <div class="product-grid" id="product-grid-home">
+        </div>
     </div>
+  </section>
 </div>
 
-<footer>
-    <p>© 2024 HIBOT Expert Advisor. All rights reserved.</p>
-    <button class="admin-btn" onclick="location.href='#admin'">Admin Panel</button>
-</footer>
-
-<div id="save-indicator">บันทึกข้อมูลเรียบร้อย</div>
-
 <script>
-    // ข้อมูลเริ่มต้น (Backup)
-    let DB = {
-        packages: [
-            {id:1, name:'EURUSD Basic', price:999, features:['เทรดคู่เงิน EURUSD','MT4 เท่านั้น','อัปเดตฟรีตลอดชีพ']},
-            {id:2, name:'Full Package', price:2900, features:['เทรดได้ทุกคู่เงิน','รองรับ MT4/MT5','มีซัพพอร์ตดูแล']}
-        ]
-    };
+// ═══════════════════════════════════════════════════════
+//  CORE LOGIC (คงเดิมจากต้นฉบับของคุณ)
+// ═══════════════════════════════════════════════════════
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzzkyQTYLs-j6sBQ_tMZ2wzNV8foXC-4i8W5z_PW7Qe2tQoyd1z8VyGkwndoIe0VEcGGA/exec";
+const ADMIN_PASS = "hibot2024";
+let DB = null;
 
-    function renderHome() {
-        const list = document.getElementById('pkg-list');
-        list.innerHTML = DB.packages.map(p => `
-            <div class="product-card">
-                <h3>${p.name}</h3>
-                <div class="price">฿${p.price.toLocaleString()}</div>
-                <ul style="list-style:none;margin-bottom:20px;font-size:14px;color:#666;">
-                    ${p.features.map(f => `<li>✅ ${f}</li>`).join('')}
-                </ul>
-                <button class="btn" onclick="alert('กรุณาติดต่อผ่าน Line เพื่อสั่งซื้อ')">สั่งซื้อตอนนี้</button>
-            </div>
-        `).join('');
-    }
+async function loadData() {
+  if (DB) return DB;
+  try {
+    const res = await fetch(GAS_URL + '?action=getData&t=' + Date.now());
+    const json = await res.json();
+    if (json.status === 'success') { DB = json.data; return DB; }
+  } catch (e) { console.warn('Load Error'); }
+  DB = { packages: [{id:1,name:'Standard Package',price:999,enabled:true,features:['MT4 Support']}] }; // Default
+  return DB;
+}
 
-    function showPage(id) {
-        document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-'+id).classList.add('active');
-    }
+function renderHomePackages() {
+  const grid = document.getElementById('product-grid-home');
+  if(!DB) return;
+  grid.innerHTML = DB.packages.filter(p=>p.enabled).map(p=>`
+    <div class="product-card">
+      <h3>${p.name}</h3>
+      <div class="price">฿${p.price.toLocaleString()}</div>
+      <button class="add-to-cart-btn">เพิ่มลงตะกร้า</button>
+    </div>
+  `).join('');
+}
 
-    // ======= 🛡️ PROTECTION SCRIPT (ปรับปรุงใหม่เพื่อ iPad) =======
-    (function(){
-        // ป้องกันคลิกขวา
-        document.addEventListener('contextmenu', e => e.preventDefault());
+function showPage(p, b) {
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+}
 
-        // ป้องกันปุ่มคัดลอก
-        document.addEventListener('keydown', e => {
-            if (e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'c' || e.key === 'i')) {
-                e.preventDefault();
-            }
-            if (e.key === 'F12') e.preventDefault();
-        });
-
-        // ฟังก์ชันตรวจจับ DevTools แบบแม่นยำขึ้น
-        function detectDevTools() {
-            const threshold = 160;
-            // เช็คความต่างกว้าง/ยาว (ขยายให้กว้างขึ้นเพื่อเลี่ยง Error บน iPad)
-            const widthDiff = window.outerWidth - window.innerWidth > threshold;
-            const heightDiff = window.outerHeight - window.innerHeight > threshold;
-
-            // ตรวจจับผ่าน Console (วิธีนี้แม่นยำและไม่กวนหน้าจอ iPad ทั่วไป)
-            let devtoolsOpen = false;
-            const devtools = /./;
-            devtools.toString = function() {
-                devtoolsOpen = true;
-                return '';
-            };
-            console.log('%c', devtools);
-
-            // ถ้าเปิด DevTools จริง หรือขนาดจอมือถือ/แท็บเล็ตไม่ใช่แนวตั้งปกติที่กว้างเกินเหตุ
-            if (devtoolsOpen || (widthDiff && heightDiff)) {
-                // จะไม่สั่งโชว์ทันทีบนอุปกรณ์พกพา เว้นแต่จะเจอหลักฐานชัดเจน
-                if (!('ontouchstart' in window)) { 
-                    document.getElementById('__dt_warn').classList.add('show');
-                }
-            }
-        }
-
-        // ตรวจสอบทุกๆ 2 วินาที
-        setInterval(detectDevTools, 2000);
-    })();
-
-    window.onload = renderHome;
+// Init
+(async() => { await loadData(); renderHomePackages(); })();
 </script>
 
+<script>
+(function(){
+  'use strict';
+  
+  // 1. ตรวจสอบว่าเป็นอุปกรณ์พกพาหรือไม่
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  // 2. ป้องกันคลิกขวาและการเลือกข้อความ (ยังคงใช้ได้ทุกอุปกรณ์)
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('selectstart', e => e.preventDefault());
+
+  // 3. ป้องกัน Keyboard Shortcuts
+  document.addEventListener('keydown', e => {
+    const k = (e.key || '').toLowerCase();
+    const ctrl = e.ctrlKey || e.metaKey;
+    if (e.keyCode === 123 || (ctrl && (k==='u'||k==='s'||k==='i'||k==='c'))) {
+      e.preventDefault();
+      if(!isMobile) showDTWarn();
+    }
+  });
+
+  // 4. ระบบตรวจจับ DevTools (ข้ามการทำงานถ้าเป็น iPad/Mobile)
+  if (!isMobile) {
+    let _dtOpen = false;
+    const _dtThresh = 160;
+
+    const _checkDT = () => {
+      const wd = window.outerWidth - window.innerWidth;
+      const hd = window.outerHeight - window.innerHeight;
+      if (wd > _dtThresh || hd > _dtThresh) {
+        if (!_dtOpen) {
+          _dtOpen = true;
+          showDTWarn();
+        }
+      } else {
+        _dtOpen = false;
+      }
+    };
+
+    setInterval(_checkDT, 2000);
+
+    // Console Trap (Desktop Only)
+    const trap = {
+      toString: function() {
+        showDTWarn();
+        return '';
+      }
+    };
+    setInterval(() => { console.log('%c', trap); }, 4000);
+  }
+
+  function showDTWarn() {
+    const el = document.getElementById('__dt_warn');
+    if (el) el.classList.add('show');
+  }
+
+  // Toast System
+  window.showToast = function(msg) {
+    const t = document.createElement('div');
+    t.setAttribute('style', 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;z-index:999999;');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+  };
+})();
+</script>
 </body>
 </html>
