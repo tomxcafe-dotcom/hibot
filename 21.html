@@ -1087,8 +1087,40 @@ reveal();
   document.addEventListener('selectstart',function(e){e.preventDefault();return false;},true);
   ['copy','cut'].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();showToast('🚫 เนื้อหาถูกป้องกัน — ไม่อนุญาตคัดลอก');return false;},true);});
   document.addEventListener('dragstart',function(e){if(e.target&&(e.target.tagName==='IMG'||e.target.tagName==='A')){e.preventDefault();return false;}},true);
-  var _dtOpen=false,_dtThresh=160;
-  function _checkDT(){var wd=window.outerWidth-window.innerWidth,hd=window.outerHeight-window.innerHeight;if(wd>_dtThresh||hd>_dtThresh){if(!_dtOpen){_dtOpen=true;showDTWarn();}}else{_dtOpen=false;}}
+ /* ======= 🛡️ แก้ไขส่วน DETECTION ให้รองรับ iPad/Mobile ======= */
+
+var _dtOpen = false, _dtThresh = 160;
+
+// ฟังก์ชันสำหรับเช็คว่าเป็นอุปกรณ์พกพาหรือไม่
+var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+function _checkDT() {
+  // ถ้าเป็น Mobile หรือ iPad ให้หยุดการเช็คทันที เพื่อป้องกัน Error จอแดง
+  if (isMobile) return; 
+
+  var wd = window.outerWidth - window.innerWidth,
+      hd = window.outerHeight - window.innerHeight;
+  
+  if (wd > _dtThresh || hd > _dtThresh) {
+    if (!_dtOpen) {
+      _dtOpen = true;
+      showDTWarn();
+    }
+  } else {
+    _dtOpen = false;
+  }
+}
+
+// ปรับระยะเวลาเช็คให้ช้าลงเล็กน้อยเพื่อประหยัดทรัพยากร
+setInterval(_checkDT, 2000); 
+
+// ส่วนของ Console Trap ก็ควรเช็ค Mobile ด้วยเช่นกัน
+var _dtTrap = {
+  toString: function() {
+    if (!isMobile) showDTWarn(); // เช็คซ้ำตรงนี้ด้วย
+    return '';
+  }
+};
   setInterval(_checkDT,1200);
   var _dtTrap={toString:function(){showDTWarn();return '';}};
   setInterval(function(){console.log('%c',_dtTrap);},3500);
