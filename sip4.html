@@ -1,52 +1,176 @@
-// 1. Data State
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIP × TRADE | Luxury Collectibles</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600&family=Sarabun:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark:     #071A10;
+  --forest:   #0B3D2E;
+  --gold:     #D4AF37;
+  --gold-dim: #A88825;
+  --cream:    #F5F5DC;
+  --cream-dim:rgba(245,245,220,.65);
+  --card-bg:  rgba(11,61,46,.55);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: var(--dark); color: var(--cream); font-family: 'Sarabun', sans-serif; overflow-x: hidden; }
+.cinzel { font-family: 'Cinzel', serif; }
+.montserrat { font-family: 'Montserrat', sans-serif; }
+.gold-text { color: var(--gold); }
+.cream-text { color: var(--cream); }
+
+/* Navigation */
+nav { background: rgba(7,26,16,0.95); padding: 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--gold-dim); display: flex; justify-content: center; gap: 20px; }
+.tab-btn { background: none; border: 1px solid transparent; color: var(--gold); padding: 10px 25px; cursor: pointer; font-family: 'Cinzel'; transition: 0.3s; letter-spacing: 2px; }
+.tab-btn.active { border-color: var(--gold); background: rgba(212,175,55,0.1); }
+
+/* Section Logic */
+.section { display: none; padding: 60px 20px; max-width: 1200px; margin: 0 auto; min-height: 80vh; }
+.section.active { display: block; }
+
+/* Collectibles Style */
+.trade-header { text-align: center; margin-bottom: 50px; }
+.col-category-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 30px; }
+.sub-tab { background: rgba(212,175,55,0.05); border: 1px solid var(--gold-dim); color: var(--gold); padding: 8px 18px; cursor: pointer; font-size: 0.85rem; transition: 0.3s; }
+.sub-tab.active { background: var(--gold); color: var(--dark); font-weight: bold; }
+
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+.menu-card { background: var(--card-bg); border: 1px solid rgba(212,175,55,0.2); border-radius: 4px; overflow: hidden; transition: 0.4s; }
+.menu-card:hover { transform: translateY(-10px); border-color: var(--gold); }
+.menu-img-container { height: 300px; overflow: hidden; position: relative; }
+.menu-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+.menu-info { padding: 20px; }
+.menu-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid rgba(212,175,55,0.1); padding-top: 15px; }
+
+/* Admin Styles */
+.apanel { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 8px; border: 1px dashed var(--gold-dim); }
+.admin-card { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+.admin-input { background: rgba(255,255,255,0.05); border: 1px solid var(--gold-dim); color: white; padding: 10px; width: 100%; margin-bottom: 10px; }
+.admin-btn { background: var(--gold); color: var(--dark); border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; }
+.admin-btn.danger { background: #ff4d4d; color: white; margin-top: 5px; }
+.tag-gold { background: var(--gold); color: var(--dark); padding: 5px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; margin: 5px; font-size: 0.8rem; font-weight: bold; }
+
+/* Animate */
+.animate-up { animation: fadeInUp 0.6s forwards; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+    <button onclick="switchTab('home', this)" class="tab-btn active">HOME</button>
+    <button onclick="switchTab('trade', this)" class="tab-btn">COLLECTIBLES</button>
+    <button onclick="switchTab('admin', this)" class="tab-btn">ADMIN</button>
+</nav>
+
+<section id="tab-home" class="section active">
+    <div style="text-align:center; padding-top:100px;">
+        <h1 class="cinzel gold-text" style="font-size:4rem;">SIP × TRADE</h1>
+        <p class="montserrat">Experience the Art of Collection</p>
+    </div>
+</section>
+
+<section id="tab-trade" class="section">
+    <div class="trade-header">
+        <h2 class="cinzel gold-text" style="font-size: 3rem; letter-spacing: 5px;">COLLECTIBLES</h2>
+        <p class="montserrat cream-text">Curated excellence for the modern collector.</p>
+        
+        <div id="colCategoryBar" class="col-category-nav"></div>
+    </div>
+
+    <div id="colItemsGrid" class="menu-grid"></div>
+</section>
+
+<section id="tab-admin" class="section">
+    <div class="apanel">
+        <h2 class="cinzel gold-text" style="margin-bottom:20px;">ADMIN DASHBOARD</h2>
+        
+        <div class="admin-card">
+            <h4 class="montserrat gold-text">จัดการหมวดหมู่ (Categories)</h4>
+            <div id="adminColCats" style="margin-bottom:15px;"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="newColCatInput" placeholder="ชื่อหมวดหมู่ใหม่..." class="admin-input" style="margin:0;">
+                <button onclick="addColCategory()" class="admin-btn">เพิ่มหมวดหมู่</button>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <h4 class="montserrat gold-text">เพิ่มรายการสินค้าใหม่</h4>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                <select id="itemColCat" class="admin-input"></select>
+                <input type="text" id="itemColName" placeholder="ชื่อสินค้า" class="admin-input">
+                <input type="text" id="itemColDesc" placeholder="รายละเอียด" class="admin-input">
+                <input type="text" id="itemColPrice" placeholder="ราคา" class="admin-input">
+                <input type="text" id="itemColImg" placeholder="Link รูปภาพ" class="admin-input" style="grid-column: span 2;">
+                <button onclick="addColItem()" class="admin-btn" style="grid-column: span 2;">บันทึกสินค้า</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// --- Data State ---
 let colCategories = ["แหวน", "กำไล", "หมวก", "เสื้อผ้า", "นาฬิกา", "แว่นตา"];
 let colItems = [
-    { id: Date.now()+1, cat: "แหวน", name: "Gold Signet", desc: "18K Solid Gold", price: "45,000", img: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400" },
-    { id: Date.now()+2, cat: "แหวน", name: "Silver Band", desc: "Sterling Silver 925", price: "5,500", img: "https://images.unsplash.com/photo-1598560912005-597659bc7aa0?w=400" },
-    { id: Date.now()+3, cat: "กำไล", name: "Classic Cuff", desc: "Minimalist Steel", price: "3,200", img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400" },
-    { id: Date.now()+4, cat: "กำไล", name: "Leather Wrap", desc: "Italian Leather", price: "2,800", img: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400" },
-    { id: Date.now()+5, cat: "หมวก", name: "Vintage Fedora", desc: "Handmade Wool", price: "4,500", img: "https://images.unsplash.com/photo-1514327605112-b887c0e61c0a?w=400" },
-    { id: Date.now()+6, cat: "หมวก", name: "Street Cap", desc: "Premium Cotton", price: "1,200", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400" },
-    { id: Date.now()+7, cat: "เสื้อผ้า", name: "Silk Shirt", desc: "Pure Mulberry Silk", price: "8,900", img: "https://images.unsplash.com/photo-1598033129183-c4f50c717658?w=400" },
-    { id: Date.now()+8, cat: "เสื้อผ้า", name: "Wool Blazer", desc: "Tailored Fit", price: "12,500", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400" },
-    { id: Date.now()+9, cat: "นาฬิกา", name: "Chronograph X", desc: "Automatic Movement", price: "85,000", img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
-    { id: Date.now()+10, cat: "นาฬิกา", name: "Dress Watch", desc: "Sapphire Crystal", price: "32,000", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400" },
-    { id: Date.now()+11, cat: "แว่นตา", name: "Aviator Gold", desc: "Polarized Lenses", price: "12,000", img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400" },
-    { id: Date.now()+12, cat: "แว่นตา", name: "Retro Frame", desc: "Acetate Material", price: "7,500", img: "https://images.unsplash.com/photo-1511499767350-a1590fdb7351?w=400" }
+    { id: 1, cat: "แหวน", name: "Gold Signet", desc: "18K Solid Gold", price: "45,000", img: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400" },
+    { id: 2, cat: "แหวน", name: "Silver Band", desc: "Sterling Silver 925", price: "5,500", img: "https://images.unsplash.com/photo-1598560912005-597659bc7aa0?w=400" },
+    { id: 3, cat: "กำไล", name: "Classic Cuff", desc: "Minimalist Steel", price: "3,200", img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400" },
+    { id: 4, cat: "กำไล", name: "Leather Wrap", desc: "Italian Leather", price: "2,800", img: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400" },
+    { id: 5, cat: "หมวก", name: "Vintage Fedora", desc: "Handmade Wool", price: "4,500", img: "https://images.unsplash.com/photo-1514327605112-b887c0e61c0a?w=400" },
+    { id: 6, cat: "หมวก", name: "Street Cap", desc: "Premium Cotton", price: "1,200", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400" },
+    { id: 7, cat: "เสื้อผ้า", name: "Silk Shirt", desc: "Pure Mulberry Silk", price: "8,900", img: "https://images.unsplash.com/photo-1598033129183-c4f50c717658?w=400" },
+    { id: 8, cat: "เสื้อผ้า", name: "Wool Blazer", desc: "Tailored Fit", price: "12,500", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400" },
+    { id: 9, cat: "นาฬิกา", name: "Chronograph X", desc: "Automatic Movement", price: "85,000", img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
+    { id: 10, cat: "นาฬิกา", name: "Dress Watch", desc: "Sapphire Crystal", price: "32,000", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400" },
+    { id: 11, cat: "แว่นตา", name: "Aviator Gold", desc: "Polarized Lenses", price: "12,000", img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400" },
+    { id: 12, cat: "แว่นตา", name: "Retro Frame", desc: "Acetate Material", price: "7,500", img: "https://images.unsplash.com/photo-1511499767350-a1590fdb7351?w=400" }
 ];
 
 let activeColCat = "แหวน";
 
-// 2. Core Functions
+// --- Tab System ---
+function switchTab(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav .tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    if(id === 'trade' || id === 'admin') renderCollectibles();
+}
+
+// --- Render Functions ---
 function renderCollectibles() {
-    // Render Category Tabs
+    // 1. Render Sub-Tabs (หมวดหมู่ย่อย)
     const catBar = document.getElementById('colCategoryBar');
     catBar.innerHTML = colCategories.map(c => `
-        <button onclick="setColCat('${c}')" class="tab-btn ${activeColCat === c ? 'active' : ''}" style="padding: 5px 20px; font-size: 0.9rem;">
+        <button onclick="setColCat('${c}')" class="sub-tab ${activeColCat === c ? 'active' : ''}">
             ${c}
         </button>
     `).join('');
 
-    // Render Items
+    // 2. Render Items Grid
     const grid = document.getElementById('colItemsGrid');
     const filtered = colItems.filter(i => i.cat === activeColCat);
-    grid.innerHTML = filtered.map(i => `
+    grid.innerHTML = filtered.length ? filtered.map(i => `
         <div class="menu-card animate-up">
             <div class="menu-img-container">
                 <img src="${i.img}" alt="${i.name}" class="menu-img">
             </div>
             <div class="menu-info">
                 <h3 class="cinzel gold-text">${i.name}</h3>
-                <p class="sarabun cream-dim" style="font-size:0.85rem;">${i.desc}</p>
+                <p class="sarabun cream-dim" style="font-size:0.85rem; margin-top:5px;">${i.desc}</p>
                 <div class="menu-footer">
                     <span class="montserrat gold-text">฿${i.price}</span>
-                    ${adminUnlocked ? `<button onclick="deleteColItem(${i.id})" class="admin-btn-sm">Delete</button>` : ''}
+                    <button onclick="deleteColItem(${i.id})" class="admin-btn danger" style="padding: 4px 10px; font-size: 0.7rem;">Delete</button>
                 </div>
             </div>
         </div>
-    `).join('');
+    `).join('') : '<p style="grid-column: 1/-1; text-align:center;">ไม่พบสินค้าในหมวดนี้</p>';
 
-    renderAdminCol(); // Sync Admin UI
+    renderAdminUI();
 }
 
 function setColCat(cat) {
@@ -54,61 +178,65 @@ function setColCat(cat) {
     renderCollectibles();
 }
 
-// 3. Admin CRUD Functions
+// --- CRUD Functions ---
 function addColCategory() {
     const input = document.getElementById('newColCatInput');
-    if (input.value.trim()) {
-        colCategories.push(input.value.trim());
+    const val = input.value.trim();
+    if(val && !colCategories.includes(val)) {
+        colCategories.push(val);
         input.value = '';
         renderCollectibles();
     }
 }
 
 function deleteColCategory(cat) {
-    if (confirm(`Delete category "${cat}" and all its items?`)) {
+    if(confirm(`ลบหมวดหมู่ "${cat}" และสินค้าทั้งหมด?`)) {
         colCategories = colCategories.filter(c => c !== cat);
         colItems = colItems.filter(i => i.cat !== cat);
-        if (activeColCat === cat) activeColCat = colCategories[0] || "";
+        if(activeColCat === cat) activeColCat = colCategories[0] || "";
         renderCollectibles();
     }
 }
 
 function addColItem() {
+    const name = document.getElementById('itemColName').value;
+    const price = document.getElementById('itemColPrice').value;
+    if(!name || !price) return alert("กรุณาระบุชื่อและราคา");
+
     const newItem = {
         id: Date.now(),
         cat: document.getElementById('itemColCat').value,
-        name: document.getElementById('itemColName').value,
+        name: name,
         desc: document.getElementById('itemColDesc').value,
-        price: document.getElementById('itemColPrice').value,
-        img: document.getElementById('itemColImg').value || 'https://via.placeholder.com/400x400?text=No+Image'
+        price: price,
+        img: document.getElementById('itemColImg').value || "https://via.placeholder.com/400"
     };
-    if (newItem.name && newItem.price) {
-        colItems.push(newItem);
-        renderCollectibles();
-        alert('Item added successfully!');
-    }
+    colItems.push(newItem);
+    renderCollectibles();
 }
 
 function deleteColItem(id) {
-    if (confirm('Delete this item?')) {
+    if(confirm("ยืนยันการลบรายการนี้?")) {
         colItems = colItems.filter(i => i.id !== id);
         renderCollectibles();
     }
 }
 
-function renderAdminCol() {
-    if (!adminUnlocked) return;
-    
-    // Admin Category List
+function renderAdminUI() {
+    // Update Tags in Admin
     const adminCats = document.getElementById('adminColCats');
     adminCats.innerHTML = colCategories.map(c => `
-        <span class="tag-gold">${c} <i onclick="deleteColCategory('${c}')" style="cursor:pointer; margin-left:5px;">&times;</i></span>
+        <span class="tag-gold">${c} <span onclick="deleteColCategory('${c}')" style="cursor:pointer; font-size:1.2rem;">&times;</span></span>
     `).join('');
 
-    // Admin Dropdown
+    // Update Dropdown in Admin Form
     const select = document.getElementById('itemColCat');
     select.innerHTML = colCategories.map(c => `<option value="${c}">${c}</option>`).join('');
 }
 
-// ผูกฟังก์ชันเข้ากับระบบเดิม
-// อย่าลืมเพิ่ม renderCollectibles() เข้าไปในฟังก์ชัน renderAll() เดิมของไฟล์
+// Initial Load
+window.onload = renderCollectibles;
+</script>
+
+</body>
+</html>
