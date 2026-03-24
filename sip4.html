@@ -1,0 +1,114 @@
+// 1. Data State
+let colCategories = ["แหวน", "กำไล", "หมวก", "เสื้อผ้า", "นาฬิกา", "แว่นตา"];
+let colItems = [
+    { id: Date.now()+1, cat: "แหวน", name: "Gold Signet", desc: "18K Solid Gold", price: "45,000", img: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400" },
+    { id: Date.now()+2, cat: "แหวน", name: "Silver Band", desc: "Sterling Silver 925", price: "5,500", img: "https://images.unsplash.com/photo-1598560912005-597659bc7aa0?w=400" },
+    { id: Date.now()+3, cat: "กำไล", name: "Classic Cuff", desc: "Minimalist Steel", price: "3,200", img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400" },
+    { id: Date.now()+4, cat: "กำไล", name: "Leather Wrap", desc: "Italian Leather", price: "2,800", img: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400" },
+    { id: Date.now()+5, cat: "หมวก", name: "Vintage Fedora", desc: "Handmade Wool", price: "4,500", img: "https://images.unsplash.com/photo-1514327605112-b887c0e61c0a?w=400" },
+    { id: Date.now()+6, cat: "หมวก", name: "Street Cap", desc: "Premium Cotton", price: "1,200", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400" },
+    { id: Date.now()+7, cat: "เสื้อผ้า", name: "Silk Shirt", desc: "Pure Mulberry Silk", price: "8,900", img: "https://images.unsplash.com/photo-1598033129183-c4f50c717658?w=400" },
+    { id: Date.now()+8, cat: "เสื้อผ้า", name: "Wool Blazer", desc: "Tailored Fit", price: "12,500", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400" },
+    { id: Date.now()+9, cat: "นาฬิกา", name: "Chronograph X", desc: "Automatic Movement", price: "85,000", img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400" },
+    { id: Date.now()+10, cat: "นาฬิกา", name: "Dress Watch", desc: "Sapphire Crystal", price: "32,000", img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400" },
+    { id: Date.now()+11, cat: "แว่นตา", name: "Aviator Gold", desc: "Polarized Lenses", price: "12,000", img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400" },
+    { id: Date.now()+12, cat: "แว่นตา", name: "Retro Frame", desc: "Acetate Material", price: "7,500", img: "https://images.unsplash.com/photo-1511499767350-a1590fdb7351?w=400" }
+];
+
+let activeColCat = "แหวน";
+
+// 2. Core Functions
+function renderCollectibles() {
+    // Render Category Tabs
+    const catBar = document.getElementById('colCategoryBar');
+    catBar.innerHTML = colCategories.map(c => `
+        <button onclick="setColCat('${c}')" class="tab-btn ${activeColCat === c ? 'active' : ''}" style="padding: 5px 20px; font-size: 0.9rem;">
+            ${c}
+        </button>
+    `).join('');
+
+    // Render Items
+    const grid = document.getElementById('colItemsGrid');
+    const filtered = colItems.filter(i => i.cat === activeColCat);
+    grid.innerHTML = filtered.map(i => `
+        <div class="menu-card animate-up">
+            <div class="menu-img-container">
+                <img src="${i.img}" alt="${i.name}" class="menu-img">
+            </div>
+            <div class="menu-info">
+                <h3 class="cinzel gold-text">${i.name}</h3>
+                <p class="sarabun cream-dim" style="font-size:0.85rem;">${i.desc}</p>
+                <div class="menu-footer">
+                    <span class="montserrat gold-text">฿${i.price}</span>
+                    ${adminUnlocked ? `<button onclick="deleteColItem(${i.id})" class="admin-btn-sm">Delete</button>` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    renderAdminCol(); // Sync Admin UI
+}
+
+function setColCat(cat) {
+    activeColCat = cat;
+    renderCollectibles();
+}
+
+// 3. Admin CRUD Functions
+function addColCategory() {
+    const input = document.getElementById('newColCatInput');
+    if (input.value.trim()) {
+        colCategories.push(input.value.trim());
+        input.value = '';
+        renderCollectibles();
+    }
+}
+
+function deleteColCategory(cat) {
+    if (confirm(`Delete category "${cat}" and all its items?`)) {
+        colCategories = colCategories.filter(c => c !== cat);
+        colItems = colItems.filter(i => i.cat !== cat);
+        if (activeColCat === cat) activeColCat = colCategories[0] || "";
+        renderCollectibles();
+    }
+}
+
+function addColItem() {
+    const newItem = {
+        id: Date.now(),
+        cat: document.getElementById('itemColCat').value,
+        name: document.getElementById('itemColName').value,
+        desc: document.getElementById('itemColDesc').value,
+        price: document.getElementById('itemColPrice').value,
+        img: document.getElementById('itemColImg').value || 'https://via.placeholder.com/400x400?text=No+Image'
+    };
+    if (newItem.name && newItem.price) {
+        colItems.push(newItem);
+        renderCollectibles();
+        alert('Item added successfully!');
+    }
+}
+
+function deleteColItem(id) {
+    if (confirm('Delete this item?')) {
+        colItems = colItems.filter(i => i.id !== id);
+        renderCollectibles();
+    }
+}
+
+function renderAdminCol() {
+    if (!adminUnlocked) return;
+    
+    // Admin Category List
+    const adminCats = document.getElementById('adminColCats');
+    adminCats.innerHTML = colCategories.map(c => `
+        <span class="tag-gold">${c} <i onclick="deleteColCategory('${c}')" style="cursor:pointer; margin-left:5px;">&times;</i></span>
+    `).join('');
+
+    // Admin Dropdown
+    const select = document.getElementById('itemColCat');
+    select.innerHTML = colCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+// ผูกฟังก์ชันเข้ากับระบบเดิม
+// อย่าลืมเพิ่ม renderCollectibles() เข้าไปในฟังก์ชัน renderAll() เดิมของไฟล์
