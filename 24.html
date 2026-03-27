@@ -710,12 +710,9 @@ function nextId(arr) { return arr.length ? Math.max(...arr.map(d => d.id)) + 1 :
 function getDefaultData() {
   return {
     packages:[
-      {id:1,name:'EURUSD Basic Package01',price:999,enabled:true,popular:false,features:['EA สำหรับ MT5','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','ผล Backtest!']},
-      {id:2,name:'EURUSD Pro Package01',price:1499,enabled:true,popular:true,features:['EA สำหรับ MT5','Source code','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','ผล Backtest!']},
-      {id:3,name:'XAUUSD Basic Package01',price:1899,enabled:true,popular:false,features:['EA สำหรับ MT5','Source code','Timeframe H1','ทุน 100$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','ผล Backtest!']}
-      {id:4,name:'XAUUSD Pro Package01',price:1899,enabled:true,popular:false,features:['EA สำหรับ MT5','Source code','Timeframe H1','ทุน 100$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','ผล Backtest!']}
-      {id:5,name:'XAUUSD Basic Package02',price:1899,enabled:true,popular:false,features:['EA สำหรับ MT5','Source code','Timeframe H1','ทุน 100$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','ผล Backtest!']}
-      {id:6,name:'XAUUSD Pro Package02',price:1899,enabled:true,popular:false,features:['EA สำหรับ MT5','Source code','Timeframe H1','ทุน 100$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','ผล Backtest!']}
+      {id:1,name:'EURUSD Basic Package',price:999,enabled:true,popular:false,features:['EA สำหรับ MT4','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','แอดไลน์เพื่อขอดูผล Backtest!']},
+      {id:2,name:'EURUSD Pro Package',price:1499,enabled:true,popular:true,features:['EA สำหรับ MT4','Source code','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','แอดไลน์เพื่อขอดูผล Backtest!']},
+      {id:3,name:'EURUSD VIP Package',price:1899,enabled:true,popular:false,features:['EA สำหรับ MT4 & MT5','Source code','Timeframe H1','ทุน 200$','อายุการใช้งานตลอดชีพ','ใช้ได้ไม่จำกัดบัญชี','แอดไลน์เพื่อขอดูผล Backtest!']}
     ],
     cats:{
       manual:['การติดตั้ง','การตั้งค่า','ไฟล์โปรแกรม'],
